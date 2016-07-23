@@ -20,27 +20,12 @@ class MainVC: UIViewController {
     
     @IBOutlet weak var vagtTableView: UITableView!
     
+    // MARK: - Variabler
+    
     var managedObjectContext: NSManagedObjectContext!
-
-//    lazy var vagterFRC: NSFetchedResultsController<NSFetchRequestResult> = {
-//
-//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
-//        let entity = NSEntityDescription.entity(forEntityName: "Vagt", in: self.managedObjectContext)
-//        fetchRequest.entity = entity
-//        
-//        let sortDescriptor1 = SortDescriptor(key: "monthNumber", ascending: false)
-//        let sortDescriptor2 = SortDescriptor(key: "startTime", ascending: false)
-//        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
-//        
-//        fetchRequest.fetchBatchSize = 20
-//        
-//        let fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-//        
-//        return fetchedResultsController
-//
-//    }
-
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
+    
+
     
     // MARK: - Initial Functions
     
@@ -96,6 +81,21 @@ class MainVC: UIViewController {
 
 }
 
+extension MainVC: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return UITableViewCell()
+    }
+}
+
+extension MainVC: UITableViewDelegate {
+    
+}
+
 extension MainVC: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
@@ -116,7 +116,23 @@ extension MainVC: NSFetchedResultsControllerDelegate {
     
 }
 
-
+//    lazy var vagterFRC: NSFetchedResultsController<NSFetchRequestResult> = {
+//
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
+//        let entity = NSEntityDescription.entity(forEntityName: "Vagt", in: self.managedObjectContext)
+//        fetchRequest.entity = entity
+//
+//        let sortDescriptor1 = SortDescriptor(key: "monthNumber", ascending: false)
+//        let sortDescriptor2 = SortDescriptor(key: "startTime", ascending: false)
+//        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
+//
+//        fetchRequest.fetchBatchSize = 20
+//
+//        let fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+//
+//        return fetchedResultsController
+//
+//    }
 
 
 

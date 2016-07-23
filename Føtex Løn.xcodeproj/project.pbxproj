@@ -8,22 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97921D4254C900D30589 /* AppDelegate.swift */; };
-		E3BE97951D4254C900D30589 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97941D4254C900D30589 /* FirstViewController.swift */; };
-		E3BE97971D4254C900D30589 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97961D4254C900D30589 /* SecondViewController.swift */; };
 		E3BE979A1D4254C900D30589 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3BE97981D4254C900D30589 /* Main.storyboard */; };
 		E3BE979C1D4254C900D30589 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E3BE979B1D4254C900D30589 /* Assets.xcassets */; };
 		E3BE979F1D4254C900D30589 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3BE979D1D4254C900D30589 /* LaunchScreen.storyboard */; };
+		E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */; };
+		E3D47E331D42B62D00C3A7E7 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D47E321D42B62D00C3A7E7 /* MainVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E3BE978F1D4254C900D30589 /* Føtex Løn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Føtex Løn.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3BE97921D4254C900D30589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		E3BE97941D4254C900D30589 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		E3BE97961D4254C900D30589 /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		E3BE97991D4254C900D30589 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E3BE979B1D4254C900D30589 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E3BE979E1D4254C900D30589 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E3BE97A01D4254C900D30589 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E3D47E301D42B4E100C3A7E7 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
+		E3D47E321D42B62D00C3A7E7 /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +57,9 @@
 			isa = PBXGroup;
 			children = (
 				E3BE97921D4254C900D30589 /* AppDelegate.swift */,
-				E3BE97941D4254C900D30589 /* FirstViewController.swift */,
-				E3BE97961D4254C900D30589 /* SecondViewController.swift */,
+				E3D47E321D42B62D00C3A7E7 /* MainVC.swift */,
 				E3BE97981D4254C900D30589 /* Main.storyboard */,
+				E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */,
 				E3BE979B1D4254C900D30589 /* Assets.xcassets */,
 				E3BE979D1D4254C900D30589 /* LaunchScreen.storyboard */,
 				E3BE97A01D4254C900D30589 /* Info.plist */,
@@ -141,9 +141,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3BE97971D4254C900D30589 /* SecondViewController.swift in Sources */,
 				E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */,
-				E3BE97951D4254C900D30589 /* FirstViewController.swift in Sources */,
+				E3D47E331D42B62D00C3A7E7 /* MainVC.swift in Sources */,
+				E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,8 +299,22 @@
 				E3BE97A51D4254C900D30589 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				E3D47E301D42B4E100C3A7E7 /* CoreDataModel.xcdatamodel */,
+			);
+			currentVersion = E3D47E301D42B4E100C3A7E7 /* CoreDataModel.xcdatamodel */;
+			path = CoreDataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = E3BE97871D4254C800D30589 /* Project object */;
 }

@@ -25,8 +25,6 @@ class MainVC: UIViewController {
     var managedObjectContext: NSManagedObjectContext!
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
-
-    
     // MARK: - Initial Functions
     
     override func viewDidLoad() {
@@ -38,6 +36,10 @@ class MainVC: UIViewController {
     }
     
     // MARK: - Core Data Functions
+    
+    func performInitialCoreDataSetup() {
+        
+    }
     
     func setupFetchedResultsController() {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>()

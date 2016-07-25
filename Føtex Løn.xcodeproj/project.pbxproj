@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E362DDF81D468B7C00B37F7D /* Vagt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E362DDF71D468B7C00B37F7D /* Vagt.swift */; };
 		E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97921D4254C900D30589 /* AppDelegate.swift */; };
 		E3BE979A1D4254C900D30589 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3BE97981D4254C900D30589 /* Main.storyboard */; };
 		E3BE979C1D4254C900D30589 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E3BE979B1D4254C900D30589 /* Assets.xcassets */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E362DDF71D468B7C00B37F7D /* Vagt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vagt.swift; sourceTree = "<group>"; };
 		E3BE978F1D4254C900D30589 /* Føtex Løn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Føtex Løn.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3BE97921D4254C900D30589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E3BE97991D4254C900D30589 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -60,6 +62,7 @@
 				E3D47E321D42B62D00C3A7E7 /* MainVC.swift */,
 				E3BE97981D4254C900D30589 /* Main.storyboard */,
 				E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */,
+				E362DDF71D468B7C00B37F7D /* Vagt.swift */,
 				E3BE979B1D4254C900D30589 /* Assets.xcassets */,
 				E3BE979D1D4254C900D30589 /* LaunchScreen.storyboard */,
 				E3BE97A01D4254C900D30589 /* Info.plist */,
@@ -144,6 +147,7 @@
 				E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */,
 				E3D47E331D42B62D00C3A7E7 /* MainVC.swift in Sources */,
 				E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */,
+				E362DDF81D468B7C00B37F7D /* Vagt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

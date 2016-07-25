@@ -5,10 +5,9 @@
         <attribute name="month" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="monthNumber" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="note" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="penge" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="startTime" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Vagt" positionX="-54" positionY="-9" width="128" height="135"/>
+        <element name="Vagt" positionX="-54" positionY="-9" width="128" height="120"/>
     </elements>
 </model>

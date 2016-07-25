@@ -30,15 +30,16 @@ class MainVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupFetchedResultsController()
-        // performFetch()
+        performInitialCoreDataSetup()
+        firstTime(inViewController: self)
         
     }
     
     // MARK: - Core Data Functions
     
     func performInitialCoreDataSetup() {
-        
+        setupFetchedResultsController()
+        // performFetch()
     }
     
     func setupFetchedResultsController() {

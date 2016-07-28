@@ -258,7 +258,7 @@
                     <navigationItem key="navigationItem" title="Vagter" id="7yc-Dx-WQV">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="Rnn-gB-l4L">
                             <connections>
-                                <segue destination="5pG-4n-sAB" kind="presentation" id="Eaa-uA-SJU"/>
+                                <segue destination="5pG-4n-sAB" kind="presentation" identifier="vagtDetailIdentifier" id="Eaa-uA-SJU"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

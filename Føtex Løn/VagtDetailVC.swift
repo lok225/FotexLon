@@ -52,6 +52,13 @@ class VagtDetailVC: UITableViewController {
             if let text = noteTextField.text {
                 vagt.note = text
             }
+            
+            do {
+                try managedObjectContext.save()
+            } catch {
+                fatalError("Error: \(error)")
+            }
+            
             delegate?.vagtDetailVC(controller: self, didFinishEditingVagt: vagt)
         } else {
             // let vagt = NSEntityDescription.insertNewObjectForEntityForName("Vagt", inManagedObjectContext: managedObjectContext) as! Vagt
@@ -63,7 +70,11 @@ class VagtDetailVC: UITableViewController {
                 vagt.note = text
             }
             
-            
+//            do {
+//                try managedObjectContext.save()
+//            } catch {
+//                fatalError("Error: \(error)")
+//            }
             
             delegate?.vagtDetailVC(controller: self, didFinishAddingVagt: vagt)
         }

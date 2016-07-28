@@ -11,12 +11,29 @@ import CoreData
 
 class VagterVC: UITableViewController {
     
+    let kVagtDetailIdentifier = "vagtDetailIdentifier"
+    
     var managedObjectContext: NSManagedObjectContext!
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+    }
+    
+    // MARK: Segue
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
+        switch segue.identifier! {
+        case kVagtDetailIdentifier:
+            let navController = segue.destinationViewController as! UINavigationController
+            let destinationVC = navController.viewControllers[0] as! VagtDetailVC
+//            let vagt = vagterFRC.object(at: sender as! IndexPath)
+//            destinationVC.vagtToEdit = vagt
+            destinationVC.delegate = self
+        default:
+            break
+        }
     }
     
     // MARK: - Core Data Functions
@@ -92,17 +109,15 @@ class VagterVC: UITableViewController {
         return nil
     }
 
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: kVagtDetailIdentifier, sender: indexPath)
+    }
 
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
-            // tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.isEditing = false
-            
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
 }
 

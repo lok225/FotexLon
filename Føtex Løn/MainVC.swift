@@ -8,6 +8,9 @@
 
 import UIKit
 import CoreData
+import UserNotifications
+
+let kSendMail = "SendMail"
 
 class MainVC: UIViewController {
     
@@ -17,70 +20,63 @@ class MainVC: UIViewController {
     @IBOutlet weak var lblFøtexTillæg: UILabel!
     @IBOutlet weak var lblFøtexTimer: UILabel!
     @IBOutlet weak var lblFøtexVagter: UILabel!
+    @IBOutlet weak var lblNæsteVagt: UILabel!
     
     @IBOutlet weak var vagtTableView: UITableView!
     
     // MARK: - Variabler
     
     var managedObjectContext: NSManagedObjectContext!
-    var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
     // MARK: - Initial Functions
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        performInitialCoreDataSetup()
-        firstTime(inViewController: self)
-        
+        firstTime(in: self)
+    
+        setupNotification()
     }
     
-    // MARK: - Core Data Functions
+    // MARK: - Other Functions
     
-    func performInitialCoreDataSetup() {
-        setupFetchedResultsController()
-        // performFetch()
-    }
-    
-    func setupFetchedResultsController() {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
-        let entity = NSEntityDescription.entity(forEntityName: "Vagt", in: self.managedObjectContext)
-        fetchRequest.entity = entity
+    func setupNotification() {
+        let center = UNUserNotificationCenter.current()
         
-        let sortDescriptor1 = SortDescriptor(key: "monthNumber", ascending: false)
-        let sortDescriptor2 = SortDescriptor(key: "startTime", ascending: false)
-        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
-        
-        fetchRequest.fetchBatchSize = 20
-        
-        vagterFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-        vagterFRC.delegate = self
-    }
-    
-    private func performFetch() {
-        do {
-            try vagterFRC.performFetch()
+        center.requestAuthorization(options: [UNAuthorizationOptions.alert, .sound, .badge], completionHandler: { (granted, error) in
             
-            if vagterFRC.fetchedObjects?.count == 0 {
+            if granted == true {
+                let content = UNMutableNotificationContent()
+                content.title = "Eksempel"
+                content.body = "Ikke lavet endnu"
+                content.sound = UNNotificationSound.default()
                 
-                // Vagt eksisterer endnu ikke
+                let date = Date(timeIntervalSinceNow: 7)
+                let components = Calendar.current.components([.year, .month, .day, .hour, .minute, .second], from: date)
+                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+                // Request
+                let request = UNNotificationRequest(identifier: kSendMail, content: content, trigger: trigger)
                 
-//                let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
-//                vagt.startTime = Date()
-//                vagt.endTime = Date(timeInterval: 60, since: vagt.startTime as! Date)
-//                vagt.monthNumber = 5
-//                do {
-//                    try managedObjectContext.save()
-//                } catch {
-//                    fatalError("Error: \(error)")
-//                }
+                center.add(request, withCompletionHandler: nil)
+                
+            } else {
+                
+                let alertController = UIAlertController (title: "Notifikationer slået fra", message: "Gå til indstillinger for at tillade Føtex Løn at sende notifikationer", preferredStyle: .alert)
+                
+                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
+                    let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
+                    if let url = settingsUrl {
+                        UIApplication.shared().open(url, options: [:], completionHandler: nil)
+                    }
+                }
+                let cancelAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                alertController.addAction(settingsAction)
+                
+                self.present(alertController, animated: true, completion: nil)
             }
-        } catch {
-            fatalError(String(error))
-        }
+        })
     }
-    
-    
 
 }
 
@@ -99,25 +95,6 @@ extension MainVC: UITableViewDelegate {
     
 }
 
-extension MainVC: NSFetchedResultsControllerDelegate {
-    
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        vagtTableView.beginUpdates()
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: AnyObject, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
-        
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        vagtTableView.endUpdates()
-    }
-    
-}
 
 //    lazy var vagterFRC: NSFetchedResultsController<NSFetchRequestResult> = {
 //

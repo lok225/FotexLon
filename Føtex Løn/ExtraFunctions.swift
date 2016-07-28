@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+// MARK: Global Konstanter
+
 let kFirstTime = "firstTime"
 let kYoungWorker = "youngWorker"
 
@@ -22,19 +24,25 @@ let oldAftenSats: Double = 25.2
 let oldLordagsSats: Double = 44.75
 let oldSondagsSats: Double = 50.6
 
-func firstTime(inViewController vc: UIViewController) {
+let vagt1 = Vagt(startTime: Date(), endTime: Date(), pause: true)
+
+var vagter: [Vagt] = [vagt1]
+
+// MARK: Functions
+
+func firstTime(in vc: UIViewController) {
     let defaults = UserDefaults.standard
     let isFirstTime = defaults.bool(forKey: kFirstTime)
     
     if isFirstTime {
-        presentAndGetYoungWorkerSetting(inViewController: vc)
+        presentAndGetYoungWorkerSetting(in: vc)
         
         defaults.set(false, forKey: kFirstTime)
         defaults.synchronize()
     }
 }
 
-func presentAndGetYoungWorkerSetting(inViewController vc: UIViewController) {
+func presentAndGetYoungWorkerSetting(in vc: UIViewController) {
     let defaults = UserDefaults.standard
     
     let alertController = UIAlertController(title: "Over eller under 18", message: "Informationen bruges til at lave indtillinger for timeløn", preferredStyle: .alert)
@@ -52,6 +60,8 @@ func presentAndGetYoungWorkerSetting(inViewController vc: UIViewController) {
     vc.present(alertController, animated: true, completion: nil)
 }
 
+// MARK: Extensions
+
 extension Date {
     
     func differenceInMins(withDate date: Date) -> Int {
@@ -61,7 +71,6 @@ extension Date {
         
         return components.minute!
     }
-    
 }
 
 

@@ -15,12 +15,18 @@ extension Vagt {
     //        return NSFetchRequest<Vagt>(entityName: "Vagt");
     //    }
     
-    
-    
+//    @NSManaged var endTime: Date!
+//    @NSManaged var month: String?
+//    @NSManaged var monthNumber: Double
+//    @NSManaged var note: String?
+//    @NSManaged var startTime: Date!
+//    @NSManaged var withPause: Bool!
 }
 
 
 class Vagt: NSObject {
+    
+    // MARK: - Variables
     
     var endTime: Date!
     var month: String?
@@ -43,6 +49,8 @@ class Vagt: NSObject {
         self.withPause = pause
         super.init()
     }
+    
+    // MARK: Computed Variables
     
     var vagtIMinMedPause: Int {
         
@@ -80,7 +88,7 @@ class Vagt: NSObject {
     
     
     
-    func calculateTotalLon() -> Double {
+    private func calculateTotalLon() -> Double {
         let isYoungWorker: Bool = UserDefaults.standard.bool(forKey: kYoungWorker)
         
         let basisLon: Double = isYoungWorker ? youngBasisLon : oldBasisLon
@@ -133,5 +141,90 @@ class Vagt: NSObject {
         return grundLon + satser
     }
     
+    func getDateIntervalString() -> String {
+        let formatter = DateIntervalFormatter()
+        formatter.dateTemplate = "EEEE d/M H:mm"
+        let formattedString = formatter.string(from: startTime, to: endTime)
+        
+        return formattedString
+    }
+    
+    func getYearString() -> String {
+        let component = myCalendar.component(.year, from: startTime)
+        
+        return String(component)
+    }
+    
+    func getMonthString() -> String {
+        return startTime.getMonthNumber(withYear: false).getMonthAsString()
+    }
+    
 }
+
+extension Date {
+    
+    func getMonthNumber(withYear: Bool) -> Double {
+        
+        let calendar = Calendar.current
+        var components = calendar.components([.year, .month, .day], from: self)
+        
+        if components.day > 18 {
+            components.month! += 1
+        }
+        
+        if withYear {
+            let monthNumber = Double(components.year!) + (Double(components.month!) / 100.0)
+            
+            return monthNumber
+        } else {
+            return Double(components.month!)
+        }
+    }
+}
+
+extension Double {
+    
+    func getMonthAsString() -> String {
+        
+        let monthString: String!
+        
+        switch self {
+        case 1:
+            monthString = "Januar"
+        case 2:
+            monthString = "Februar"
+        case 3:
+            monthString = "Marts"
+        case 4:
+            monthString = "April"
+        case 5:
+            monthString = "Maj"
+        case 6:
+            monthString = "Juni"
+        case 7:
+            monthString = "Juli"
+        case 8:
+            monthString = "August"
+        case 9:
+            monthString = "September"
+        case 10:
+            monthString = "Oktober"
+        case 11:
+            monthString = "November"
+        case 12:
+            monthString = "December"
+        default:
+            monthString = ""
+        }
+        
+        return monthString
+    }
+}
+
+
+
+
+
+
+
 

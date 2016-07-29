@@ -136,7 +136,8 @@ class Vagt: NSObject {
         
         // Udregn Løn
         
-        let grundLon = vagtIMin * basisLon
+        let grundLon = vagtITimer * basisLon
+        print(grundLon)
         
         return grundLon + satser
     }

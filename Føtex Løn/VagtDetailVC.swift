@@ -37,8 +37,21 @@ class VagtDetailVC: UITableViewController {
     
     var vagtToEdit: Vagt?
     
+    var startDatePickerHidden = false
+    var endDatePickerHidden = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let _ = vagtToEdit {
+            startDatePickerHidden = true
+            title = "Ændre Vagt"
+        }
+        
+        lblStartDate.textColor = UIColor.gray()
+        lblEndDate.textColor = UIColor.gray()
+        lblStartDate.text = formatDate(date: startTimePicker.date)
+        lblEndDate.text = formatDate(date: endTimePicker.date)
     }
 
     // MARK: - @IBActions
@@ -53,22 +66,23 @@ class VagtDetailVC: UITableViewController {
                 vagt.note = text
             }
             
-            do {
-                try managedObjectContext.save()
-            } catch {
-                fatalError("Error: \(error)")
-            }
+//            do {
+//                try managedObjectContext.save()
+//            } catch {
+//                fatalError("Error: \(error)")
+//            }
             
             delegate?.vagtDetailVC(controller: self, didFinishEditingVagt: vagt)
         } else {
             // let vagt = NSEntityDescription.insertNewObjectForEntityForName("Vagt", inManagedObjectContext: managedObjectContext) as! Vagt
             let vagt = Vagt(startTime: startTimePicker.date, endTime: endTimePicker.date, pause: pauseSwitch.isOn)
             vagt.startTime = startTimePicker.date
-            vagt.endTime = startTimePicker.date
+            vagt.endTime = endTimePicker.date
             vagt.withPause = pauseSwitch.isOn
             if let text = noteTextField.text {
                 vagt.note = text
             }
+            vagter.append(vagt)
             
 //            do {
 //                try managedObjectContext.save()
@@ -85,40 +99,108 @@ class VagtDetailVC: UITableViewController {
     }
 
     @IBAction func startTimePickerChanged(_ sender: UIDatePicker) {
+        lblStartDate.text = formatDate(date: sender.date)
     }
     
     @IBAction func endTimePickerChanged(_ sender: UIDatePicker) {
+        lblEndDate.text = formatDate(date: sender.date)
     }
     
     @IBAction func timeSegControlChanged(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 4 {
+            hideStartPicker(false)
+            hideEndPicker(false)
+        } else {
+            hideStartPicker(false)
+            hideEndPicker(true)
+        }
     }
     
     @IBAction func pauseSwitchChanged(_ sender: UISwitch) {
     }
     
+    // MARK: - UITableViewDelegate
     
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        return 0
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        noteTextField.resignFirstResponder()
+        tableView.cellForRow(at: indexPath)!.setSelected(false, animated: true)
         
-        return 0
+        if indexPath.section == 1 && indexPath.row == 0 {
+            
+            if startDatePickerHidden {
+                hideStartPicker(false)
+            } else {
+                hideStartPicker(true)
+            }
+            
+        } else if indexPath.section == 2 && indexPath.row == 0 {
+            if endDatePickerHidden {
+                hideEndPicker(false)
+            } else {
+                hideEndPicker(true)
+            }
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if startDatePickerHidden && indexPath.section == 1 && indexPath.row == 1 {
+            return 0
+        } else if endDatePickerHidden && indexPath.section == 2 && indexPath.row == 1{
+            return 0
+        } else {
+            return super.tableView(tableView, heightForRowAt: indexPath)
+        }
     }
 
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
+    // MARK: - Helper Functions
+    
+    func hideStartPicker(_ hide: Bool) {
+        startDatePickerHidden = hide
+        
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
-    */
-
-
+    
+    func hideEndPicker(_ hide: Bool) {
+        endDatePickerHidden = hide
+        
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    func formatDate(date: Date) -> String {
+        
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        let dateString = formatter.string(from: date)
+        
+        return dateString
+    }
 
 }
+
+extension VagtDetailVC: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        textField.resignFirstResponder()
+        
+        return true
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

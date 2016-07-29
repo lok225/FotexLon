@@ -10,6 +10,7 @@
 		E30784EA1D4A9ED7009ED245 /* VagtDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */; };
 		E30AFF3A1D469456009ADF71 /* ExtraFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30AFF391D469456009ADF71 /* ExtraFunctions.swift */; };
 		E30AFF3C1D46AF6E009ADF71 /* Vagt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30AFF3B1D46AF6E009ADF71 /* Vagt.swift */; };
+		E3A387DD1D4BD75A001F7952 /* MonthCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A387DC1D4BD75A001F7952 /* MonthCell.swift */; };
 		E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97921D4254C900D30589 /* AppDelegate.swift */; };
 		E3BE979A1D4254C900D30589 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3BE97981D4254C900D30589 /* Main.storyboard */; };
 		E3BE979C1D4254C900D30589 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E3BE979B1D4254C900D30589 /* Assets.xcassets */; };
@@ -24,6 +25,7 @@
 		E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VagtDetailVC.swift; sourceTree = "<group>"; };
 		E30AFF391D469456009ADF71 /* ExtraFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtraFunctions.swift; sourceTree = "<group>"; };
 		E30AFF3B1D46AF6E009ADF71 /* Vagt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vagt.swift; sourceTree = "<group>"; };
+		E3A387DC1D4BD75A001F7952 /* MonthCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthCell.swift; sourceTree = "<group>"; };
 		E3BE978F1D4254C900D30589 /* Føtex Løn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Føtex Løn.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3BE97921D4254C900D30589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E3BE97991D4254C900D30589 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 				E3D47E321D42B62D00C3A7E7 /* MainVC.swift */,
 				E3F4FA471D481CFA00647B1E /* VagterVC.swift */,
 				E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */,
+				E3A387DC1D4BD75A001F7952 /* MonthCell.swift */,
 				E3BE97981D4254C900D30589 /* Main.storyboard */,
 				E30AFF391D469456009ADF71 /* ExtraFunctions.swift */,
 				E3FD81B51D49736B001171EE /* Data Model */,
@@ -175,6 +178,7 @@
 				E3FD81B41D496C6D001171EE /* DataController.swift in Sources */,
 				E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */,
 				E3D47E331D42B62D00C3A7E7 /* MainVC.swift in Sources */,
+				E3A387DD1D4BD75A001F7952 /* MonthCell.swift in Sources */,
 				E30AFF3C1D46AF6E009ADF71 /* Vagt.swift in Sources */,
 				E3F4FA481D481CFA00647B1E /* VagterVC.swift in Sources */,
 				E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */,

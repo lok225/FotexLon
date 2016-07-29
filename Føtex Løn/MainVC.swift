@@ -28,6 +28,8 @@ class MainVC: UIViewController {
     
     var managedObjectContext: NSManagedObjectContext!
     
+    var shouldShow = false
+    
     // MARK: - Initial Functions
     
     override func viewDidLoad() {
@@ -83,16 +85,81 @@ class MainVC: UIViewController {
 extension MainVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        
+        if shouldShow {
+            return 4
+        } else {
+            return 1
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        
+        var cell: UITableViewCell!
+        
+        if indexPath.row == 0 {
+            cell = tableView.dequeueReusableCell(withIdentifier: "monthCell")
+            
+            let imageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "down"), highlightedImage: #imageLiteral(resourceName: "up"))
+            if shouldShow {
+                imageView.isHighlighted = true
+            } else {
+                imageView.isHighlighted = false
+            }
+//            let imageView = UIImageView(image: #imageLiteral(resourceName: "down"))
+            
+            cell.accessoryView = imageView
+            cell.textLabel?.text = "Juli"
+            cell.detailTextLabel?.text = "4750,-"
+        } else {
+            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+            cell.textLabel?.text = "- Antal vagt"
+            cell.detailTextLabel?.text = "12"
+        }
+        
+        switch indexPath.row {
+        case 0:
+            cell = tableView.dequeueReusableCell(withIdentifier: "monthCell")
+            
+            let imageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "down"), highlightedImage: #imageLiteral(resourceName: "up"))
+            if shouldShow {
+                imageView.isHighlighted = true
+            } else {
+                imageView.isHighlighted = false
+            }
+            //            let imageView = UIImageView(image: #imageLiteral(resourceName: "down"))
+            
+            cell.accessoryView = imageView
+            cell.textLabel?.text = "Juli"
+            cell.detailTextLabel?.text = "4750,-"
+        case 1:
+            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+            cell.textLabel?.text = "- Deraf tillæg"
+            cell.detailTextLabel?.text = "700,-"
+        case 2:
+            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+            cell.textLabel?.text = "- Antal timer"
+            cell.detailTextLabel?.text = "64:15"
+        case 3:
+            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+            cell.textLabel?.text = "- Antal vagter"
+            cell.detailTextLabel?.text = "15"
+        default:
+            cell = UITableViewCell()
+        }
+        
+        return cell
     }
 }
 
 extension MainVC: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            shouldShow = !shouldShow
+            tableView.reloadData()
+        }
+    }
 }
 
 

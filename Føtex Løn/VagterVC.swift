@@ -31,6 +31,7 @@ class VagterVC: UITableViewController {
 //            let vagt = vagterFRC.object(at: sender as! IndexPath)
 //            destinationVC.vagtToEdit = vagt
             destinationVC.delegate = self
+            destinationVC.managedObjectContext = self.managedObjectContext
         default:
             break
         }
@@ -90,7 +91,9 @@ class VagterVC: UITableViewController {
 
         let vagt = vagter[indexPath.row]
         cell.textLabel?.text = vagt.getDateIntervalString()
-        cell.detailTextLabel?.text = "\(Int(vagt.samletLon))"
+        cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
+        
+        print("\(indexPath.row): \(vagt.endTime)")
 
         return cell
     }
@@ -104,10 +107,10 @@ class VagterVC: UITableViewController {
     
     // MARK: - UITableViewDelegate
     
-    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        // Gør så man ikke kan selecte row
-        return nil
-    }
+//    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+//        // Gør så man ikke kan selecte row
+//        return nil
+//    }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: kVagtDetailIdentifier, sender: indexPath)
@@ -135,6 +138,7 @@ extension VagterVC: VagtDetailVCDelegate {
     
     func vagtDetailVC(controller: VagtDetailVC, didFinishAddingVagt vagt: Vagt) {
         dismiss(animated: true, completion: nil)
+        tableView.reloadData()
     }
 }
 

@@ -40,16 +40,41 @@ class VagtDetailVC: UITableViewController {
     var startDatePickerHidden = false
     var endDatePickerHidden = true
     
+    var calendar: Calendar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setAttributes(for: navigationController!.navigationBar)
+        self.calendar = Calendar.current
         
         if let _ = vagtToEdit {
             startDatePickerHidden = true
             title = "Ændre Vagt"
         }
         
-        lblStartDate.textColor = UIColor.gray()
-        lblEndDate.textColor = UIColor.gray()
+        lblStartDate.textColor = UIColor.gray
+        lblEndDate.textColor = UIColor.gray
+        lblStartDate.text = formatDate(date: startTimePicker.date)
+        lblEndDate.text = formatDate(date: endTimePicker.date)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        if let vagt = vagtToEdit {
+            startTimePicker.date = vagt.startTime
+            endTimePicker.date = vagt.endTime
+            pauseSwitch.isOn = vagt.withPause
+            if let note = vagt.note {
+                noteTextField.text = note
+            }
+        } else {
+            setInitialDates()
+            pauseSwitch.isOn = true
+            noteTextField.text = nil
+        }
+        
         lblStartDate.text = formatDate(date: startTimePicker.date)
         lblEndDate.text = formatDate(date: endTimePicker.date)
     }
@@ -179,8 +204,37 @@ class VagtDetailVC: UITableViewController {
         
         return dateString
     }
+    
+    func setInitialDates() {
+        let date = Date(timeIntervalSinceNow: 60*40)
+        var components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        let numberOfTimes = components.minute! / 15
+        let newMinute = numberOfTimes * 15
+        components.minute! = newMinute
+        
+        startTimePicker.date = Calendar.current.date(from: components)!
+        endTimePicker.date = Date(timeInterval: 10800, since: startTimePicker.date)
+    }
 
 }
+
+extension VagtDetailVC {
+    
+    // MARK: - Segment Control Functions
+
+    func updateDatePicker(from segControl: UISegmentedControl, weekDay: Int) {
+        
+    }
+    
+//    func updateDatePickerFromSegmentControl(startTimes: [Int], endTimes: [Int], atIndex index: Int) {
+//        let startTime = startTimePicker.date
+//        
+//        let newStartTimeComps = calendar.dateComponents([.year, .month, .day], from: startTime)
+//        let newEndTimeComps = calendar.dateComponents([.year, .month, .day], from: startTime)
+//    }
+}
+
+// MARK: - UITextFieldDelegate
 
 extension VagtDetailVC: UITextFieldDelegate {
     

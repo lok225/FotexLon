@@ -19,11 +19,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         dataController = DataController()
-        
         setManagedObjectContext()
+        
         registerDefaults()
         
+        setGlobalColors()
+        
+        let date = Date(timeIntervalSinceNow: 10800)
+        
+        let vagt = Vagt(startTime: Date(), endTime: date, pause: true)
+        let vagt1 = Vagt(startTime: Date(timeIntervalSinceNow: 1800), endTime: Date(timeIntervalSinceNow: 10800), pause: true)
+        
+        vagter.append(vagt)
+        
         return true
+    }
+    
+    // MARK: Functions
+    
+    func setGlobalColors() {
+        UINavigationBar.appearance().tintColor = UIColor.white
+        UIApplication.shared.statusBarStyle = .lightContent
+        //UINavigationBar.appearance().backgroundColor = fotexBlue
     }
     
     // MARK: CoreData
@@ -72,7 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func registerDefaults() {
         let defaultsDic = [kFirstTime: true]
-        UserDefaults.standard.register(defaultsDic)
+        UserDefaults.standard.register(defaults: defaultsDic)
     }
     
     // MARK: - Other AppDelegate Funcs

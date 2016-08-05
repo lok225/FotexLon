@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-extension Vagt {
+//extension Vagt {
     
     //    @nonobjc class func fetchRequest() -> NSFetchRequest<Vagt> {
     //        return NSFetchRequest<Vagt>(entityName: "Vagt");
@@ -21,7 +21,7 @@ extension Vagt {
 //    @NSManaged var note: String?
 //    @NSManaged var startTime: Date!
 //    @NSManaged var withPause: Bool!
-}
+//}
 
 
 class Vagt: NSObject {
@@ -162,65 +162,6 @@ class Vagt: NSObject {
     
 }
 
-extension Date {
-    
-    func getMonthNumber(withYear: Bool) -> Double {
-        
-        let calendar = Calendar.current
-        var components = calendar.components([.year, .month, .day], from: self)
-        
-        if components.day > 18 {
-            components.month! += 1
-        }
-        
-        if withYear {
-            let monthNumber = Double(components.year!) + (Double(components.month!) / 100.0)
-            
-            return monthNumber
-        } else {
-            return Double(components.month!)
-        }
-    }
-}
-
-extension Double {
-    
-    func getMonthAsString() -> String {
-        
-        let monthString: String!
-        
-        switch self {
-        case 1:
-            monthString = "Januar"
-        case 2:
-            monthString = "Februar"
-        case 3:
-            monthString = "Marts"
-        case 4:
-            monthString = "April"
-        case 5:
-            monthString = "Maj"
-        case 6:
-            monthString = "Juni"
-        case 7:
-            monthString = "Juli"
-        case 8:
-            monthString = "August"
-        case 9:
-            monthString = "September"
-        case 10:
-            monthString = "Oktober"
-        case 11:
-            monthString = "November"
-        case 12:
-            monthString = "December"
-        default:
-            monthString = ""
-        }
-        
-        return monthString
-    }
-}
 
 
 

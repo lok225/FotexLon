@@ -19,6 +19,8 @@ class VagterVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setColors()
+        setAttributes(for: navigationController!.navigationBar)
     }
     
     // MARK: Segue
@@ -26,7 +28,7 @@ class VagterVC: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
         switch segue.identifier! {
         case kVagtDetailIdentifier:
-            let navController = segue.destinationViewController as! UINavigationController
+            let navController = segue.destination as! UINavigationController
             let destinationVC = navController.viewControllers[0] as! VagtDetailVC
 //            let vagt = vagterFRC.object(at: sender as! IndexPath)
 //            destinationVC.vagtToEdit = vagt
@@ -37,6 +39,18 @@ class VagterVC: UITableViewController {
         }
     }
     
+    // MARK: - Colors
+    
+    private func setColors() {
+        tableView.backgroundColor = fotexBlue
+    }
+    
+    private func setColors(for cell: UITableViewCell) {
+        cell.backgroundColor = fotexBlue
+        cell.textLabel?.textColor = UIColor.white
+        cell.detailTextLabel?.textColor = UIColor.lightText
+    }
+    
     // MARK: - Core Data Functions
     
     func setupFetchedResultsController() {
@@ -44,8 +58,8 @@ class VagterVC: UITableViewController {
         let entity = NSEntityDescription.entity(forEntityName: "Vagt", in: self.managedObjectContext)
         fetchRequest.entity = entity
         
-        let sortDescriptor1 = SortDescriptor(key: "monthNumber", ascending: false)
-        let sortDescriptor2 = SortDescriptor(key: "startTime", ascending: false)
+        let sortDescriptor1 = NSSortDescriptor(key: "monthNumber", ascending: false)
+        let sortDescriptor2 = NSSortDescriptor(key: "startTime", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
         
         fetchRequest.fetchBatchSize = 20
@@ -78,7 +92,7 @@ class VagterVC: UITableViewController {
     // MARK: - UITableViewDataSource
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return months.count
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -87,13 +101,13 @@ class VagterVC: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+        let cell = UITableViewCell(style: .value1, reuseIdentifier: "vagtCell")
 
         let vagt = vagter[indexPath.row]
-        cell.textLabel?.text = vagt.getDateIntervalString()
+        cell.textLabel?.text = vagt.getDateIntervalString().capitalized
         cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
         
-        print("\(indexPath.row): \(vagt.endTime)")
+        setColors(for: cell)
 
         return cell
     }
@@ -106,12 +120,13 @@ class VagterVC: UITableViewController {
     }
     
     // MARK: - UITableViewDelegate
-    
-//    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-//        // Gør så man ikke kan selecte row
-//        return nil
-//    }
 
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let header = view as! UITableViewHeaderFooterView
+        header.textLabel?.textColor = UIColor.white
+        header.alpha = 0.85
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: kVagtDetailIdentifier, sender: indexPath)
     }
@@ -123,6 +138,8 @@ class VagterVC: UITableViewController {
         }
     }
 }
+
+// MARK: - VagtDetailVCDelegate
 
 extension VagterVC: VagtDetailVCDelegate {
     
@@ -141,6 +158,8 @@ extension VagterVC: VagtDetailVCDelegate {
         tableView.reloadData()
     }
 }
+
+// MARK: - NSFetchedResultsControllerDelegate
 
 extension VagterVC: NSFetchedResultsControllerDelegate {
     

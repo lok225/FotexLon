@@ -17,6 +17,7 @@
 		E3BE979F1D4254C900D30589 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3BE979D1D4254C900D30589 /* LaunchScreen.storyboard */; };
 		E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */; };
 		E3D47E331D42B62D00C3A7E7 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D47E321D42B62D00C3A7E7 /* MainVC.swift */; };
+		E3EDB2D91D5222CD00D2D1BB /* Month.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EDB2D81D5222CD00D2D1BB /* Month.swift */; };
 		E3F4FA481D481CFA00647B1E /* VagterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F4FA471D481CFA00647B1E /* VagterVC.swift */; };
 		E3FD81B41D496C6D001171EE /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FD81B31D496C6D001171EE /* DataController.swift */; };
 /* End PBXBuildFile section */
@@ -34,6 +35,7 @@
 		E3BE97A01D4254C900D30589 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E3D47E301D42B4E100C3A7E7 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
 		E3D47E321D42B62D00C3A7E7 /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
+		E3EDB2D81D5222CD00D2D1BB /* Month.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Month.swift; sourceTree = "<group>"; };
 		E3F4FA471D481CFA00647B1E /* VagterVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VagterVC.swift; sourceTree = "<group>"; };
 		E3FD81B31D496C6D001171EE /* DataController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -79,16 +81,25 @@
 			isa = PBXGroup;
 			children = (
 				E3BE97921D4254C900D30589 /* AppDelegate.swift */,
-				E3D47E321D42B62D00C3A7E7 /* MainVC.swift */,
-				E3F4FA471D481CFA00647B1E /* VagterVC.swift */,
-				E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */,
-				E3A387DC1D4BD75A001F7952 /* MonthCell.swift */,
+				E3F4DEBF1D50C66300857279 /* View Controllers */,
 				E3BE97981D4254C900D30589 /* Main.storyboard */,
+				E3A387DC1D4BD75A001F7952 /* MonthCell.swift */,
+				E3EDB2D81D5222CD00D2D1BB /* Month.swift */,
 				E30AFF391D469456009ADF71 /* ExtraFunctions.swift */,
 				E3FD81B51D49736B001171EE /* Data Model */,
 				E30784EB1D4A9EE9009ED245 /* Andre Filer */,
 			);
 			path = "Føtex Løn";
+			sourceTree = "<group>";
+		};
+		E3F4DEBF1D50C66300857279 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				E3D47E321D42B62D00C3A7E7 /* MainVC.swift */,
+				E3F4FA471D481CFA00647B1E /* VagterVC.swift */,
+				E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */,
+			);
+			name = "View Controllers";
 			sourceTree = "<group>";
 		};
 		E3FD81B51D49736B001171EE /* Data Model */ = {
@@ -183,6 +194,7 @@
 				E3F4FA481D481CFA00647B1E /* VagterVC.swift in Sources */,
 				E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */,
 				E30784EA1D4A9ED7009ED245 /* VagtDetailVC.swift in Sources */,
+				E3EDB2D91D5222CD00D2D1BB /* Month.swift in Sources */,
 				E30AFF3A1D469456009ADF71 /* ExtraFunctions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,6 +312,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 2J6YE5GZ93;
 				INFOPLIST_FILE = "Føtex Løn/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.martinlok.F-tex-L-n";
@@ -312,6 +325,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 2J6YE5GZ93;
 				INFOPLIST_FILE = "Føtex Løn/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.martinlok.F-tex-L-n";

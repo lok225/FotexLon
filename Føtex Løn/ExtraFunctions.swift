@@ -30,9 +30,7 @@ let fotexBlue = UIColor(red: 0.01, green: 0.18, blue: 0.35, alpha: 1.0)
 let fotexBlue1 = UIColor(hue: 0.59, saturation: 0.93, brightness: 0.35, alpha: 1.0)
 let fotexCellBlue = UIColor(hue: 209/360, saturation: 0.87, brightness: 0.4, alpha: 1.0)
 
-let vagt1 = Vagt(startTime: Date(), endTime: Date(), pause: true)
-
-var vagter: [Vagt] = [vagt1]
+var vagter: [Vagt] = []
 var months: [[Vagt]] = [vagter]
 
 // MARK: Functions

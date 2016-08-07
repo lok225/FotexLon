@@ -25,12 +25,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         setGlobalColors()
         
-        let date = Date(timeIntervalSinceNow: 10800)
-        
-        let vagt = Vagt(startTime: Date(), endTime: date, pause: true)
-        let vagt1 = Vagt(startTime: Date(timeIntervalSinceNow: 1800), endTime: Date(timeIntervalSinceNow: 10800), pause: true)
+        let vagt = Vagt(startTime: Date(), endTime: Date(timeIntervalSinceNow: 3600), pause: true)
+        let vagt1 = Vagt(startTime: Date(timeIntervalSinceNow: 10800), endTime: Date(timeIntervalSinceNow: 32400), pause: true)
         
         vagter.append(vagt)
+        vagter.append(vagt1)
         
         return true
     }

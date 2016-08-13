@@ -25,9 +25,40 @@ class MainVC: UIViewController {
     
     // MARK: - Variabler
     
+    var dataController: DataController!
     var managedObjectContext: NSManagedObjectContext!
+    var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
     var shouldShow = false
+    
+    var currentMonthIndex: Int {
+        
+        var tempIndex = 0
+        
+        guard let sections = vagterFRC.sections else {
+            return tempIndex
+        }
+        
+        let thisMonthNumber = Date().getMonthNumber(withYear: true)
+        
+        let weekdayComp = Calendar.current.component(.weekday, from: Date())
+        
+        if weekdayComp > 18 {
+            tempIndex += 1
+        }
+        
+        for section in sections {
+            let vagt = section.objects?[0] as! Vagt
+            
+            if thisMonthNumber != vagt.monthNumber {
+                tempIndex += 1
+            }
+        }
+        
+        return tempIndex
+    }
+    
+    var month: Month?
     
     // MARK: - Initial Functions
     
@@ -35,13 +66,20 @@ class MainVC: UIViewController {
         super.viewDidLoad()
 
         firstTime(in: self)
-        
-        setupNotification()
+        setupFetchedResultsController()
         
         setColors()
         setAttributes(for: navigationController!.navigationBar)
         initialAnimations()
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        fetchObjects()
+        setupMonth()
+        setViews()
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -66,6 +104,11 @@ class MainVC: UIViewController {
         cell.backgroundColor = fotexBlue
         cell.textLabel?.textColor = UIColor.white
         cell.detailTextLabel?.textColor = UIColor.lightText
+    }
+    
+    private func setupMonth() {
+        let vagt = vagterFRC.fetchedObjects!.first as! Vagt
+        month = Month(fetchedRC: vagterFRC, monthNumber: vagt.monthNumber)
     }
     
     private func initialAnimations() {
@@ -117,7 +160,89 @@ class MainVC: UIViewController {
             }, completion: nil)
     }
     
+    // MARK: - Core Data Functions
+    
+    func setupFetchedResultsController() {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
+        let entity = NSEntityDescription.entity(forEntityName: "Vagt", in: self.managedObjectContext)
+        fetchRequest.entity = entity
+        
+        let sortDescriptor1 = NSSortDescriptor(key: "monthNumber", ascending: false)
+        let sortDescriptor2 = NSSortDescriptor(key: "startTime", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
+        
+        fetchRequest.fetchBatchSize = 20
+        
+        vagterFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: "monthNumber", cacheName: nil)
+        
+        fetchObjects()
+    }
+    
+    func fetchObjects() {
+        do {
+            try vagterFRC.performFetch()
+            
+            print(vagterFRC.sections?.count)
+            
+            if vagterFRC.fetchedObjects?.count == 0 {
+                print("Ingen objekter")
+                createStandardVagt()
+            } else {
+                
+                var needNew = true
+                
+                for section in vagterFRC.sections! {
+                    let vagt = section.objects!.first!
+                    if vagt.monthNumber == Date().getMonthNumber(withYear: true) {
+                        needNew = false
+                    }
+                    print(needNew)
+                }
+                
+                if needNew == true {
+                    createStandardVagt()
+                }
+            }
+        } catch {
+            fatalError(String(error))
+        }
+    }
+    
+    func createStandardVagt() {
+        let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
+        vagt.startTime = Date()
+        vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
+        vagt.pause = true
+        vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+        print(vagt.monthNumber)
+        dataController.save()
+        
+        do {
+            try vagterFRC.performFetch()
+        } catch {
+            fatalError(String(error))
+        }
+    }
+    
     // MARK: - Other Functions
+    
+    func setViews() {
+        
+        if let _ = month {
+            lblThisMonth.text = "Løn i \(month!.getMonthString().lowercased())"
+            lblFøtexTotalLøn.text = "\(month!.calculateTotalLøn()),-"
+            lblFøtexTillæg.text = "Deraf tillæg: \(month!.calculateSatser()),-"
+            lblFøtexTimer.text = "Antal timer: \(getFormatted(time: month!.calculateAntalMin()))"
+            lblFøtexVagter.text = "Antal vagter: \(month!.calculateAntalVagter())"
+        } else {
+            lblThisMonth.text = "Løn i denne måned"
+            lblFøtexTotalLøn.text = "0,-"
+            lblFøtexTillæg.text = "Deraf tillæg: 0,-"
+            lblFøtexTimer.text = "Antal timer: \(getFormatted(time: 0))"
+            lblFøtexVagter.text = "Antal vagter: 0"
+        }
+        
+    }
     
     func setupNotification() {
         let center = UNUserNotificationCenter.current()
@@ -247,25 +372,6 @@ extension MainVC: UITableViewDelegate {
         }
     }
 }
-
-
-//    lazy var vagterFRC: NSFetchedResultsController<NSFetchRequestResult> = {
-//
-//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
-//        let entity = NSEntityDescription.entity(forEntityName: "Vagt", in: self.managedObjectContext)
-//        fetchRequest.entity = entity
-//
-//        let sortDescriptor1 = SortDescriptor(key: "monthNumber", ascending: false)
-//        let sortDescriptor2 = SortDescriptor(key: "startTime", ascending: false)
-//        fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
-//
-//        fetchRequest.fetchBatchSize = 20
-//
-//        let fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-//
-//        return fetchedResultsController
-//
-//    }
 
 
 

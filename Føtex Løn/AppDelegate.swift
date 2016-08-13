@@ -20,18 +20,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         dataController = DataController()
         setManagedObjectContext()
+        setDataControllers()
         
         registerDefaults()
         
         setGlobalColors()
         
+        /*
         let vagt = Vagt(startTime: Date(), endTime: Date(timeIntervalSinceNow: 3600), pause: true)
         let vagt1 = Vagt(startTime: Date(timeIntervalSinceNow: 10800), endTime: Date(timeIntervalSinceNow: 32400), pause: true)
         
         vagter.append(vagt)
         vagter.append(vagt1)
+        */
         
         return true
+    }
+    
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+        
+        if shortcutItem.type == "com.martinlok.F-tex-L-n.nyVagt" {
+            let tabBarController = window!.rootViewController as! UITabBarController
+            let vagterNC = tabBarController.viewControllers![1] as! UINavigationController
+            let vagterVC = vagterNC.topViewController as! VagterVC
+            
+            tabBarController.selectedIndex = 1
+            vagterVC.performSegue(withIdentifier: kVagtDetailSegue, sender: nil)
+        }
+        
     }
     
     // MARK: Functions
@@ -43,6 +59,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // MARK: CoreData
+    
+    private func setDataControllers() {
+        let tabBarController = window?.rootViewController as! UITabBarController
+        let mainNavigationController = tabBarController.viewControllers![0] as! UINavigationController
+        let mainVC = mainNavigationController.viewControllers[0] as! MainVC
+        mainVC.dataController = self.dataController
+        
+        let vagterNavigationController = tabBarController.viewControllers![1] as! UINavigationController
+        let vagterVC = vagterNavigationController.viewControllers[0] as! VagterVC
+        vagterVC.dataController = self.dataController
+    }
 
     private func setManagedObjectContext() {
         let tabBarController = window?.rootViewController as! UITabBarController

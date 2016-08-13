@@ -11,8 +11,7 @@ import CoreData
 
 class VagterVC: UITableViewController {
     
-    let kVagtDetailIdentifier = "vagtDetailIdentifier"
-    
+    var dataController: DataController!
     var managedObjectContext: NSManagedObjectContext!
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
 
@@ -21,18 +20,24 @@ class VagterVC: UITableViewController {
 
         setColors()
         setAttributes(for: navigationController!.navigationBar)
+        
+        setupFetchedResultsController()
     }
+    
     
     // MARK: Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
         switch segue.identifier! {
-        case kVagtDetailIdentifier:
+        case kVagtDetailSegue:
             let navController = segue.destination as! UINavigationController
             let destinationVC = navController.viewControllers[0] as! VagtDetailVC
-//            let vagt = vagterFRC.object(at: sender as! IndexPath)
-//            destinationVC.vagtToEdit = vagt
+            
+            if let indexPath = sender as? IndexPath {
+                destinationVC.vagtToEdit = vagterFRC.object(at: indexPath) as? Vagt
+            }
             destinationVC.delegate = self
+            destinationVC.dataController = self.dataController
             destinationVC.managedObjectContext = self.managedObjectContext
         default:
             break
@@ -73,54 +78,81 @@ class VagterVC: UITableViewController {
             if vagterFRC.fetchedObjects?.count == 0 {
                 
                 // Vagt eksisterer endnu ikke
-//                
-//                let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
-//                vagt.startTime = Date()
-//                vagt.endTime = Date(timeInterval: 60, since: vagt.startTime as! Date)
-//                vagt.monthNumber = 5
-//                do {
-//                    try managedObjectContext.save()
-//                } catch {
-//                    fatalError("Error: \(error)")
-//                }
+                
+                let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
+                vagt.startTime = Date()
+                vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
+                vagt.pause = true
+                vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+                
+                dataController.save()
             }
         } catch {
             fatalError(String(error))
         }
     }
-
-    // MARK: - UITableViewDataSource
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return months.count
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return vagter.count
-    }
-
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .value1, reuseIdentifier: "vagtCell")
-
-        let vagt = vagter[indexPath.row]
+    // MARK: - Helper Functions
+    
+    func configure(cell: UITableViewCell, atIndexPath indexPath: IndexPath) {
+        let vagt = vagterFRC.object(at: indexPath) as! Vagt
+        
         cell.textLabel?.text = vagt.getDateIntervalString().capitalized
         cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
         
         setColors(for: cell)
+        
+        let longPressGR = UILongPressGestureRecognizer(target: self, action: #selector(cellLongPressed))
+        longPressGR.minimumPressDuration = 1.0
+        cell.addGestureRecognizer(longPressGR)
+        
+        cell.selectionStyle = UITableViewCellSelectionStyle.none
+    }
+    
+}
 
+// MARK: - UITableViewDataSource
+
+extension VagterVC {
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return vagterFRC.sections!.count
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let section = vagterFRC.sections![section]
+        
+        return section.objects!.count
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .value1, reuseIdentifier: "vagtCell")
+        
+        configure(cell: cell, atIndexPath: indexPath)
+        
         return cell
     }
-    
+     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+     
+        let section = vagterFRC.sections![section]
+        let monthString = section.name
+        let monthNumber = Double(monthString)!
         
-        let vagt = vagter[0]
-        
-        return vagt.getMonthString() + ", " + vagt.getYearString()
+        let month = Month(fetchedRC: vagterFRC, monthNumber: monthNumber)
+     
+        return  month.getMonthString() + " " + month.getYearString()
     }
+     
     
-    // MARK: - UITableViewDelegate
+    
+}
 
+// MARK: - UITableViewDelegate 
+
+extension VagterVC {
+    
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         let header = view as! UITableViewHeaderFooterView
         header.textLabel?.textColor = UIColor.white
@@ -128,15 +160,54 @@ class VagterVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: kVagtDetailIdentifier, sender: indexPath)
+        self.performSegue(withIdentifier: kVagtDetailSegue, sender: indexPath)
     }
 
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            tableView.isEditing = false
+            let vagt = vagterFRC.object(at: indexPath) as! Vagt
+            
+            managedObjectContext.delete(vagt)
+            
+            dataController.save()
         }
     }
+
+    override func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func cellLongPressed(longPressGR: UILongPressGestureRecognizer) {
+        print("Pressed")
+        
+        let indexPath = self.tableView.indexPathForRow(at: longPressGR.location(in: self.tableView))!
+        let vagt = self.vagterFRC.object(at: indexPath) as! Vagt
+        
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let cancelAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
+        let deleteAction = UIAlertAction(title: "Slet", style: .destructive) { (_) in
+            self.managedObjectContext.delete(vagt)
+            
+            self.dataController.save()
+        }
+        let dublicateAction = UIAlertAction(title: "Dubler", style: .default) { (_) in
+            let newVagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: self.managedObjectContext) as! Vagt
+            newVagt.startTime = vagt.startTime
+            newVagt.endTime = vagt.endTime
+            newVagt.pause = vagt.pause
+            newVagt.monthNumber = newVagt.startTime.getMonthNumber(withYear: true)
+            
+            self.dataController.save()
+        }
+        
+        actionSheet.addAction(dublicateAction)
+        actionSheet.addAction(deleteAction)
+        actionSheet.addAction(cancelAction)
+        self.present(actionSheet, animated: true, completion: nil)
+    }
+    
 }
 
 // MARK: - VagtDetailVCDelegate
@@ -164,18 +235,51 @@ extension VagterVC: VagtDetailVCDelegate {
 extension VagterVC: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        print("*** controllerWillChangeContent")
         tableView.beginUpdates()
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: AnyObject, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         
+        switch type {
+        case .insert:
+            print("*** NSFetchedResultsChangeInsert (object)")
+            tableView.insertRows(at: [newIndexPath!], with: .fade)
+        case .delete:
+            print("*** NSFetchedResultsChangeDelete (object)")
+            tableView.deleteRows(at: [indexPath!], with: .fade)
+        case .update:
+            print("*** NSFetchedResultsChangeUpdate (object)")
+            configure(cell: tableView.cellForRow(at: indexPath!)!, atIndexPath: indexPath!)
+        case .move:
+            print("*** NSFetchedResultsChangeMove (object)")
+            tableView.deleteRows(at: [indexPath!], with: .fade)
+            tableView.insertRows(at: [newIndexPath!], with: .fade)
+        }
+        
+        tableView.reloadData()
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
         
+        switch type {
+        case .insert:
+            print("*** NSFetchedResultsChangeInsert (section)")
+            tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
+        case .delete:
+            print("*** NSFetchedResultsChangeDelete (section)")
+            tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
+        case .update:
+            print("*** NSFetchedResultsChangeUpdate (section)")
+        case .move:
+            print("*** NSFetchedResultsChangeMove (section)")
+        }
+        
+        tableView.reloadData()
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        print("*** controllerDidChangeContent")
         tableView.endUpdates()
     }
     

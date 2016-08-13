@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11185.3" systemVersion="16A254g" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11191" systemVersion="16A270f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11151.4"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11156"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -82,7 +82,7 @@
                                 </constraints>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="2m2-6o-ELu">
-                                        <frame key="frameInset" minY="28" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2m2-6o-ELu" id="tm0-xA-aXe">
                                             <frame key="frameInset" width="375" height="43.5"/>
@@ -124,7 +124,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="monthCell" textLabel="sBf-fV-vqV" detailTextLabel="7vQ-kC-agt" style="IBUITableViewCellStyleValue1" id="O1f-gq-ZLG" customClass="MonthCell" customModule="Føtex_Løn" customModuleProvider="target">
-                                        <frame key="frameInset" minY="72" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="O1f-gq-ZLG" id="1bo-d5-ctp">
                                             <frame key="frameInset" width="375" height="43.5"/>
@@ -148,7 +148,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell3" id="3Oi-vn-X6a">
-                                        <frame key="frameInset" minY="116" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="116" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3Oi-vn-X6a" id="9as-Kw-IRh">
                                             <frame key="frameInset" width="375" height="43.5"/>
@@ -334,7 +334,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="vagtCell" textLabel="OJ5-mQ-Lo8" detailTextLabel="c9A-Gf-7Pn" style="IBUITableViewCellStyleValue1" id="ARG-ds-jOl">
-                                <frame key="frameInset" minY="92" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="92" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ARG-ds-jOl" id="nhA-w1-nOk">
                                     <frame key="frameInset" width="375" height="43.5"/>
@@ -366,7 +366,7 @@
                     <navigationItem key="navigationItem" title="Vagter" id="7yc-Dx-WQV">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="Rnn-gB-l4L">
                             <connections>
-                                <segue destination="5pG-4n-sAB" kind="presentation" identifier="vagtDetailIdentifier" id="Zg8-eI-IA0"/>
+                                <segue destination="5pG-4n-sAB" kind="presentation" identifier="vagtDetailSegue" id="Zg8-eI-IA0"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

@@ -39,8 +39,19 @@ class DataController: NSObject {
         }
     }
     
-
+    func save() {
+        do {
+            try managedObjectContext.save()
+        } catch {
+            fatalError("Error: \(error)")
+        }
+    }
     
+    func delete(vagt: Vagt) {
+        managedObjectContext.delete(vagt)
+        
+        save()
+    }
     
 }
 

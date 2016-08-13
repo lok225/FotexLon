@@ -33,6 +33,7 @@ class VagtDetailVC: UITableViewController {
     
     weak var delegate: VagtDetailVCDelegate?
     
+    var dataController: DataController!
     var managedObjectContext: NSManagedObjectContext!
     
     var vagtToEdit: Vagt?
@@ -65,7 +66,7 @@ class VagtDetailVC: UITableViewController {
         if let vagt = vagtToEdit {
             startTimePicker.date = vagt.startTime
             endTimePicker.date = vagt.endTime
-            pauseSwitch.isOn = vagt.withPause
+            pauseSwitch.isOn = vagt.pause
             if let note = vagt.note {
                 noteTextField.text = note
             }
@@ -86,34 +87,29 @@ class VagtDetailVC: UITableViewController {
         if let vagt = vagtToEdit {
             vagt.startTime = startTimePicker.date
             vagt.endTime = startTimePicker.date
-            vagt.withPause = pauseSwitch.isOn
+            vagt.pause = pauseSwitch.isOn
+            vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+            
             if let text = noteTextField.text {
                 vagt.note = text
             }
             
-//            do {
-//                try managedObjectContext.save()
-//            } catch {
-//                fatalError("Error: \(error)")
-//            }
+            dataController.save()
             
             delegate?.vagtDetailVC(controller: self, didFinishEditingVagt: vagt)
+            
         } else {
-            // let vagt = NSEntityDescription.insertNewObjectForEntityForName("Vagt", inManagedObjectContext: managedObjectContext) as! Vagt
-            let vagt = Vagt(startTime: startTimePicker.date, endTime: endTimePicker.date, pause: pauseSwitch.isOn)
+            let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
             vagt.startTime = startTimePicker.date
             vagt.endTime = endTimePicker.date
-            vagt.withPause = pauseSwitch.isOn
+            vagt.pause = pauseSwitch.isOn
+            vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+            
             if let text = noteTextField.text {
                 vagt.note = text
             }
-            vagter.append(vagt)
             
-//            do {
-//                try managedObjectContext.save()
-//            } catch {
-//                fatalError("Error: \(error)")
-//            }
+            dataController.save()
             
             delegate?.vagtDetailVC(controller: self, didFinishAddingVagt: vagt)
         }
@@ -124,7 +120,24 @@ class VagtDetailVC: UITableViewController {
     }
 
     @IBAction func startTimePickerChanged(_ sender: UIDatePicker) {
-        lblStartDate.text = formatDate(date: sender.date)
+        
+        let startDate = startTimePicker.date
+        let endDate = endTimePicker.date
+        let dateInterval = startDate.differenceInMins(withDate: endDate)
+        
+        var startComps = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: startDate)
+        let endComps = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: endDate)
+        
+        if dateInterval <= 0 {
+            endTimePicker.date = Date(timeInterval: 10800, since: startDate)
+        } else {
+            startComps.hour = endComps.hour
+            startComps.minute = endComps.minute
+            let date = calendar.date(from: startComps)!
+            endTimePicker.date = date
+        }
+        
+        updateDateLabels()
     }
     
     @IBAction func endTimePickerChanged(_ sender: UIDatePicker) {
@@ -144,7 +157,53 @@ class VagtDetailVC: UITableViewController {
     @IBAction func pauseSwitchChanged(_ sender: UISwitch) {
     }
     
-    // MARK: - UITableViewDelegate
+    // MARK: - Helper Functions
+    
+    func hideStartPicker(_ hide: Bool) {
+        startDatePickerHidden = hide
+        
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    func hideEndPicker(_ hide: Bool) {
+        endDatePickerHidden = hide
+        
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+    
+    func updateDateLabels() {
+        lblStartDate.text = formatDate(date: startTimePicker.date)
+        lblEndDate.text = formatDate(date: endTimePicker.date)
+    }
+    
+    func formatDate(date: Date) -> String {
+        
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        let dateString = formatter.string(from: date)
+        
+        return dateString
+    }
+    
+    func setInitialDates() {
+        let date = Date(timeIntervalSinceNow: 60*40)
+        var components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        let numberOfTimes = components.minute! / 15
+        let newMinute = numberOfTimes * 15
+        components.minute! = newMinute
+        
+        startTimePicker.date = Calendar.current.date(from: components)!
+        endTimePicker.date = Date(timeInterval: 10800, since: startTimePicker.date)
+    }
+
+}
+
+// MARK: - UITableViewDelegate
+
+extension VagtDetailVC {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -179,48 +238,11 @@ class VagtDetailVC: UITableViewController {
         }
     }
 
-    // MARK: - Helper Functions
-    
-    func hideStartPicker(_ hide: Bool) {
-        startDatePickerHidden = hide
-        
-        tableView.beginUpdates()
-        tableView.endUpdates()
-    }
-    
-    func hideEndPicker(_ hide: Bool) {
-        endDatePickerHidden = hide
-        
-        tableView.beginUpdates()
-        tableView.endUpdates()
-    }
-    
-    func formatDate(date: Date) -> String {
-        
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        let dateString = formatter.string(from: date)
-        
-        return dateString
-    }
-    
-    func setInitialDates() {
-        let date = Date(timeIntervalSinceNow: 60*40)
-        var components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-        let numberOfTimes = components.minute! / 15
-        let newMinute = numberOfTimes * 15
-        components.minute! = newMinute
-        
-        startTimePicker.date = Calendar.current.date(from: components)!
-        endTimePicker.date = Date(timeInterval: 10800, since: startTimePicker.date)
-    }
-
 }
 
+// MARK: - Segment Control Functions
+
 extension VagtDetailVC {
-    
-    // MARK: - Segment Control Functions
 
     func updateDatePicker(from segControl: UISegmentedControl, weekDay: Int) {
         

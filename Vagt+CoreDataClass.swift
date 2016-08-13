@@ -1,54 +1,23 @@
 //
-//  Vagt.swift
+//  Vagt+CoreDataClass.swift
 //  Føtex Løn
 //
-//  Created by Martin Lok on 25/07/2016.
+//  Created by Martin Lok on 07/08/2016.
 //  Copyright © 2016 Martin Lok. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import CoreData
 
-//extension Vagt {
-    
-    //    @nonobjc class func fetchRequest() -> NSFetchRequest<Vagt> {
-    //        return NSFetchRequest<Vagt>(entityName: "Vagt");
-    //    }
-    
-//    @NSManaged var endTime: Date!
-//    @NSManaged var month: String?
-//    @NSManaged var monthNumber: Double
-//    @NSManaged var note: String?
-//    @NSManaged var startTime: Date!
-//    @NSManaged var withPause: Bool!
-//}
 
+public class Vagt: NSManagedObject {
 
-class Vagt: NSObject {
-    
-    // MARK: - Variables
-    
-    var endTime: Date!
-    var month: String?
-    var monthNumber: Double
-    var note: String?
-    var startTime: Date!
-    var withPause: Bool!
-    
     var satser = 0.0
     
     let myCalendar: Calendar = Calendar.current
     
     private let lordagSatsTid = 15 * 60
     private let hverdagSatsTid = 18 * 60
-    
-    init(startTime: Date, endTime: Date, pause: Bool) {
-        self.startTime = startTime
-        self.endTime = endTime
-        self.monthNumber = 2014.2
-        self.withPause = pause
-        super.init()
-    }
     
     // MARK: Computed Variables
     
@@ -59,7 +28,7 @@ class Vagt: NSObject {
     
     var vagtIMin: Double {
         
-        return Double(vagtIMinMedPause - pause)
+        return Double(vagtIMinMedPause - pauseTime)
     }
     
     var vagtITimer: Double {
@@ -67,9 +36,9 @@ class Vagt: NSObject {
         return Double(vagtIMin / 60)
     }
     
-    var pause: Int {
+    var pauseTime: Int {
         
-        guard withPause == true else {
+        guard pause == true else {
             return 0
         }
         
@@ -96,7 +65,7 @@ class Vagt: NSObject {
         let lordagsSats: Double = isYoungWorker ? youngLordagsSats : oldLordagsSats
         let sondagsSats: Double = isYoungWorker ? youngSondagsSats : oldSondagsSats
         
-        let weekDayComponent = myCalendar.component(.weekday, from: startTime)
+        let weekDayComponent = Calendar.current.component(.weekday, from: startTime)
         
         let endHour = myCalendar.component(.hour, from: endTime)
         let endMinute = myCalendar.component(.minute, from: endTime)
@@ -160,13 +129,5 @@ class Vagt: NSObject {
         return startTime.getMonthNumber(withYear: false).getMonthAsString()
     }
     
+    
 }
-
-
-
-
-
-
-
-
-

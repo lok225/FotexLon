@@ -13,6 +13,7 @@ import UIKit
 
 let kFirstTime = "firstTime"
 let kYoungWorker = "youngWorker"
+let kVagtDetailSegue = "vagtDetailSegue"
 
 let youngBasisLon: Double = 63.86
 let youngAftenSats: Double = 12.6
@@ -68,6 +69,16 @@ func presentAndGetYoungWorkerSetting(in vc: UIViewController) {
 func setAttributes(for navBar: UINavigationBar) {
     navBar.barTintColor = fotexCellBlue
     navBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
+}
+
+func getFormatted(time timeWorked: Int) -> String {
+    
+    let hoursWorked = timeWorked / 60
+    let minutesWorked = timeWorked % 60
+    
+    let totalTime = String(format: "%01d:%02d", hoursWorked, minutesWorked)
+    
+    return totalTime
 }
 
 // MARK: Extensions

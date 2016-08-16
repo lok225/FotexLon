@@ -15,6 +15,15 @@ let kFirstTime = "firstTime"
 let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
 
+let kYoungBasisLon = "youngBasisLon"
+let kYoungAftensSats = "youngAftenSats"
+let kYoungLordagsSats = "youngLordagsSats"
+let kYoungSondagsSats = "youngSondagsSats"
+let kOldBasisLon = "oldBasisLon"
+let kOldAftensSats = "oldAftenSats"
+let kOldLordagsSats = "oldLordagsSats"
+let kOldSondagsSats = "oldSondagsSats"
+
 let youngBasisLon: Double = 63.86
 let youngAftenSats: Double = 12.6
 let youngLordagsSats: Double = 22.38
@@ -30,6 +39,7 @@ let cellBlue = UIColor(hue: 175/360, saturation: 0.26, brightness: 0.69, alpha: 
 let fotexBlue = UIColor(red: 0.01, green: 0.18, blue: 0.35, alpha: 1.0)
 let fotexBlue1 = UIColor(hue: 0.59, saturation: 0.93, brightness: 0.35, alpha: 1.0)
 let fotexCellBlue = UIColor(hue: 209/360, saturation: 0.87, brightness: 0.4, alpha: 1.0)
+let gothicBlue = UIColor(red: 0.44, green: 0.58, blue: 0.67, alpha: 1.0)
 
 var vagter: [Vagt] = []
 var months: [[Vagt]] = [vagter]
@@ -58,12 +68,15 @@ func presentAndGetYoungWorkerSetting(in vc: UIViewController) {
     }
     let overAction = UIAlertAction(title: "Over 18", style: .default) { (action) in
         defaults.set(false, forKey: kYoungWorker)
-        
     }
     alertController.addAction(underAction)
     alertController.addAction(overAction)
     
     vc.present(alertController, animated: true, completion: nil)
+}
+
+func setLonDefaults() {
+    
 }
 
 func setAttributes(for navBar: UINavigationBar) {
@@ -82,6 +95,17 @@ func getFormatted(time timeWorked: Int) -> String {
 }
 
 // MARK: Extensions
+
+extension UIViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}
 
 extension Date {
     

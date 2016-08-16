@@ -24,6 +24,11 @@ class VagterVC: UITableViewController {
         setupFetchedResultsController()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tableView.reloadData()
+    }
     
     // MARK: Segue
     
@@ -54,6 +59,10 @@ class VagterVC: UITableViewController {
         cell.backgroundColor = fotexBlue
         cell.textLabel?.textColor = UIColor.white
         cell.detailTextLabel?.textColor = UIColor.lightText
+        
+        let cellView = UIView()
+        cellView.backgroundColor = gothicBlue
+        cell.selectedBackgroundView = cellView
     }
     
     // MARK: - Core Data Functions
@@ -82,7 +91,28 @@ class VagterVC: UITableViewController {
                 let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
                 vagt.startTime = Date()
                 vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
-                vagt.pause = true
+                vagt.pause = 30
+                vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+                
+                dataController.save()
+            }
+        } catch {
+            fatalError(String(error))
+        }
+    }
+    
+    func fetchObjects() {
+        do {
+            try vagterFRC.performFetch()
+            
+            if vagterFRC.fetchedObjects?.count == 0 {
+                
+                // Vagt eksisterer endnu ikke
+                
+                let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
+                vagt.startTime = Date()
+                vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
+                vagt.pause = 30
                 vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
                 
                 dataController.save()
@@ -106,7 +136,6 @@ class VagterVC: UITableViewController {
         longPressGR.minimumPressDuration = 1.0
         cell.addGestureRecognizer(longPressGR)
         
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
     }
     
 }
@@ -142,7 +171,7 @@ extension VagterVC {
         
         let month = Month(fetchedRC: vagterFRC, monthNumber: monthNumber)
      
-        return  month.getMonthString() + " " + month.getYearString()
+        return month.getMonthString() + " " + month.getYearString()
     }
      
     

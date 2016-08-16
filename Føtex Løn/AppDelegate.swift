@@ -114,7 +114,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: UserDefaults
     
     private func registerDefaults() {
-        let defaultsDic = [kFirstTime: true]
+        let defaultsDic = [kFirstTime: true,
+                           kYoungBasisLon: 63.86,
+                           kYoungAftensSats: 12.6,
+                           kYoungLordagsSats: 22.38,
+                           kYoungSondagsSats: 25.3,
+                           kOldBasisLon: 112.42,
+                           kOldAftensSats: 25.2,
+                           kOldLordagsSats: 44.75,
+                           kOldSondagsSats: 50.6]
         UserDefaults.standard.register(defaults: defaultsDic)
     }
     

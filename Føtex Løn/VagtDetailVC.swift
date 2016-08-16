@@ -26,7 +26,8 @@ class VagtDetailVC: UITableViewController {
     @IBOutlet weak var lblEndDate: UILabel!
     
     @IBOutlet weak var timesSegControl: UISegmentedControl!
-    @IBOutlet weak var pauseSwitch: UISwitch!
+    
+    @IBOutlet weak var txtPause: UITextField!
     @IBOutlet weak var noteTextField: UITextField!
     
     // MARK: - Variabler
@@ -47,6 +48,7 @@ class VagtDetailVC: UITableViewController {
         super.viewDidLoad()
         
         setAttributes(for: navigationController!.navigationBar)
+        // hideKeyboardWhenTappedAround()
         self.calendar = Calendar.current
         
         if let _ = vagtToEdit {
@@ -66,13 +68,13 @@ class VagtDetailVC: UITableViewController {
         if let vagt = vagtToEdit {
             startTimePicker.date = vagt.startTime
             endTimePicker.date = vagt.endTime
-            pauseSwitch.isOn = vagt.pause
+            txtPause.text = String(vagt.pause) + " min"
             if let note = vagt.note {
                 noteTextField.text = note
             }
         } else {
             setInitialDates()
-            pauseSwitch.isOn = true
+            txtPause.text = "30 min"
             noteTextField.text = nil
         }
         
@@ -84,10 +86,12 @@ class VagtDetailVC: UITableViewController {
     
     @IBAction func doneBtnPressed(_ sender: UIBarButtonItem) {
         
+        self.dismissKeyboard()
+        
         if let vagt = vagtToEdit {
             vagt.startTime = startTimePicker.date
             vagt.endTime = startTimePicker.date
-            vagt.pause = pauseSwitch.isOn
+            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
             
             if let text = noteTextField.text {
@@ -102,7 +106,7 @@ class VagtDetailVC: UITableViewController {
             let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
             vagt.startTime = startTimePicker.date
             vagt.endTime = endTimePicker.date
-            vagt.pause = pauseSwitch.isOn
+            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
             
             if let text = noteTextField.text {
@@ -116,6 +120,7 @@ class VagtDetailVC: UITableViewController {
     }
     
     @IBAction func cancelBtnPressed(_ sender: UIBarButtonItem) {
+        self.dismissKeyboard()
         delegate?.vagtDetailVCDidCancel(controller: self)
     }
 
@@ -260,8 +265,14 @@ extension VagtDetailVC {
 
 extension VagtDetailVC: UITextFieldDelegate {
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.tag == 2 {
+            let position = textField.position(from: textField.beginningOfDocument, offset: textField.text!.characters.count - 4)!
+            textField.selectedTextRange = textField.textRange(from: position, to: position)
+        }
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         textField.resignFirstResponder()
         
         return true

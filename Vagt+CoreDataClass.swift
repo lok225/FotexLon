@@ -28,26 +28,12 @@ public class Vagt: NSManagedObject {
     
     var vagtIMin: Double {
         
-        return Double(vagtIMinMedPause - pauseTime)
+        return Double(vagtIMinMedPause - pause)
     }
     
     var vagtITimer: Double {
         
         return Double(vagtIMin / 60)
-    }
-    
-    var pauseTime: Int {
-        
-        guard pause == true else {
-            return 0
-        }
-        
-        // TODO: Tilføj andre tidspunkter med pauser
-        if vagtIMinMedPause >= 240 {
-            return 30
-        } else {
-            return 0
-        }
     }
     
     var samletLon: Double {
@@ -58,12 +44,15 @@ public class Vagt: NSManagedObject {
     
     
     private func calculateTotalLon() -> Double {
-        let isYoungWorker: Bool = UserDefaults.standard.bool(forKey: kYoungWorker)
         
-        let basisLon: Double = isYoungWorker ? youngBasisLon : oldBasisLon
-        let aftenSats: Double = isYoungWorker ? youngAftenSats : oldAftenSats
-        let lordagsSats: Double = isYoungWorker ? youngLordagsSats : oldLordagsSats
-        let sondagsSats: Double = isYoungWorker ? youngSondagsSats : oldSondagsSats
+        let defaults = UserDefaults.standard
+        
+        let isYoungWorker: Bool = defaults.bool(forKey: kYoungWorker)
+        
+        let basisLon: Double = isYoungWorker ? defaults.double(forKey: kYoungBasisLon) : defaults.double(forKey: kOldBasisLon)
+        let aftenSats: Double = isYoungWorker ? defaults.double(forKey: kYoungAftensSats) : defaults.double(forKey: kOldAftensSats)
+        let lordagsSats: Double = isYoungWorker ? defaults.double(forKey: kYoungLordagsSats) : defaults.double(forKey: kOldLordagsSats)
+        let sondagsSats: Double = isYoungWorker ? defaults.double(forKey: kYoungSondagsSats) : defaults.double(forKey: kOldSondagsSats)
         
         let weekDayComponent = Calendar.current.component(.weekday, from: startTime)
         
@@ -106,7 +95,6 @@ public class Vagt: NSManagedObject {
         // Udregn Løn
         
         let grundLon = vagtITimer * basisLon
-        print(grundLon)
         
         return grundLon + satser
     }

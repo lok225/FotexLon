@@ -11,6 +11,7 @@
 		E3000D151D57A9FD004788B0 /* Vagt+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3000D131D57A9FD004788B0 /* Vagt+CoreDataProperties.swift */; };
 		E30784EA1D4A9ED7009ED245 /* VagtDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */; };
 		E30AFF3A1D469456009ADF71 /* ExtraFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30AFF391D469456009ADF71 /* ExtraFunctions.swift */; };
+		E31478D61D5FD1DE00C4C9DC /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */; };
 		E34453BD1D5DAACC00B3DB67 /* VagtCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34453BC1D5DAACC00B3DB67 /* VagtCell.swift */; };
 		E3A387DD1D4BD75A001F7952 /* MonthCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A387DC1D4BD75A001F7952 /* MonthCell.swift */; };
 		E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97921D4254C900D30589 /* AppDelegate.swift */; };
@@ -29,6 +30,7 @@
 		E3000D131D57A9FD004788B0 /* Vagt+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Vagt+CoreDataProperties.swift"; path = "../Vagt+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VagtDetailVC.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E30AFF391D469456009ADF71 /* ExtraFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ExtraFunctions.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		E34453BC1D5DAACC00B3DB67 /* VagtCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VagtCell.swift; sourceTree = "<group>"; };
 		E3A387DC1D4BD75A001F7952 /* MonthCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthCell.swift; sourceTree = "<group>"; };
 		E3BE978F1D4254C900D30589 /* Føtex Løn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Føtex Løn.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				E3D47E321D42B62D00C3A7E7 /* MainVC.swift */,
+				E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */,
 				E3F4FA471D481CFA00647B1E /* VagterVC.swift */,
 				E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */,
 			);
@@ -192,6 +195,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E31478D61D5FD1DE00C4C9DC /* SettingsVC.swift in Sources */,
 				E3000D151D57A9FD004788B0 /* Vagt+CoreDataProperties.swift in Sources */,
 				E3FD81B41D496C6D001171EE /* DataController.swift in Sources */,
 				E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */,

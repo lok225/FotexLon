@@ -41,24 +41,29 @@ class MainVC: UIViewController {
         
         let thisMonthNumber = Date().getMonthNumber(withYear: true)
         
-        let weekdayComp = Calendar.current.component(.weekday, from: Date())
+        /*
+        var dayComp = Calendar.current.component(.day, from: Date())
         
-        if weekdayComp > 18 {
-            tempIndex += 1
+        if dayComp > 18 {
+            tempIndex -= 1
         }
+        */
         
         for section in sections {
             let vagt = section.objects?[0] as! Vagt
             
             if thisMonthNumber != vagt.monthNumber {
                 tempIndex += 1
+            } else {
+                return tempIndex
             }
         }
         
         return tempIndex
     }
     
-    var month: Month?
+    var currentMonth: Month?
+    var months: [Month] = []
     
     // MARK: - Initial Functions
     
@@ -78,7 +83,10 @@ class MainVC: UIViewController {
         super.viewWillAppear(animated)
         
         fetchObjects()
-        setupMonth()
+        setupMonths()
+        print(currentMonthIndex)
+        currentMonth = months[currentMonthIndex]
+        vagtTableView.reloadData()
         setViews()
     }
     
@@ -106,9 +114,13 @@ class MainVC: UIViewController {
         cell.detailTextLabel?.textColor = UIColor.lightText
     }
     
-    private func setupMonth() {
-        let vagt = vagterFRC.fetchedObjects!.first as! Vagt
-        month = Month(fetchedRC: vagterFRC, monthNumber: vagt.monthNumber)
+    private func setupMonths() {
+        months.removeAll()
+        for section in vagterFRC.sections! {
+            let vagt = section.objects!.first!
+            let month = Month(fetchedRC: vagterFRC, monthNumber: vagt.monthNumber)
+            months.append(month)
+        }
     }
     
     private func initialAnimations() {
@@ -182,26 +194,35 @@ class MainVC: UIViewController {
         do {
             try vagterFRC.performFetch()
             
-            print(vagterFRC.sections?.count)
+//            if vagterFRC.fetchedObjects?.count == 0 {
+//                createStandardVagt()
+//            } else {
+//                
+//                var needNew = true
+//                
+//                for section in vagterFRC.sections! {
+//                    let vagt = section.objects!.first!
+//                    if vagt.monthNumber == Date().getMonthNumber(withYear: true) {
+//                        needNew = false
+//                    }
+//                }
+//                
+//                if needNew == true {
+//                    createStandardVagt()
+//                }
+//            }
             
-            if vagterFRC.fetchedObjects?.count == 0 {
-                print("Ingen objekter")
+            var needNew = true
+            
+            for section in vagterFRC.sections! {
+                let vagt = section.objects!.first!
+                if vagt.monthNumber == Date().getMonthNumber(withYear: true) {
+                    needNew = false
+                }
+            }
+            
+            if needNew == true {
                 createStandardVagt()
-            } else {
-                
-                var needNew = true
-                
-                for section in vagterFRC.sections! {
-                    let vagt = section.objects!.first!
-                    if vagt.monthNumber == Date().getMonthNumber(withYear: true) {
-                        needNew = false
-                    }
-                    print(needNew)
-                }
-                
-                if needNew == true {
-                    createStandardVagt()
-                }
             }
         } catch {
             fatalError(String(error))
@@ -212,9 +233,8 @@ class MainVC: UIViewController {
         let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
         vagt.startTime = Date()
         vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
-        vagt.pause = true
+        vagt.pause = 0
         vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
-        print(vagt.monthNumber)
         dataController.save()
         
         do {
@@ -228,12 +248,12 @@ class MainVC: UIViewController {
     
     func setViews() {
         
-        if let _ = month {
-            lblThisMonth.text = "Løn i \(month!.getMonthString().lowercased())"
-            lblFøtexTotalLøn.text = "\(month!.calculateTotalLøn()),-"
-            lblFøtexTillæg.text = "Deraf tillæg: \(month!.calculateSatser()),-"
-            lblFøtexTimer.text = "Antal timer: \(getFormatted(time: month!.calculateAntalMin()))"
-            lblFøtexVagter.text = "Antal vagter: \(month!.calculateAntalVagter())"
+        if let month = currentMonth {
+            lblThisMonth.text = "Løn i \(month.getMonthString().lowercased())"
+            lblFøtexTotalLøn.text = "\(month.calculateTotalLøn()),-"
+            lblFøtexTillæg.text = "Deraf tillæg: \(month.calculateSatser()),-"
+            lblFøtexTimer.text = "Antal timer: \(getFormatted(time: month.calculateAntalMin()))"
+            lblFøtexVagter.text = "Antal vagter: \(month.calculateAntalVagter())"
         } else {
             lblThisMonth.text = "Løn i denne måned"
             lblFøtexTotalLøn.text = "0,-"
@@ -290,70 +310,26 @@ extension MainVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if shouldShow {
-            return 4
-        } else {
-            return 1
-        }
+//        if shouldShow {
+//            return 4
+//        } else {
+//            return 1
+//        }
+        
+        return months.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var cell: UITableViewCell!
         
-        if indexPath.row == 0 {
-            cell = tableView.dequeueReusableCell(withIdentifier: "monthCell")
-            
-            let imageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "down"), highlightedImage: #imageLiteral(resourceName: "up"))
-            if shouldShow {
-                imageView.isHighlighted = true
-            } else {
-                imageView.isHighlighted = false
-            }
-//            let imageView = UIImageView(image: #imageLiteral(resourceName: "down"))
-            
-            cell.accessoryView = imageView
-            cell.textLabel?.text = "Juli"
-            cell.detailTextLabel?.text = "4750,-"
-        } else {
-            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-            cell.textLabel?.text = "- Antal vagt"
-            cell.detailTextLabel?.text = "12"
-        }
+        let month = months[indexPath.row]
         
-        switch indexPath.row {
-        case 0:
-            cell = tableView.dequeueReusableCell(withIdentifier: "monthCell")
-            
-            let imageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "down"), highlightedImage: #imageLiteral(resourceName: "up"))
-            if shouldShow {
-                imageView.isHighlighted = true
-            } else {
-                imageView.isHighlighted = false
-            }
-            //            let imageView = UIImageView(image: #imageLiteral(resourceName: "down"))
-            
-            cell.accessoryView = imageView
-            cell.textLabel?.text = "Juli"
-            cell.detailTextLabel?.text = "4750,-"
-        case 1:
-            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-            // cell = tableView.dequeueReusableCell(withIdentifier: "theCell")
-            // cell = MonthCell(style: .value1, reuseIdentifier: "theCell")
-            cell.textLabel?.text = "- Deraf tillæg"
-            cell.detailTextLabel?.text = "700,-"
-            cell.accessoryView = nil
-        case 2:
-            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-            cell.textLabel?.text = "- Antal timer"
-            cell.detailTextLabel?.text = "64:15"
-        case 3:
-            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-            cell.textLabel?.text = "- Antal vagter"
-            cell.detailTextLabel?.text = "15"
-        default:
-            cell = UITableViewCell()
-        }
+        cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+        cell.textLabel?.text = month.getMonthString() + ", " + month.getYearString()
+        cell.detailTextLabel?.text = String(month.calculateTotalLøn()) + ",-"
+        
+        cell.selectionStyle = .none
         
         setColors(for: cell)
         
@@ -365,15 +341,73 @@ extension MainVC: UITableViewDataSource {
 
 extension MainVC: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        return nil
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
             shouldShow = !shouldShow
             tableView.reloadData()
         }
     }
+    
+    
 }
 
-
+//        if indexPath.row == 0 {
+//            cell = tableView.dequeueReusableCell(withIdentifier: "monthCell")
+//
+//            let imageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "down"), highlightedImage: #imageLiteral(resourceName: "up"))
+//            if shouldShow {
+//                imageView.isHighlighted = true
+//            } else {
+//                imageView.isHighlighted = false
+//            }
+////            let imageView = UIImageView(image: #imageLiteral(resourceName: "down"))
+//
+//            cell.accessoryView = imageView
+//            cell.textLabel?.text = "Juli"
+//            cell.detailTextLabel?.text = "4750,-"
+//        } else {
+//            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+//            cell.textLabel?.text = "- Antal vagt"
+//            cell.detailTextLabel?.text = "12"
+//        }
+//
+//        switch indexPath.row {
+//        case 0:
+//            cell = tableView.dequeueReusableCell(withIdentifier: "monthCell")
+//
+//            let imageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "down"), highlightedImage: #imageLiteral(resourceName: "up"))
+//            if shouldShow {
+//                imageView.isHighlighted = true
+//            } else {
+//                imageView.isHighlighted = false
+//            }
+//            //            let imageView = UIImageView(image: #imageLiteral(resourceName: "down"))
+//
+//            cell.accessoryView = imageView
+//            cell.textLabel?.text = "Juli"
+//            cell.detailTextLabel?.text = "4750,-"
+//        case 1:
+//            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+//            // cell = tableView.dequeueReusableCell(withIdentifier: "theCell")
+//            // cell = MonthCell(style: .value1, reuseIdentifier: "theCell")
+//            cell.textLabel?.text = "- Deraf tillæg"
+//            cell.detailTextLabel?.text = "700,-"
+//            cell.accessoryView = nil
+//        case 2:
+//            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+//            cell.textLabel?.text = "- Antal timer"
+//            cell.detailTextLabel?.text = "64:15"
+//        case 3:
+//            cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+//            cell.textLabel?.text = "- Antal vagter"
+//            cell.detailTextLabel?.text = "15"
+//        default:
+//            cell = UITableViewCell()
+//        }
 
 
 

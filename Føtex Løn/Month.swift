@@ -97,6 +97,12 @@ class Month: NSObject {
         return fetchedRC.sections![thisMonthIndex].objects!.count
     }
     
+    func getYear() -> Int {
+        let comp = Calendar.current.component(.year, from: vagt.startTime)
+        
+        return comp
+    }
+    
     func getYearString() -> String {
         
         return vagt.getYearString()

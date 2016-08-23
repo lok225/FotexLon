@@ -21,17 +21,22 @@ class SettingsVC: UITableViewController {
     @IBOutlet weak var lblLordagssats: UITextField!
     @IBOutlet weak var lblSondagssats: UITextField!
     
+    @IBOutlet weak var lblNotifications: UILabel!
+    
     let defaults = UserDefaults.standard
 
     var youngWorker: Bool!
     
+    var notifications: [Int]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        hideKeyboardWhenTappedAround()
+        // hideKeyboardWhenTappedAround()
         
         setAttributes(for: navigationController!.navigationBar)
         
+        notifications = defaults.object(forKey: kNotifications) as! [Int]
         youngWorker = defaults.bool(forKey: kYoungWorker)
         
         if youngWorker == true {
@@ -42,6 +47,12 @@ class SettingsVC: UITableViewController {
         
         setLonViews()
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        setNotificationsView()
     }
 
     func setLonViews() {
@@ -56,6 +67,24 @@ class SettingsVC: UITableViewController {
             lblLordagssats.text = String(defaults.double(forKey: kOldLordagsSats)).replacingOccurrences(of: ".", with: ",") + ",-"
             lblSondagssats.text = String(defaults.double(forKey: kOldSondagsSats)).replacingOccurrences(of: ".", with: ",") + ",-"
         }
+    }
+    
+    func setNotificationsView() {
+        
+        var string = ""
+        
+        for not in notifications {
+            
+            if string.isEmpty {
+                string.append(not.getNotificationsDetailString())
+            } else {
+                string += "+ \(not.getNotificationsDetailString())"
+            }
+        }
+        
+        lblNotifications.text = string
+        lblNotifications.textColor = UIColor.darkGray
+        
     }
     
     // MARK: - @IBActions

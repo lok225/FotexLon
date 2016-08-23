@@ -13,26 +13,17 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var dataController: DataController!
+    let dataController = DataController()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        dataController = DataController()
-        setManagedObjectContext()
         setDataControllers()
+        setManagedObjectContext()
         
         registerDefaults()
         
         setGlobalColors()
-        
-        /*
-        let vagt = Vagt(startTime: Date(), endTime: Date(timeIntervalSinceNow: 3600), pause: true)
-        let vagt1 = Vagt(startTime: Date(timeIntervalSinceNow: 10800), endTime: Date(timeIntervalSinceNow: 32400), pause: true)
-        
-        vagter.append(vagt)
-        vagter.append(vagt1)
-        */
         
         return true
     }
@@ -69,6 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let vagterNavigationController = tabBarController.viewControllers![1] as! UINavigationController
         let vagterVC = vagterNavigationController.viewControllers[0] as! VagterVC
         vagterVC.dataController = self.dataController
+        
+        print("Done")
     }
 
     private func setManagedObjectContext() {
@@ -115,6 +108,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func registerDefaults() {
         let defaultsDic = [kFirstTime: true,
+                           kNotifications: [0],
                            kYoungBasisLon: 63.86,
                            kYoungAftensSats: 12.6,
                            kYoungLordagsSats: 22.38,
@@ -122,7 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                            kOldBasisLon: 112.42,
                            kOldAftensSats: 25.2,
                            kOldLordagsSats: 44.75,
-                           kOldSondagsSats: 50.6]
+                           kOldSondagsSats: 50.6] as [String : Any]
         UserDefaults.standard.register(defaults: defaultsDic)
     }
     

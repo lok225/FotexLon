@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreData
-
+import UserNotifications
 
 public class Vagt: NSManagedObject {
 
@@ -41,8 +41,6 @@ public class Vagt: NSManagedObject {
         return calculateTotalLon()
     }
     
-    
-    
     private func calculateTotalLon() -> Double {
         
         let defaults = UserDefaults.standard
@@ -59,7 +57,7 @@ public class Vagt: NSManagedObject {
         let endHour = myCalendar.component(.hour, from: endTime)
         let endMinute = myCalendar.component(.minute, from: endTime)
         
-        let endTid = (endHour * 60) + endMinute
+        let endTid = (endHour * 60) + endMinute - pause
         
         let tillægDage: [Double] = [sondagsSats, aftenSats, aftenSats, aftenSats, aftenSats, aftenSats, lordagsSats]
         
@@ -98,6 +96,40 @@ public class Vagt: NSManagedObject {
         
         return grundLon + satser
     }
+    
+    func setNotificationRequest() {
+        let center = UNUserNotificationCenter.current()
+        
+        center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+            
+            if granted {
+                let content = UNMutableNotificationContent()
+                content.title = "Kommende vagt!!"
+                content.subtitle = "16:00-20:15"
+                content.body = "Din næste vagt begynder om 2 timer"
+                content.sound = UNNotificationSound.default()
+                
+                let date = Date(timeInterval: -7200, since: self.startTime)
+                
+                let formatter = DateFormatter()
+                formatter.dateStyle = .full
+                formatter.timeStyle = .medium
+                print(formatter.string(from: self.startTime))
+                print(formatter.string(from: date))
+                let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+                print(comps.hour)
+                print(comps.minute)
+                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+                
+                let request = UNNotificationRequest(identifier: String(describing: date), content: content, trigger: trigger)
+                
+                center.add(request, withCompletionHandler: nil)
+            }
+            
+        }
+    }
+    
+    
     
     func getDateIntervalString() -> String {
         let formatter = DateIntervalFormatter()

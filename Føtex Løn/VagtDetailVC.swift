@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 protocol VagtDetailVCDelegate: class {
     func vagtDetailVCDidCancel(controller: VagtDetailVC)
@@ -44,6 +45,8 @@ class VagtDetailVC: UITableViewController {
     
     var calendar: Calendar!
     
+    var currentStartTime: Date?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -72,6 +75,7 @@ class VagtDetailVC: UITableViewController {
             if let note = vagt.note {
                 noteTextField.text = note
             }
+            currentStartTime = vagt.startTime
         } else {
             setInitialDates()
             txtPause.text = "30 min"
@@ -89,10 +93,15 @@ class VagtDetailVC: UITableViewController {
         self.dismissKeyboard()
         
         if let vagt = vagtToEdit {
+            
+            let center = UNUserNotificationCenter.current()
+            center.removePendingNotificationRequests(withIdentifiers: [String(describing: vagt.startTime)])
+            
             vagt.startTime = startTimePicker.date
-            vagt.endTime = startTimePicker.date
+            vagt.endTime = endTimePicker.date
             vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+            vagt.setNotificationRequest()
             
             if let text = noteTextField.text {
                 vagt.note = text
@@ -103,11 +112,24 @@ class VagtDetailVC: UITableViewController {
             delegate?.vagtDetailVC(controller: self, didFinishEditingVagt: vagt)
             
         } else {
+            
+            guard shouldCreateDate() == true else {
+                
+                let alert = UIAlertController(title: "Ugyldig Dato", message: "Sluttiden skal være efter efter starttiden", preferredStyle: .alert)
+                let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alert.addAction(action)
+                
+                self.present(alert, animated: true, completion: nil)
+                
+                return
+            }
+            
             let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
             vagt.startTime = startTimePicker.date
             vagt.endTime = endTimePicker.date
             vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+            vagt.setNotificationRequest()
             
             if let text = noteTextField.text {
                 vagt.note = text
@@ -159,10 +181,20 @@ class VagtDetailVC: UITableViewController {
         }
     }
     
-    @IBAction func pauseSwitchChanged(_ sender: UISwitch) {
-    }
-    
     // MARK: - Helper Functions
+    
+    func shouldCreateDate() -> Bool {
+        
+        let startDate = startTimePicker.date
+        let endDate = endTimePicker.date
+        let dateInterval = startDate.differenceInMins(withDate: endDate)
+        
+        if dateInterval <= 0 {
+            return false
+        } else {
+            return true
+        }
+    }
     
     func hideStartPicker(_ hide: Bool) {
         startDatePickerHidden = hide

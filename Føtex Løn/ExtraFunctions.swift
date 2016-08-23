@@ -14,6 +14,7 @@ import UIKit
 let kFirstTime = "firstTime"
 let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
+let kNotifications = "notifications"
 
 let kYoungBasisLon = "youngBasisLon"
 let kYoungAftensSats = "youngAftenSats"
@@ -75,10 +76,6 @@ func presentAndGetYoungWorkerSetting(in vc: UIViewController) {
     vc.present(alertController, animated: true, completion: nil)
 }
 
-func setLonDefaults() {
-    
-}
-
 func setAttributes(for navBar: UINavigationBar) {
     navBar.barTintColor = fotexCellBlue
     navBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
@@ -122,7 +119,7 @@ extension Date {
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day], from: self)
         
-        if components.day > 18 {
+        if components.day! > 18 {
             components.month! += 1
         }
         
@@ -176,6 +173,31 @@ extension Double {
     }
 }
 
+extension Int {
+    
+    func getNotificationsDetailString() -> String {
+        
+        switch self {
+        case 0:
+            return "Ved vagtens start"
+        case 1:
+            return "5 min før"
+        case 2:
+            return "15 min før"
+        case 3:
+            return "30 min før"
+        case 4:
+            return "1 time før"
+        case 5:
+            return "2 timer før"
+        case 6:
+            return "Dagen før"
+        default:
+            return "Intet"
+        }
+    }
+    
+}
 
 
 

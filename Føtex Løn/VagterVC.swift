@@ -11,9 +11,13 @@ import CoreData
 
 class VagterVC: UITableViewController {
     
+    let calendar = Calendar.current
+    
     var dataController: DataController!
     var managedObjectContext: NSManagedObjectContext!
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
+    
+    var dateAlert: UIAlertController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +26,9 @@ class VagterVC: UITableViewController {
         setAttributes(for: navigationController!.navigationBar)
         
         setupFetchedResultsController()
+        
+        print(dataController)
+        print(managedObjectContext)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -32,21 +39,16 @@ class VagterVC: UITableViewController {
     
     // MARK: Segue
     
-    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
-        switch segue.identifier! {
-        case kVagtDetailSegue:
-            let navController = segue.destination as! UINavigationController
-            let destinationVC = navController.viewControllers[0] as! VagtDetailVC
-            
-            if let indexPath = sender as? IndexPath {
-                destinationVC.vagtToEdit = vagterFRC.object(at: indexPath) as? Vagt
-            }
-            destinationVC.delegate = self
-            destinationVC.dataController = self.dataController
-            destinationVC.managedObjectContext = self.managedObjectContext
-        default:
-            break
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navController = segue.destination as! UINavigationController
+        let destinationVC = navController.viewControllers[0] as! VagtDetailVC
+        
+        if let indexPath = sender as? IndexPath {
+            destinationVC.vagtToEdit = vagterFRC.object(at: indexPath) as? Vagt
         }
+        destinationVC.delegate = self
+        destinationVC.dataController = self.dataController
+        destinationVC.managedObjectContext = self.managedObjectContext
     }
     
     // MARK: - Colors
@@ -91,13 +93,13 @@ class VagterVC: UITableViewController {
                 let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
                 vagt.startTime = Date()
                 vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
-                vagt.pause = 30
+                vagt.pause = 0
                 vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
                 
                 dataController.save()
             }
         } catch {
-            fatalError(String(error))
+            fatalError(String(describing: error))
         }
     }
     
@@ -118,7 +120,7 @@ class VagterVC: UITableViewController {
                 dataController.save()
             }
         } catch {
-            fatalError(String(error))
+            fatalError(String(describing: error))
         }
     }
     
@@ -127,10 +129,24 @@ class VagterVC: UITableViewController {
     func configure(cell: UITableViewCell, atIndexPath indexPath: IndexPath) {
         let vagt = vagterFRC.object(at: indexPath) as! Vagt
         
-        cell.textLabel?.text = vagt.getDateIntervalString().capitalized
-        cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
-        
         setColors(for: cell)
+        
+        if indexPath.row == 0 {
+            let attString = NSMutableAttributedString(string: vagt.getDateIntervalString().capitalized)
+            attString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attString.length))
+            
+            let attString2 = NSMutableAttributedString(string: "\(Int(vagt.samletLon)),-")
+            attString2.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attString2.length))
+            
+            cell.textLabel?.attributedText = attString
+            cell.textLabel?.textColor = UIColor.lightGray
+            
+            cell.detailTextLabel?.attributedText = attString2
+            cell.detailTextLabel?.textColor = UIColor.lightGray
+        } else {
+            cell.textLabel?.text = vagt.getDateIntervalString().capitalized
+            cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
+        }
         
         let longPressGR = UILongPressGestureRecognizer(target: self, action: #selector(cellLongPressed))
         longPressGR.minimumPressDuration = 1.0
@@ -189,7 +205,7 @@ extension VagterVC {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: kVagtDetailSegue, sender: indexPath)
+        super.performSegue(withIdentifier: kVagtDetailSegue, sender: indexPath)
     }
 
     // Override to support editing the table view.
@@ -221,20 +237,68 @@ extension VagterVC {
             
             self.dataController.save()
         }
+        
         let dublicateAction = UIAlertAction(title: "Dubler", style: .default) { (_) in
+            
+            self.dateAlert = UIAlertController(title: "Vælg dato", message: nil, preferredStyle: .alert)
+            
+            var datePicker: UIDatePicker!
+            
+            let action = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+                let newVagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: self.managedObjectContext) as! Vagt
+                
+                let newComps = self.calendar.dateComponents([.year, .month, .day], from: datePicker.date)
+                var startComps = self.calendar.dateComponents([.hour, .minute], from: vagt.startTime)
+                startComps.year = newComps.year
+                startComps.month = newComps.month
+                startComps.day = newComps.day
+                
+                var endComps = self.calendar.dateComponents([.hour, .minute], from: vagt.endTime)
+                endComps.year = newComps.year
+                endComps.month = newComps.month
+                endComps.day = newComps.day
+                
+                newVagt.startTime = self.calendar.date(from: startComps)
+                newVagt.endTime = self.calendar.date(from: endComps)
+                newVagt.pause = vagt.pause
+                newVagt.monthNumber = newVagt.startTime.getMonthNumber(withYear: true)
+                
+                self.dataController.save()
+            })
+            
+            self.dateAlert!.addAction(action)
+            self.dateAlert!.addTextField(configurationHandler: { (textField) in
+                datePicker = UIDatePicker()
+                datePicker.datePickerMode = .date
+                datePicker.addTarget(self, action: #selector(self.alertPickerChanged), for: .valueChanged)
+                textField.inputView = datePicker
+            })
+            self.present(self.dateAlert!, animated: true, completion: nil)
+            
+            /*
             let newVagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: self.managedObjectContext) as! Vagt
             newVagt.startTime = vagt.startTime
             newVagt.endTime = vagt.endTime
             newVagt.pause = vagt.pause
             newVagt.monthNumber = newVagt.startTime.getMonthNumber(withYear: true)
-            
+            */
+ 
             self.dataController.save()
         }
         
         actionSheet.addAction(dublicateAction)
         actionSheet.addAction(deleteAction)
         actionSheet.addAction(cancelAction)
+        
         self.present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func alertPickerChanged(sender: UIDatePicker) {
+        let textField = dateAlert!.textFields![0]
+        let formatter = DateFormatter()
+        formatter.timeStyle = .none
+        formatter.dateStyle = .long
+        textField.text = formatter.string(from: sender.date)
     }
     
 }
@@ -268,7 +332,7 @@ extension VagterVC: NSFetchedResultsControllerDelegate {
         tableView.beginUpdates()
     }
     
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: AnyObject, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         
         switch type {
         case .insert:

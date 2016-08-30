@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         
         if shortcutItem.type == "com.martinlok.F-tex-L-n.nyVagt" {
             let tabBarController = window!.rootViewController as! UITabBarController
@@ -38,7 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             tabBarController.selectedIndex = 1
             vagterVC.performSegue(withIdentifier: kVagtDetailSegue, sender: nil)
         }
-        
     }
     
     // MARK: Functions
@@ -60,8 +59,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let vagterNavigationController = tabBarController.viewControllers![1] as! UINavigationController
         let vagterVC = vagterNavigationController.viewControllers[0] as! VagterVC
         vagterVC.dataController = self.dataController
-        
-        print("Done")
     }
 
     private func setManagedObjectContext() {
@@ -74,41 +71,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let vagterVC = vagterNavigationController.viewControllers[0] as! VagterVC
         vagterVC.managedObjectContext = self.dataController.managedObjectContext
     }
-//    
-//    lazy var managedObjectContext: NSManagedObjectContext = {
-//        guard let modelURL = Bundle.main.urlForResource("CoreDataModel", withExtension: "momd") else {
-//            fatalError("Could not find data model in app bundle")
-//        }
-//        guard let model = NSManagedObjectModel(contentsOf: modelURL) else {
-//            fatalError("Error initializing model from: \(modelURL)")
-//        }
-//        let urls = FileManager.default.urlsForDirectory( .documentDirectory, inDomains: .userDomainMask)
-//        let documentsDirectory = urls[0]
-//        var storeURL: URL?
-//        do {
-//            storeURL = try documentsDirectory.appendingPathComponent("DataStore.sqlite")
-//        } catch {
-//            print(error)
-//        }
-//        
-//        do {
-//            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
-//            try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL, options: nil)
-//            
-//            let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-//            context.persistentStoreCoordinator = coordinator
-//            
-//            return context
-//        } catch {
-//            fatalError("Error adding persistent store at \(storeURL): \(error)")
-//        }
-//    }()
     
     // MARK: UserDefaults
     
     private func registerDefaults() {
+        
         let defaultsDic = [kFirstTime: true,
                            kNotifications: [0],
+                           kStandardHverdage: [],
+                           kStandardLørdag: [],
+                           kStandardSøndag: [],
                            kYoungBasisLon: 63.86,
                            kYoungAftensSats: 12.6,
                            kYoungLordagsSats: 22.38,

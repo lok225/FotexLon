@@ -39,15 +39,13 @@ class MainVC: UIViewController {
             return tempIndex
         }
         
-        let thisMonthNumber = Date().getMonthNumber(withYear: true)
-        
         /*
-        var dayComp = Calendar.current.component(.day, from: Date())
-        
-        if dayComp > 18 {
-            tempIndex -= 1
+        if vagterFRC.sections!.count > 1 {
+            tempIndex += 1
         }
         */
+        
+        let thisMonthNumber = Date().getMonthNumber(withYear: true)
         
         for section in sections {
             let vagt = section.objects?[0] as! Vagt
@@ -70,8 +68,6 @@ class MainVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupNotification()
 
         firstTime(in: self)
         setupFetchedResultsController()
@@ -127,14 +123,37 @@ class MainVC: UIViewController {
     
     private func setupYears() {
         years.removeAll()
-        var monthsInYear = [Month]()
+        
+        var i = -1
+        
+        var year = [Month]()
+        
         for month in months {
-            if month.getYear() == 2016 {
-                monthsInYear.append(month)
+            
+            if months.count == 1{
+                years.append(Year(months: [month]))
+            } else if i == -1 {
+                year.append(month)
+                i += 1
+            } else {
+                if i == months.count - 2 && months[i].getYear() == month.getYear() {
+                    year.append(month)
+                    years.append(Year(months: year))
+                    year.removeAll()
+                } else if months[i].getYear() == month.getYear() {
+                    year.append(month)
+                } else if i == months.count - 2 && months[i].getYear() != month.getYear() {
+                    years.append(Year(months: year))
+                    years.append(Year(months: [month]))
+                } else {
+                    years.append(Year(months: year))
+                    year.removeAll()
+                    year.append(month)
+                }
+                i += 1
+                
             }
         }
-        
-        years.append(Year(months: monthsInYear))
     }
     
     private func initialAnimations() {
@@ -193,12 +212,24 @@ class MainVC: UIViewController {
         
     }
     
+    // MARK: - Segue
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        switch segue.identifier! {
+        case "settingsSegue":
+            let navVC = segue.destination as! UINavigationController
+            let vc = navVC.topViewController! as! SettingsVC
+            vc.vagterFRC = self.vagterFRC
+        default:
+            break
+        }
+    }
+    
     // MARK: - Core Data Functions
     
     func setupFetchedResultsController() {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
-        print(self.dataController)
-        print(self.managedObjectContext)
         let entity = NSEntityDescription.entity(forEntityName: "Vagt", in: self.dataController.managedObjectContext)
         fetchRequest.entity = entity
         
@@ -273,9 +304,9 @@ class MainVC: UIViewController {
         
         if let month = currentMonth {
             lblThisMonth.text = "Anslået løn i \(month.getMonthString().lowercased())"
-            lblFøtexTotalLøn.text = "\(month.calculateTotalLøn()),-"
+            lblFøtexTotalLøn.text = getFormatted(number: month.calculateTotalLøn())
             // lblFøtexTillæg.text = "Deraf tillæg: \(month.calculateSatser()),-"
-            lblFøtexTillæg.text = "Til udbetaling: \(Int(Double(month.calculateTotalLøn()) * 0.92)),-"
+            lblFøtexTillæg.text = "Til udbetaling: \(getFormatted(number:Int(Double(month.calculateTotalLøn()) * 0.92)))"
             lblFøtexTimer.text = "Antal timer: \(getFormatted(time: month.calculateAntalMin()))"
             lblFøtexVagter.text = "Antal vagter: \(month.calculateAntalVagter())"
         } else {
@@ -337,8 +368,6 @@ extension MainVC: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        print(years[section].months.count)
         return years[section].months.count
     }
     
@@ -346,11 +375,11 @@ extension MainVC: UITableViewDataSource {
         
         var cell: UITableViewCell!
         
-        let month = months[indexPath.row]
+        let month = years[indexPath.section].months[indexPath.row]
         
         cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
         cell.textLabel?.text = month.getMonthString() + ", " + month.getYearString()
-        cell.detailTextLabel?.text = String(month.calculateTotalLøn()) + ",-"
+        cell.detailTextLabel?.text = getFormatted(number: month.calculateTotalLøn()) + " / " + getFormatted(number: Int(Double(month.calculateTotalLøn()) * 0.92))
         
         cell.selectionStyle = .none
         
@@ -362,8 +391,11 @@ extension MainVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
         let year = years[section]
+        let lønString = "\nLøn: ".lowercased() + getFormatted(number: year.calculateTotalLøn())
+        let frikort = "\nResterende frikort: " + getFormatted(number: 33000 - year.calculateTotalLøn())
+        let feriePenge = "\nFeriepenge: " + getFormatted(number: Int(Double(year.calculateTotalLøn()) * 0.12))
         
-        return year.getYearString() + " - " + String(year.calculateTotalLøn()) + ",-"
+        return year.getYearString() + lønString + frikort + feriePenge
     }
 }
 

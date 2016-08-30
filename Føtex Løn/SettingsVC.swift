@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol SettingsVCDelegate: class {
     func settingsVCDidCancel(controller: VagtDetailVC)
@@ -25,8 +26,9 @@ class SettingsVC: UITableViewController {
     
     let defaults = UserDefaults.standard
 
-    var youngWorker: Bool!
+    var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
+    var youngWorker: Bool!
     var notifications: [Int]!
     
     override func viewDidLoad() {
@@ -36,7 +38,6 @@ class SettingsVC: UITableViewController {
         
         setAttributes(for: navigationController!.navigationBar)
         
-        notifications = defaults.object(forKey: kNotifications) as! [Int]
         youngWorker = defaults.bool(forKey: kYoungWorker)
         
         if youngWorker == true {
@@ -52,8 +53,34 @@ class SettingsVC: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        notifications = defaults.object(forKey: kNotifications) as! [Int]
         setNotificationsView()
     }
+    
+    // MARK: - Segue
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if let _ = sender as? Int {
+            
+            let vc = segue.destination as! StandardVagterVC
+            
+            switch sender as! Int {
+            case 0:
+                vc.standardVagter = defaults.object(forKey: kStandardHverdage) as! [StandardVagt]
+            case 1:
+                vc.standardVagter = defaults.object(forKey: kStandardLørdag) as! [StandardVagt]
+            case 2:
+                vc.standardVagter = defaults.object(forKey: kStandardSøndag) as! [StandardVagt]
+            default:
+                break
+            }
+        }
+        
+        
+    }
+    
+    // MARK: - Views
 
     func setLonViews() {
         if youngWorker == true {
@@ -78,13 +105,12 @@ class SettingsVC: UITableViewController {
             if string.isEmpty {
                 string.append(not.getNotificationsDetailString())
             } else {
-                string += "+ \(not.getNotificationsDetailString())"
+                string += ", \(not.getNotificationsDetailString().lowercased())"
             }
         }
         
         lblNotifications.text = string
         lblNotifications.textColor = UIColor.darkGray
-        
     }
     
     // MARK: - @IBActions
@@ -132,6 +158,23 @@ class SettingsVC: UITableViewController {
         }
         
         setLonViews()
+    }
+}
+
+extension SettingsVC {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.section == 2 else { return }
+        
+        switch indexPath.row {
+        case 0:
+            performSegue(withIdentifier: kStandardVagtSegue, sender: 0)
+        case 1:
+            performSegue(withIdentifier: kStandardVagtSegue, sender: 1)
+        case 2:
+            performSegue(withIdentifier: kStandardVagtSegue, sender: 2)
+        default:
+            break
+        }
     }
 }
 

@@ -49,7 +49,6 @@ class DataController: NSObject {
     
     func delete(vagt: Vagt) {
         managedObjectContext.delete(vagt)
-        
         save()
     }
     

@@ -15,6 +15,7 @@ extension Vagt {
         return NSFetchRequest<Vagt>(entityName: "Vagt");
     }
 
+    @NSManaged public var active: Bool
     @NSManaged public var note: String?
     @NSManaged public var startTime: Date!
     @NSManaged public var endTime: Date!

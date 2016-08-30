@@ -11,10 +11,23 @@ import UIKit
 
 // MARK: Global Konstanter
 
+// UserDefaults
+
 let kFirstTime = "firstTime"
 let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
 let kNotifications = "notifications"
+
+// Segues
+
+let kStandardVagtSegue = "standardVCSegue"
+
+// Cells
+
+let kStandardFilledCell = "standardFilledVagtcell"
+let kStandardEmptyCell = "standardEmptyVagtcell"
+
+// Løn
 
 let kYoungBasisLon = "youngBasisLon"
 let kYoungAftensSats = "youngAftenSats"
@@ -24,6 +37,10 @@ let kOldBasisLon = "oldBasisLon"
 let kOldAftensSats = "oldAftenSats"
 let kOldLordagsSats = "oldLordagsSats"
 let kOldSondagsSats = "oldSondagsSats"
+
+let kStandardHverdage = "standardHverdage"
+let kStandardLørdag = "standardLørdag"
+let kStandardSøndag = "standardSøndag"
 
 let youngBasisLon: Double = 63.86
 let youngAftenSats: Double = 12.6
@@ -35,12 +52,19 @@ let oldAftenSats: Double = 25.2
 let oldLordagsSats: Double = 44.75
 let oldSondagsSats: Double = 50.6
 
-let mainBlue = UIColor(hue: 185/360, saturation: 0.39, brightness: 0.6, alpha: 1.0)
+// Farver
+
+// let mainBlue = UIColor(hue: 185/360, saturation: 0.39, brightness: 0.6, alpha: 1.0)
 let cellBlue = UIColor(hue: 175/360, saturation: 0.26, brightness: 0.69, alpha: 1.0)
 let fotexBlue = UIColor(red: 0.01, green: 0.18, blue: 0.35, alpha: 1.0)
-let fotexBlue1 = UIColor(hue: 0.59, saturation: 0.93, brightness: 0.35, alpha: 1.0)
+// let fotexBlue1 = UIColor(hue: 0.59, saturation: 0.93, brightness: 0.35, alpha: 1.0)
 let fotexCellBlue = UIColor(hue: 209/360, saturation: 0.87, brightness: 0.4, alpha: 1.0)
 let gothicBlue = UIColor(red: 0.44, green: 0.58, blue: 0.67, alpha: 1.0)
+let highlightedCellBlue = UIColor(red: 0.17, green: 0.36, blue: 0.48, alpha: 1.0)
+let highlightedCellBlue1 = UIColor(hue: 0.56, saturation: 0.62, brightness: 0.4, alpha: 1.0)
+let highlightedCellBlue2 = UIColor(hue: 0.57, saturation: 0.69, brightness: 0.42, alpha: 1.0)
+
+// Data Model
 
 var vagter: [Vagt] = []
 var months: [[Vagt]] = [vagter]
@@ -89,6 +113,15 @@ func getFormatted(time timeWorked: Int) -> String {
     let totalTime = String(format: "%01d:%02d", hoursWorked, minutesWorked)
     
     return totalTime
+}
+
+func getFormatted(number: Int) -> String {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .decimal
+    formatter.maximumFractionDigits = 0
+    
+    return formatter.string(from: NSNumber(value: number))! + ",-"
+    
 }
 
 // MARK: Extensions

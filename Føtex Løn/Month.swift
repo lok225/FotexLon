@@ -28,7 +28,7 @@ class Month: NSObject {
         self.vagt = fetchedRC.sections![thisMonthIndex].objects!.first as! Vagt
     }
     
-    func setThisMonthIndex() {
+    private func setThisMonthIndex() {
         
         guard let sections = fetchedRC.sections else {
             return 
@@ -52,8 +52,10 @@ class Month: NSObject {
         var løn = 0.0
         
         for vagt in fetchedRC.sections![thisMonthIndex].objects as! [Vagt] {
-            let vagtLøn = vagt.samletLon
-            løn += vagtLøn
+            if vagt.active {
+                let vagtLøn = vagt.samletLon
+                løn += vagtLøn
+            }
         }
         
         return Int(løn)
@@ -63,8 +65,10 @@ class Month: NSObject {
         var tid = 0.0
         
         for vagt in fetchedRC.sections![thisMonthIndex].objects as! [Vagt] {
-            let vagtTid = vagt.vagtITimer
-            tid += vagtTid
+            if vagt.active {
+                let vagtTid = vagt.vagtITimer
+                tid += vagtTid
+            }
         }
         
         return tid
@@ -74,8 +78,10 @@ class Month: NSObject {
         var tid = 0
         
         for vagt in fetchedRC.sections![thisMonthIndex].objects as! [Vagt] {
-            let vagtTid = Int(vagt.vagtIMin)
-            tid += vagtTid
+            if vagt.active {
+                let vagtTid = Int(vagt.vagtIMin)
+                tid += vagtTid
+            }
         }
         
         return tid
@@ -85,16 +91,25 @@ class Month: NSObject {
         var satser = 0.0
         
         for vagt in fetchedRC.sections![thisMonthIndex].objects as! [Vagt] {
-            let vagtSats = vagt.satser
-            satser += vagtSats
+            if vagt.active {
+                let vagtSats = vagt.satser
+                satser += vagtSats
+            }
         }
 
         return Int(satser)
     }
     
     func calculateAntalVagter() -> Int {
+        var count = 0
+        
+        for vagt in fetchedRC.sections![thisMonthIndex].objects as! [Vagt] {
+            if vagt.active {
+                count += 1
+            }
+        }
     
-        return fetchedRC.sections![thisMonthIndex].objects!.count
+        return count
     }
     
     func getYear() -> Int {

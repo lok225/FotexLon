@@ -14,6 +14,9 @@
 		E31478D61D5FD1DE00C4C9DC /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */; };
 		E318EEAE1D6C2C4500893D53 /* Year.swift in Sources */ = {isa = PBXBuildFile; fileRef = E318EEAD1D6C2C4500893D53 /* Year.swift */; };
 		E34453BD1D5DAACC00B3DB67 /* VagtCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34453BC1D5DAACC00B3DB67 /* VagtCell.swift */; };
+		E365E6A11D6D8C3D0046F56D /* StandardVagt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E365E6A01D6D8C3D0046F56D /* StandardVagt.swift */; };
+		E365E6A31D6DB3370046F56D /* StandardVagtDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E365E6A21D6DB3370046F56D /* StandardVagtDetailVC.swift */; };
+		E366621C1D6D870E0014C14D /* StandardVagterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E366621B1D6D870E0014C14D /* StandardVagterVC.swift */; };
 		E3A387DD1D4BD75A001F7952 /* MonthCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A387DC1D4BD75A001F7952 /* MonthCell.swift */; };
 		E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97921D4254C900D30589 /* AppDelegate.swift */; };
 		E3BE979A1D4254C900D30589 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3BE97981D4254C900D30589 /* Main.storyboard */; };
@@ -35,6 +38,9 @@
 		E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		E318EEAD1D6C2C4500893D53 /* Year.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Year.swift; sourceTree = "<group>"; };
 		E34453BC1D5DAACC00B3DB67 /* VagtCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VagtCell.swift; sourceTree = "<group>"; };
+		E365E6A01D6D8C3D0046F56D /* StandardVagt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardVagt.swift; sourceTree = "<group>"; };
+		E365E6A21D6DB3370046F56D /* StandardVagtDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardVagtDetailVC.swift; sourceTree = "<group>"; };
+		E366621B1D6D870E0014C14D /* StandardVagterVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardVagterVC.swift; sourceTree = "<group>"; };
 		E3A387DC1D4BD75A001F7952 /* MonthCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthCell.swift; sourceTree = "<group>"; };
 		E3BE978F1D4254C900D30589 /* Føtex Løn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Føtex Løn.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3BE97921D4254C900D30589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -69,6 +75,17 @@
 				E3BE97A01D4254C900D30589 /* Info.plist */,
 			);
 			name = "Andre Filer";
+			sourceTree = "<group>";
+		};
+		E365E6A41D6DC1970046F56D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */,
+				E3FE4DF81D6AE9090012B828 /* NotificationsVC.swift */,
+				E366621B1D6D870E0014C14D /* StandardVagterVC.swift */,
+				E365E6A21D6DB3370046F56D /* StandardVagtDetailVC.swift */,
+			);
+			name = Settings;
 			sourceTree = "<group>";
 		};
 		E3BE97861D4254C800D30589 = {
@@ -108,8 +125,7 @@
 				E3D47E321D42B62D00C3A7E7 /* MainVC.swift */,
 				E3F4FA471D481CFA00647B1E /* VagterVC.swift */,
 				E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */,
-				E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */,
-				E3FE4DF81D6AE9090012B828 /* NotificationsVC.swift */,
+				E365E6A41D6DC1970046F56D /* Settings */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -119,6 +135,7 @@
 			children = (
 				E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */,
 				E3000D121D57A9FD004788B0 /* Vagt+CoreDataClass.swift */,
+				E365E6A01D6D8C3D0046F56D /* StandardVagt.swift */,
 				E3EDB2D81D5222CD00D2D1BB /* Month.swift */,
 				E318EEAD1D6C2C4500893D53 /* Year.swift */,
 				E3FD81B31D496C6D001171EE /* DataController.swift */,
@@ -205,17 +222,20 @@
 				E3000D151D57A9FD004788B0 /* Vagt+CoreDataProperties.swift in Sources */,
 				E3FD81B41D496C6D001171EE /* DataController.swift in Sources */,
 				E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */,
+				E366621C1D6D870E0014C14D /* StandardVagterVC.swift in Sources */,
 				E3D47E331D42B62D00C3A7E7 /* MainVC.swift in Sources */,
 				E3FE4DF91D6AE9090012B828 /* NotificationsVC.swift in Sources */,
 				E3000D141D57A9FD004788B0 /* Vagt+CoreDataClass.swift in Sources */,
 				E318EEAE1D6C2C4500893D53 /* Year.swift in Sources */,
 				E3A387DD1D4BD75A001F7952 /* MonthCell.swift in Sources */,
+				E365E6A31D6DB3370046F56D /* StandardVagtDetailVC.swift in Sources */,
 				E3F4FA481D481CFA00647B1E /* VagterVC.swift in Sources */,
 				E34453BD1D5DAACC00B3DB67 /* VagtCell.swift in Sources */,
 				E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */,
 				E30784EA1D4A9ED7009ED245 /* VagtDetailVC.swift in Sources */,
 				E3EDB2D91D5222CD00D2D1BB /* Month.swift in Sources */,
 				E30AFF3A1D469456009ADF71 /* ExtraFunctions.swift in Sources */,
+				E365E6A11D6D8C3D0046F56D /* StandardVagt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

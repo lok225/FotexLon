@@ -18,6 +18,35 @@ class VagterVC: UITableViewController {
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
     var dateAlert: UIAlertController?
+    
+    var currentMonthIndex: Int {
+        
+        var tempIndex = 0
+        
+        guard let sections = vagterFRC.sections else {
+            return tempIndex
+        }
+        
+        /*
+         if vagterFRC.sections!.count > 1 {
+         tempIndex += 1
+         }
+         */
+        
+        let thisMonthNumber = Date().getMonthNumber(withYear: true)
+        
+        for section in sections {
+            let vagt = section.objects?[0] as! Vagt
+            
+            if thisMonthNumber != vagt.monthNumber {
+                tempIndex += 1
+            } else {
+                return tempIndex
+            }
+        }
+        
+        return tempIndex
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,9 +55,6 @@ class VagterVC: UITableViewController {
         setAttributes(for: navigationController!.navigationBar)
         
         setupFetchedResultsController()
-        
-        print(dataController)
-        print(managedObjectContext)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,8 +89,15 @@ class VagterVC: UITableViewController {
         cell.detailTextLabel?.textColor = UIColor.lightText
         
         let cellView = UIView()
-        cellView.backgroundColor = gothicBlue
+        cellView.backgroundColor = highlightedCellBlue2
         cell.selectedBackgroundView = cellView
+    }
+    
+    // MARK: - @IBActions
+    
+    @IBAction func toDate(_ sender: UIBarButtonItem) {
+        let indexPath = IndexPath(row: 0, section: currentMonthIndex)
+        tableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
     
     // MARK: - Core Data Functions
@@ -131,7 +164,7 @@ class VagterVC: UITableViewController {
         
         setColors(for: cell)
         
-        if indexPath.row == 0 {
+        if vagt.active == false {
             let attString = NSMutableAttributedString(string: vagt.getDateIntervalString().capitalized)
             attString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attString.length))
             
@@ -143,9 +176,11 @@ class VagterVC: UITableViewController {
             
             cell.detailTextLabel?.attributedText = attString2
             cell.detailTextLabel?.textColor = UIColor.lightGray
+            
         } else {
             cell.textLabel?.text = vagt.getDateIntervalString().capitalized
-            cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
+            // cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
+            cell.detailTextLabel?.text = getFormatted(number: Int(vagt.samletLon))
         }
         
         let longPressGR = UILongPressGestureRecognizer(target: self, action: #selector(cellLongPressed))
@@ -210,21 +245,76 @@ extension VagterVC {
 
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let vagt = vagterFRC.object(at: indexPath) as! Vagt
-            
-            managedObjectContext.delete(vagt)
-            
-            dataController.save()
-        }
-    }
 
-    override func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool {
-        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        let vagt = self.vagterFRC.object(at: indexPath) as! Vagt
+        
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Slet") { (action, indexPath) in
+            tableView.isEditing = false
+            self.managedObjectContext.delete(vagt)
+            self.dataController.save()
+        }
+        
+        let inactiveAction: UITableViewRowAction!
+        
+        if vagt.active {
+            inactiveAction = UITableViewRowAction(style: .normal, title: "Byttet væk") { (action, indexPath) in
+                
+                let alert = UIAlertController(title: "Tilføj note", message: "Hvem har du byttet vagten til?", preferredStyle: .alert)
+                alert.addTextField(configurationHandler: { (textField) in
+                    textField.placeholder = "F.eks. 'Byttet til Camilla'"
+                    textField.text = vagt.note
+                })
+                let action = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+                    vagt.note = alert.textFields?.first?.text
+                })
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
+                
+                
+                tableView.isEditing = false
+                
+                let time = DispatchTime.now() + .milliseconds(500)
+                DispatchQueue.main.asyncAfter(deadline: time, execute: { 
+                    vagt.active = !vagt.active
+                    self.dataController.save()
+                })
+                
+            }
+        } else {
+            inactiveAction = UITableViewRowAction(style: .normal, title: "Fået tilbage") { (action, indexPath) in
+                
+                if let note = vagt.note {
+                    if note.characters.count > 0 {
+                        let alert = UIAlertController(title: "Behold eller slet note", message: "Hvad vil du gøre med den tilhørende note?", preferredStyle: .alert)
+                        let keepAction = UIAlertAction(title: "Behold", style: .default, handler: nil)
+                        let deleteAction = UIAlertAction(title: "Slet", style: .destructive, handler: { (action) in
+                            vagt.note = nil
+                        })
+                        alert.addAction(keepAction)
+                        alert.addAction(deleteAction)
+                        
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+                
+                tableView.isEditing = false
+                
+                let time = DispatchTime.now() + .milliseconds(500)
+                DispatchQueue.main.asyncAfter(deadline: time, execute: {
+                    vagt.active = !vagt.active
+                    self.dataController.save()
+                })
+            }
+        }
+        
+        return [deleteAction, inactiveAction]
     }
     
     func cellLongPressed(longPressGR: UILongPressGestureRecognizer) {
-        print("Pressed")
         
         let indexPath = self.tableView.indexPathForRow(at: longPressGR.location(in: self.tableView))!
         let vagt = self.vagterFRC.object(at: indexPath) as! Vagt
@@ -234,8 +324,6 @@ extension VagterVC {
         let cancelAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
         let deleteAction = UIAlertAction(title: "Slet", style: .destructive) { (_) in
             self.managedObjectContext.delete(vagt)
-            
-            self.dataController.save()
         }
         
         let dublicateAction = UIAlertAction(title: "Dubler", style: .default) { (_) in
@@ -244,6 +332,7 @@ extension VagterVC {
             
             var datePicker: UIDatePicker!
             
+            let annullerAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
             let action = UIAlertAction(title: "OK", style: .default, handler: { (action) in
                 let newVagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: self.managedObjectContext) as! Vagt
                 
@@ -266,23 +355,17 @@ extension VagterVC {
                 self.dataController.save()
             })
             
+            self.dateAlert?.addAction(annullerAction)
             self.dateAlert!.addAction(action)
             self.dateAlert!.addTextField(configurationHandler: { (textField) in
                 datePicker = UIDatePicker()
                 datePicker.datePickerMode = .date
+                textField.text = self.getFormattedDate(datePicker.date)
                 datePicker.addTarget(self, action: #selector(self.alertPickerChanged), for: .valueChanged)
                 textField.inputView = datePicker
             })
             self.present(self.dateAlert!, animated: true, completion: nil)
-            
-            /*
-            let newVagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: self.managedObjectContext) as! Vagt
-            newVagt.startTime = vagt.startTime
-            newVagt.endTime = vagt.endTime
-            newVagt.pause = vagt.pause
-            newVagt.monthNumber = newVagt.startTime.getMonthNumber(withYear: true)
-            */
- 
+
             self.dataController.save()
         }
         
@@ -295,10 +378,14 @@ extension VagterVC {
     
     func alertPickerChanged(sender: UIDatePicker) {
         let textField = dateAlert!.textFields![0]
+        textField.text = getFormattedDate(sender.date)
+    }
+    
+    func getFormattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.timeStyle = .none
         formatter.dateStyle = .long
-        textField.text = formatter.string(from: sender.date)
+        return formatter.string(from: date)
     }
     
 }

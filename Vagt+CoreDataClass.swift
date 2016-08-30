@@ -9,6 +9,7 @@
 import Foundation
 import CoreData
 import UserNotifications
+import EventKit
 
 public class Vagt: NSManagedObject {
 
@@ -97,40 +98,108 @@ public class Vagt: NSManagedObject {
         return grundLon + satser
     }
     
-    func setNotificationRequest() {
+    func createCalendarEvent() {
+        let eventStore = EKEventStore()
+        
+        eventStore.requestAccess(to: .event) { (granted, error) in
+            if granted && error == nil {
+                let event = EKEvent(eventStore: eventStore)
+                event.title = "Føtex - Vagt"
+                event.startDate = self.startTime
+                event.endDate = self.endTime
+                event.location = "Føtex Nørrevænget 47A"
+                event.notes = self.note
+                event.calendar = eventStore.defaultCalendarForNewEvents
+                
+                do {
+                    try eventStore.save(event, span: .thisEvent)
+                } catch {
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    func createNotifications() {
         let center = UNUserNotificationCenter.current()
         
         center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
             
             if granted {
-                let content = UNMutableNotificationContent()
-                content.title = "Kommende vagt!!"
-                content.subtitle = "16:00-20:15"
-                content.body = "Din næste vagt begynder om 2 timer"
-                content.sound = UNNotificationSound.default()
                 
-                let date = Date(timeInterval: -7200, since: self.startTime)
-                
-                let formatter = DateFormatter()
-                formatter.dateStyle = .full
-                formatter.timeStyle = .medium
-                print(formatter.string(from: self.startTime))
-                print(formatter.string(from: date))
-                let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-                print(comps.hour)
-                print(comps.minute)
-                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
-                
-                let request = UNNotificationRequest(identifier: String(describing: date), content: content, trigger: trigger)
-                
-                center.add(request, withCompletionHandler: nil)
+                for notificationInt in UserDefaults.standard.object(forKey: kNotifications) as! [Int] {
+                    let content = UNMutableNotificationContent()
+                    content.sound = UNNotificationSound.default()
+                    
+                    var date: Date!
+                    switch notificationInt {
+                    case 0:
+                        content.title = "Vagt begynder nu"
+                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu"
+                        date = Date(timeInterval: 0, since: self.startTime)
+                    case 1:
+                        content.title = "Arbejde om 5 min"
+                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 5 minutter"
+                        date = Date(timeInterval: -300, since: self.startTime)
+                    case 2:
+                        content.title = "Arbejde om 15 min"
+                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu 15 minutter"
+                        date = Date(timeInterval: -900, since: self.startTime)
+                    case 3:
+                        content.title = "Arbejde om 30 min"
+                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 30 minutter"
+                        date = Date(timeInterval: -1800, since: self.startTime)
+                    case 4:
+                        content.title = "Arbejde om 1 time"
+                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 1 time"
+                        date = Date(timeInterval: -3600, since: self.startTime)
+                    case 5:
+                        content.title = "Arbejde om 2 timer"
+                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 2 timer"
+                        date = Date(timeInterval: -7200, since: self.startTime)
+                    case 6:
+                        content.title = "Arbejde imorgen"
+                        content.body = "Din vagt kl. \(self.getTimeIntervalString())"
+                        date = Date(timeInterval: -86400, since: self.startTime)
+                    default:
+                        break
+                    }
+                    
+                    let formatter = DateFormatter()
+                    formatter.dateStyle = .full
+                    formatter.timeStyle = .medium
+                    print(formatter.string(from: self.startTime))
+                    print(formatter.string(from: date))
+                    
+                    var comps: DateComponents!
+                    comps = Calendar.current.dateComponents(in: TimeZone.current, from: date)
+                    if content.title == "Arbejde imorgen" {
+                        comps.hour = 20
+                        comps.minute = 0
+                    }
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+                    
+                    let request = UNNotificationRequest(identifier: String(describing: date), content: content, trigger: trigger)
+                    
+                    center.add(request, withCompletionHandler: nil)
+                }
             }
-            
         }
     }
     
+    /// Bruges til notifikationer
+    ///
+    /// - returns: Returnerer en string udelukkende med start- og sluttidspunktet, som f.eks. '16.00-20-15'
+    func getTimeIntervalString() -> String {
+        let formatter = DateIntervalFormatter()
+        formatter.dateTemplate = "H:mm"
+        
+        return formatter.string(from: startTime, to: endTime)
+    }
     
-    
+    /// Bruges ved vagt-cell
+    ///
+    /// - returns: Returnerer en string med startdato + start- og sluttidspunktet, som f.eks. 'Onsdag 24/8 16.00-20.15'
     func getDateIntervalString() -> String {
         let formatter = DateIntervalFormatter()
         formatter.dateTemplate = "EEEE d/M H:mm"
@@ -139,12 +208,14 @@ public class Vagt: NSManagedObject {
         return formattedString
     }
     
+    /// - returns: Returnerer vagtens år som string
     func getYearString() -> String {
         let component = myCalendar.component(.year, from: startTime)
         
         return String(component)
     }
     
+    /// - returns: Returnerer vagtens måned som string
     func getMonthString() -> String {
         return startTime.getMonthNumber(withYear: false).getMonthAsString()
     }

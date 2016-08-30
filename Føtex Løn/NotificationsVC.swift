@@ -9,29 +9,54 @@
 import UIKit
 
 class NotificationsVC: UITableViewController {
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateAccessoryTypes()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        var array = [Int]()
+        
+        var i = 0
+        
+        while i < tableView.numberOfRows(inSection: 0) {
+            let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0))
+            if cell?.accessoryType == .checkmark {
+                array.append(i)
+            }
+            i += 1
+        }
+        
+        defaults.set(array, forKey: kNotifications)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         cell?.setSelected(false, animated: true)
+        
+        if cell?.accessoryType == .checkmark {
+            cell?.accessoryType = .none
+        } else {
+            cell?.accessoryType = .checkmark
+        }
     }
 
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
+    func updateAccessoryTypes() {
+        
+        let notifications = defaults.object(forKey: kNotifications) as! [Int]
+        
+        for noticationInt in notifications {
+            tableView.cellForRow(at: IndexPath(row: noticationInt, section: 0))?.accessoryType = .checkmark
+        }
     }
-    */
 
 }

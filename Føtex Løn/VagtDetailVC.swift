@@ -33,6 +33,12 @@ class VagtDetailVC: UITableViewController {
     
     // MARK: - Variabler
     
+    let defaults = UserDefaults.standard
+    
+    var standardHverdag = [StandardVagt]()
+    var standardLørdag = [StandardVagt]()
+    var standardSøndag = [StandardVagt]()
+    
     weak var delegate: VagtDetailVCDelegate?
     
     var dataController: DataController!
@@ -52,6 +58,9 @@ class VagtDetailVC: UITableViewController {
         
         setAttributes(for: navigationController!.navigationBar)
         // hideKeyboardWhenTappedAround()
+        self.standardHverdag = defaults.object(forKey: kStandardHverdage) as! [StandardVagt]
+        self.standardLørdag = defaults.object(forKey: kStandardLørdag) as! [StandardVagt]
+        self.standardSøndag = defaults.object(forKey: kStandardSøndag) as! [StandardVagt]
         self.calendar = Calendar.current
         
         if let _ = vagtToEdit {
@@ -82,6 +91,8 @@ class VagtDetailVC: UITableViewController {
             noteTextField.text = nil
         }
         
+        // setupSegControl()
+        
         lblStartDate.text = formatDate(date: startTimePicker.date)
         lblEndDate.text = formatDate(date: endTimePicker.date)
     }
@@ -101,7 +112,7 @@ class VagtDetailVC: UITableViewController {
             vagt.endTime = endTimePicker.date
             vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
-            vagt.setNotificationRequest()
+            vagt.createNotifications()
             
             if let text = noteTextField.text {
                 vagt.note = text
@@ -129,7 +140,8 @@ class VagtDetailVC: UITableViewController {
             vagt.endTime = endTimePicker.date
             vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
-            vagt.setNotificationRequest()
+            vagt.createNotifications()
+            vagt.createCalendarEvent()
             
             if let text = noteTextField.text {
                 vagt.note = text
@@ -165,6 +177,7 @@ class VagtDetailVC: UITableViewController {
         }
         
         updateDateLabels()
+        // setupSegControl()
     }
     
     @IBAction func endTimePickerChanged(_ sender: UIDatePicker) {
@@ -280,6 +293,53 @@ extension VagtDetailVC {
 // MARK: - Segment Control Functions
 
 extension VagtDetailVC {
+    
+    func setupSegControl() {
+        let weekday = calendar.component(.weekday, from: startTimePicker.date)
+        
+        timesSegControl.removeAllSegments()
+        
+        switch weekday {
+        case 0:
+            var i = 0
+            
+            if standardSøndag.isEmpty {
+                timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: true)
+                timesSegControl.selectedSegmentIndex = i
+            }
+            
+            for vagt in standardSøndag {
+                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: true)
+                i += 1
+            }
+        case 1...5:
+            var i = 0
+            
+            if standardHverdag.isEmpty {
+                timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: true)
+                timesSegControl.selectedSegmentIndex = i
+            }
+            
+            for vagt in standardHverdag {
+                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: true)
+                i += 1
+            }
+        case 6:
+            var i = 0
+            
+            if standardLørdag.isEmpty {
+                timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: true)
+                timesSegControl.selectedSegmentIndex = i
+            }
+            
+            for vagt in standardLørdag {
+                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: true)
+                i += 1
+            }
+        default:
+            break
+        }
+    }
 
     func updateDatePicker(from segControl: UISegmentedControl, weekDay: Int) {
         

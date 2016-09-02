@@ -51,14 +51,14 @@ class VagterVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setColors()
-        setAttributes(for: navigationController!.navigationBar)
-        
         setupFetchedResultsController()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        setColors(forTableView: tableView)
+        setAttributes(for: navigationController!.navigationBar)
         
         tableView.reloadData()
     }
@@ -78,20 +78,6 @@ class VagterVC: UITableViewController {
     }
     
     // MARK: - Colors
-    
-    private func setColors() {
-        tableView.backgroundColor = fotexBlue
-    }
-    
-    private func setColors(for cell: UITableViewCell) {
-        cell.backgroundColor = fotexBlue
-        cell.textLabel?.textColor = UIColor.white
-        cell.detailTextLabel?.textColor = UIColor.lightText
-        
-        let cellView = UIView()
-        cellView.backgroundColor = highlightedCellBlue2
-        cell.selectedBackgroundView = cellView
-    }
     
     // MARK: - @IBActions
     
@@ -162,7 +148,7 @@ class VagterVC: UITableViewController {
     func configure(cell: UITableViewCell, atIndexPath indexPath: IndexPath) {
         let vagt = vagterFRC.object(at: indexPath) as! Vagt
         
-        setColors(for: cell)
+        setColors(forCell: cell)
         
         if vagt.active == false {
             let attString = NSMutableAttributedString(string: vagt.getDateIntervalString().capitalized)
@@ -234,9 +220,7 @@ extension VagterVC {
 extension VagterVC {
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        let header = view as! UITableViewHeaderFooterView
-        header.textLabel?.textColor = UIColor.white
-        header.alpha = 0.85
+        setColors(forTableViewHeader: view as! UITableViewHeaderFooterView)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

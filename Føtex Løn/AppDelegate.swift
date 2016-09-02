@@ -45,7 +45,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func setGlobalColors() {
         UINavigationBar.appearance().tintColor = UIColor.white
         UIApplication.shared.statusBarStyle = .lightContent
-        //UINavigationBar.appearance().backgroundColor = fotexBlue
+        
+        let tabBarController = window!.rootViewController as! UITabBarController
+        setColors(forTabBar: tabBarController.tabBar)
     }
     
     // MARK: CoreData
@@ -77,6 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func registerDefaults() {
         
         let defaultsDic = [kFirstTime: true,
+                           kTheme: Shop.ingen.rawValue,
                            kNotifications: [0],
                            kStandardHverdage: [],
                            kStandardLørdag: [],

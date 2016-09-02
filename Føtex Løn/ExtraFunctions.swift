@@ -17,6 +17,7 @@ let kFirstTime = "firstTime"
 let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
 let kNotifications = "notifications"
+let kTheme = "theme"
 
 // Segues
 
@@ -52,17 +53,30 @@ let oldAftenSats: Double = 25.2
 let oldLordagsSats: Double = 44.75
 let oldSondagsSats: Double = 50.6
 
-// Farver
+// Enum
 
-// let mainBlue = UIColor(hue: 185/360, saturation: 0.39, brightness: 0.6, alpha: 1.0)
-let cellBlue = UIColor(hue: 175/360, saturation: 0.26, brightness: 0.69, alpha: 1.0)
+enum Shop: Int {
+    case ingen = 0
+    case føtex = 1
+    case fakta = 2
+    case bio = 3
+    case dagli = 4
+}
+
+// MARK: Farver
+
+// Føtex
 let fotexBlue = UIColor(red: 0.01, green: 0.18, blue: 0.35, alpha: 1.0)
-// let fotexBlue1 = UIColor(hue: 0.59, saturation: 0.93, brightness: 0.35, alpha: 1.0)
 let fotexCellBlue = UIColor(hue: 209/360, saturation: 0.87, brightness: 0.4, alpha: 1.0)
-let gothicBlue = UIColor(red: 0.44, green: 0.58, blue: 0.67, alpha: 1.0)
-let highlightedCellBlue = UIColor(red: 0.17, green: 0.36, blue: 0.48, alpha: 1.0)
-let highlightedCellBlue1 = UIColor(hue: 0.56, saturation: 0.62, brightness: 0.4, alpha: 1.0)
 let highlightedCellBlue2 = UIColor(hue: 0.57, saturation: 0.69, brightness: 0.42, alpha: 1.0)
+
+// Fakta
+let faktaDardRed = UIColor(red: 0.59, green: 0.1, blue: 0.2, alpha: 1.0)
+let faktaRed = UIColor(red: 0.71, green: 0.09, blue: 0.16, alpha: 1.0)
+
+// Bio
+let bioDark = UIColor.black
+let bioLighter = UIColor.darkGray
 
 // Data Model
 
@@ -100,10 +114,132 @@ func presentAndGetYoungWorkerSetting(in vc: UIViewController) {
     vc.present(alertController, animated: true, completion: nil)
 }
 
+// MARK: - Global Colors
+
+// Ved ændring af farver skal disse konfigureres samt mainView og headerTitle i MainVC
+
 func setAttributes(for navBar: UINavigationBar) {
-    navBar.barTintColor = fotexCellBlue
+    
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        navBar.barTintColor = UIColor.gray
+    case .føtex:
+        navBar.barTintColor = fotexCellBlue
+    case .fakta:
+        navBar.barTintColor = faktaDardRed
+    case .bio:
+        navBar.barTintColor = bioDark
+    default:
+        break
+    }
+
     navBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
 }
+
+func setColors(forVC vc: UIViewController) {
+    
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        vc.view.backgroundColor = UIColor.white
+    case .føtex:
+        vc.view.backgroundColor = fotexBlue
+    case .fakta:
+        vc.view.backgroundColor = faktaRed
+    case .bio:
+        vc.view.backgroundColor = bioLighter
+    case .dagli:
+        break
+    default:
+        break
+    }
+}
+
+func setColors(forTableView tableView: UITableView) {
+    
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        tableView.backgroundColor = UIColor.white
+    case .føtex:
+        tableView.backgroundColor = fotexBlue
+    case .fakta:
+        tableView.backgroundColor = faktaRed
+    case .bio:
+        tableView.backgroundColor = bioLighter
+    case .dagli:
+        break
+    default:
+        break
+    }
+}
+
+func setColors(forCell cell: UITableViewCell) {
+    
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        cell.backgroundColor = UIColor.white
+        cell.textLabel?.textColor = UIColor.black
+        cell.detailTextLabel?.textColor = UIColor.lightText
+    case .føtex:
+        cell.backgroundColor = fotexBlue
+        cell.textLabel?.textColor = UIColor.white
+        cell.detailTextLabel?.textColor = UIColor.lightText
+        
+        let cellView = UIView()
+        cellView.backgroundColor = highlightedCellBlue2
+        cell.selectedBackgroundView = cellView
+    case .fakta:
+        cell.backgroundColor = faktaRed
+        cell.textLabel?.textColor = UIColor.white
+        cell.detailTextLabel?.textColor = UIColor.lightText
+    case .bio:
+        cell.backgroundColor = bioLighter
+        cell.textLabel?.textColor = UIColor.white
+        cell.detailTextLabel?.textColor = UIColor.lightText
+    default:
+        break
+    }
+}
+
+func setColors(forTableViewHeader header: UITableViewHeaderFooterView) {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        header.textLabel?.textColor = UIColor.black
+    default:
+        header.textLabel?.textColor = UIColor.white
+    }
+    
+    header.alpha = 0.85
+}
+
+func setColors(forTabBar tabBar: UITabBar) {
+    
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        tabBar.tintColor = UIColor.black
+    case .føtex:
+        tabBar.tintColor = fotexBlue
+    case .fakta:
+        tabBar.tintColor = faktaRed
+    case .bio:
+        tabBar.tintColor = bioDark
+    default:
+        break
+    }
+}
+
+// MARK: - Formatting
 
 func getFormatted(time timeWorked: Int) -> String {
     

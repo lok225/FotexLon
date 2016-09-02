@@ -72,13 +72,16 @@ class MainVC: UIViewController {
         firstTime(in: self)
         setupFetchedResultsController()
         
-        setColors()
-        setAttributes(for: navigationController!.navigationBar)
         initialAnimations()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        setAttributes(for: navigationController!.navigationBar)
+        setMainViewColors()
+        setColors(forVC: self)
+        setColors(forTableView: vagtTableView)
         
         fetchObjects()
         setupMonths()
@@ -94,22 +97,25 @@ class MainVC: UIViewController {
     
     // Startup Functions
     
-    private func setColors() {
-        lblThisMonth.textColor = UIColor.white
-        lblFøtexTotalLøn.textColor = UIColor.white
-        lblFøtexTillæg.textColor = UIColor.white
-        lblFøtexTimer.textColor = UIColor.white
-        lblFøtexVagter.textColor = UIColor.white
-        lblNæsteVagt.textColor = UIColor.white
+    private func setMainViewColors() {
         
-        self.view.backgroundColor = fotexBlue
-        vagtTableView.backgroundColor = fotexBlue
-    }
-    
-    internal func setColors(for cell: UITableViewCell) {
-        cell.backgroundColor = fotexBlue
-        cell.textLabel?.textColor = UIColor.white
-        cell.detailTextLabel?.textColor = UIColor.lightText
+        let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+        
+        if shop == .ingen {
+            lblThisMonth.textColor = UIColor.black
+            lblFøtexTotalLøn.textColor = UIColor.black
+            lblFøtexTillæg.textColor = UIColor.black
+            lblFøtexTimer.textColor = UIColor.black
+            lblFøtexVagter.textColor = UIColor.black
+            lblNæsteVagt.textColor = UIColor.black
+        } else {
+            lblThisMonth.textColor = UIColor.white
+            lblFøtexTotalLøn.textColor = UIColor.white
+            lblFøtexTillæg.textColor = UIColor.white
+            lblFøtexTimer.textColor = UIColor.white
+            lblFøtexVagter.textColor = UIColor.white
+            lblNæsteVagt.textColor = UIColor.white
+        }
     }
     
     private func setupMonths() {
@@ -383,7 +389,7 @@ extension MainVC: UITableViewDataSource {
         
         cell.selectionStyle = .none
         
-        setColors(for: cell)
+        setColors(forCell: cell)
         
         return cell
     }
@@ -415,9 +421,8 @@ extension MainVC: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        let header = view as! UITableViewHeaderFooterView
-        header.textLabel?.textColor = UIColor.white
-        header.alpha = 0.85
+        
+        setColors(forTableViewHeader: view as! UITableViewHeaderFooterView)
     }
     
 }

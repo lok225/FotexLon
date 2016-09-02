@@ -17,6 +17,7 @@ protocol SettingsVCDelegate: class {
 class SettingsVC: UITableViewController {
     
     @IBOutlet weak var ageSegControl: UISegmentedControl!
+    @IBOutlet weak var themeSegControl: UISegmentedControl!
     @IBOutlet weak var lblGrundlon: UITextField!
     @IBOutlet weak var lblAftensats: UITextField!
     @IBOutlet weak var lblLordagssats: UITextField!
@@ -34,10 +35,6 @@ class SettingsVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // hideKeyboardWhenTappedAround()
-        
-        setAttributes(for: navigationController!.navigationBar)
-        
         youngWorker = defaults.bool(forKey: kYoungWorker)
         
         if youngWorker == true {
@@ -53,8 +50,10 @@ class SettingsVC: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        setAttributes(for: navigationController!.navigationBar)
         notifications = defaults.object(forKey: kNotifications) as! [Int]
         setNotificationsView()
+        themeSegControl.selectedSegmentIndex = defaults.integer(forKey: kTheme)
     }
     
     // MARK: - Segue
@@ -145,6 +144,25 @@ class SettingsVC: UITableViewController {
         
         defaults.set(youngWorker, forKey: kYoungWorker)
         
+        var shop: Shop!
+        
+        switch themeSegControl.selectedSegmentIndex {
+        case 0:
+            shop = .ingen
+            print("none")
+        case 1:
+            shop = .føtex
+        case 2:
+            shop = .fakta
+        case 3:
+            shop = .bio
+        default:
+            shop = .ingen
+        }
+        
+        print(shop.rawValue)
+        defaults.set(shop.rawValue, forKey: kTheme)
+        
         dismiss(animated: true, completion: nil)
     }
     
@@ -159,6 +177,11 @@ class SettingsVC: UITableViewController {
         
         setLonViews()
     }
+    
+    @IBAction func themeSegChanged(_ sender: UISegmentedControl) {
+        
+    }
+    
 }
 
 extension SettingsVC {

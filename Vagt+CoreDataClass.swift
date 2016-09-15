@@ -98,94 +98,179 @@ public class Vagt: NSManagedObject {
         return grundLon + satser
     }
     
+    // MARK: - Initial functions
+    
+    func createID() {
+        let id = UUID()
+        
+        self.id = id.uuidString
+    }
+    
+    // MARK: - Calendar Functions
+    
     func createCalendarEvent() {
         let eventStore = EKEventStore()
         
         eventStore.requestAccess(to: .event) { (granted, error) in
             if granted && error == nil {
                 let event = EKEvent(eventStore: eventStore)
-                event.title = "Føtex - Vagt"
+                event.title = getLocationString() + " - Vagt"
                 event.startDate = self.startTime
                 event.endDate = self.endTime
-                event.location = "Føtex Nørrevænget 47A"
+                event.location = getLocationString()
                 event.notes = self.note
                 event.calendar = eventStore.defaultCalendarForNewEvents
                 
                 do {
-                    try eventStore.save(event, span: .thisEvent)
+                    try eventStore.save(event, span: .thisEvent, commit: true)
                 } catch {
                     print(error)
                 }
+                
+                self.eventID = event.eventIdentifier
             }
         }
     }
+    
+    func updateCalendarEvent() {
+        let eventStore = EKEventStore()
+        
+        eventStore.requestAccess(to: .event) { (granted, error) in
+            guard granted && error == nil else {
+                return
+            }
+        
+            let event = eventStore.event(withIdentifier: self.eventID!)!
+            event.startDate = self.startTime
+            event.endDate = self.endTime
+            event.notes = self.note
+            
+            do {
+                try eventStore.save(event, span: .thisEvent, commit: true)
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func deleteCalendarEvent() {
+        let eventStore = EKEventStore()
+        
+        eventStore.requestAccess(to: .event) { (granted, error) in
+            guard granted && error == nil else {
+                return
+            }
+            
+            print(self.eventID!)
+            let event = eventStore.event(withIdentifier: self.eventID!)!
+            print("Deleted")
+            
+            do {
+                try eventStore.remove(event, span: .thisEvent, commit: true)
+                print("Deleted")
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    // MARK: - Notifications
     
     func createNotifications() {
         let center = UNUserNotificationCenter.current()
         
         center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
             
-            if granted {
-                
-                for notificationInt in UserDefaults.standard.object(forKey: kNotifications) as! [Int] {
-                    let content = UNMutableNotificationContent()
-                    content.sound = UNNotificationSound.default()
-                    
-                    var date: Date!
-                    switch notificationInt {
-                    case 0:
-                        content.title = "Vagt begynder nu"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu"
-                        date = Date(timeInterval: 0, since: self.startTime)
-                    case 1:
-                        content.title = "Arbejde om 5 min"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 5 minutter"
-                        date = Date(timeInterval: -300, since: self.startTime)
-                    case 2:
-                        content.title = "Arbejde om 15 min"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu 15 minutter"
-                        date = Date(timeInterval: -900, since: self.startTime)
-                    case 3:
-                        content.title = "Arbejde om 30 min"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 30 minutter"
-                        date = Date(timeInterval: -1800, since: self.startTime)
-                    case 4:
-                        content.title = "Arbejde om 1 time"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 1 time"
-                        date = Date(timeInterval: -3600, since: self.startTime)
-                    case 5:
-                        content.title = "Arbejde om 2 timer"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 2 timer"
-                        date = Date(timeInterval: -7200, since: self.startTime)
-                    case 6:
-                        content.title = "Arbejde imorgen"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString())"
-                        date = Date(timeInterval: -86400, since: self.startTime)
-                    default:
-                        break
-                    }
-                    
-                    let formatter = DateFormatter()
-                    formatter.dateStyle = .full
-                    formatter.timeStyle = .medium
-                    print(formatter.string(from: self.startTime))
-                    print(formatter.string(from: date))
-                    
-                    var comps: DateComponents!
-                    comps = Calendar.current.dateComponents(in: TimeZone.current, from: date)
-                    if content.title == "Arbejde imorgen" {
-                        comps.hour = 20
-                        comps.minute = 0
-                    }
-                    let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
-                    
-                    let request = UNNotificationRequest(identifier: String(describing: date), content: content, trigger: trigger)
-                    
-                    center.add(request, withCompletionHandler: nil)
-                }
+            guard granted && error == nil else {
+                return
             }
+            
+            for notificationInt in UserDefaults.standard.object(forKey: kNotifications) as! [Int] {
+                let content = UNMutableNotificationContent()
+                content.sound = UNNotificationSound.default()
+                
+                var date: Date!
+                switch notificationInt {
+                case 0:
+                    content.title = "Vagt begynder nu"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu"
+                    date = Date(timeInterval: 0, since: self.startTime)
+                case 1:
+                    content.title = "Arbejde om 5 min"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 5 minutter"
+                    date = Date(timeInterval: -300, since: self.startTime)
+                case 2:
+                    content.title = "Arbejde om 15 min"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu 15 minutter"
+                    date = Date(timeInterval: -900, since: self.startTime)
+                case 3:
+                    content.title = "Arbejde om 30 min"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 30 minutter"
+                    date = Date(timeInterval: -1800, since: self.startTime)
+                case 4:
+                    content.title = "Arbejde om 1 time"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 1 time"
+                    date = Date(timeInterval: -3600, since: self.startTime)
+                case 5:
+                    content.title = "Arbejde om 2 timer"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 2 timer"
+                    date = Date(timeInterval: -7200, since: self.startTime)
+                case 6:
+                    content.title = "Arbejde imorgen"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString())"
+                    date = Date(timeInterval: -86400, since: self.startTime)
+                default:
+                    break
+                }
+                
+                let formatter = DateFormatter()
+                formatter.dateStyle = .full
+                formatter.timeStyle = .medium
+                print(formatter.string(from: self.startTime))
+                print(formatter.string(from: date))
+                
+                var comps: DateComponents!
+                comps = Calendar.current.dateComponents(in: TimeZone.current, from: date)
+                if content.title == "Arbejde imorgen" {
+                    comps.hour = 20
+                    comps.minute = 0
+                }
+                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+                
+                let request = UNNotificationRequest(identifier: self.id + String(notificationInt), content: content, trigger: trigger)
+                print(request.identifier)
+                
+                center.add(request, withCompletionHandler: nil)
+            }
+            
         }
     }
+    
+    func deleteNotifications() {
+        let center = UNUserNotificationCenter.current()
+        
+        center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+            
+            guard granted && error == nil else {
+                return
+            }
+            
+            var IDs = [String]()
+            
+            for notificationInt in UserDefaults.standard.object(forKey: kNotifications) as! [Int] {
+                let id = self.id + String(notificationInt)
+                IDs.append(id)
+            }
+            center.removePendingNotificationRequests(withIdentifiers: IDs)
+        }
+    }
+    
+    func updateNotifications() {
+        deleteNotifications()
+        createNotifications()
+    }
+    
+    // MARK: - Get Strings
     
     /// Bruges til notifikationer
     ///

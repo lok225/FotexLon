@@ -48,6 +48,12 @@ class DataController: NSObject {
     }
     
     func delete(vagt: Vagt) {
+        
+        if let _ = vagt.eventID {
+            vagt.deleteCalendarEvent()
+        }
+        vagt.deleteNotifications()
+        
         managedObjectContext.delete(vagt)
         save()
     }

@@ -7,10 +7,14 @@
 //
 
 import UIKit
+import CoreData
+import UserNotifications
 
 class NotificationsVC: UITableViewController {
     
     let defaults = UserDefaults.standard
+    
+    var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +41,14 @@ class NotificationsVC: UITableViewController {
         }
         
         defaults.set(array, forKey: kNotifications)
+        
+        let center = UNUserNotificationCenter.current()
+        center.removeAllPendingNotificationRequests()
+        
+        let objects = vagterFRC.fetchedObjects as! [Vagt]
+        for vagt in objects {
+            vagt.createNotifications()
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

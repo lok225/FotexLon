@@ -65,6 +65,8 @@ enum Shop: Int {
 
 // MARK: Farver
 
+let defaultTint = UIColor(red: 0.0, green: 122.0/255.0, blue: 1.0, alpha: 1.0)
+
 // Føtex
 let fotexBlue = UIColor(red: 0.01, green: 0.18, blue: 0.35, alpha: 1.0)
 let fotexCellBlue = UIColor(hue: 209/360, saturation: 0.87, brightness: 0.4, alpha: 1.0)
@@ -138,6 +140,26 @@ func setAttributes(for navBar: UINavigationBar) {
     navBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
 }
 
+func setColors(forVagtDetailVC vc: VagtDetailVC) {
+    
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        vc.view.tintColor = defaultTint
+    case .føtex:
+        vc.view.tintColor = fotexBlue
+    case .fakta:
+        vc.view.tintColor = faktaRed
+    case .bio:
+        vc.view.tintColor = bioLighter
+    case .dagli:
+        break
+    }
+    
+    
+}
+
 func setColors(forVC vc: UIViewController) {
     
     let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
@@ -145,15 +167,17 @@ func setColors(forVC vc: UIViewController) {
     switch shop {
     case .ingen:
         vc.view.backgroundColor = UIColor.white
+        vc.view.tintColor = defaultTint
     case .føtex:
         vc.view.backgroundColor = fotexBlue
+        vc.view.tintColor = fotexBlue
     case .fakta:
         vc.view.backgroundColor = faktaRed
+        vc.view.tintColor = faktaRed
     case .bio:
         vc.view.backgroundColor = bioLighter
+        vc.view.tintColor = bioLighter
     case .dagli:
-        break
-    default:
         break
     }
 }
@@ -172,8 +196,6 @@ func setColors(forTableView tableView: UITableView) {
     case .bio:
         tableView.backgroundColor = bioLighter
     case .dagli:
-        break
-    default:
         break
     }
 }
@@ -236,6 +258,24 @@ func setColors(forTabBar tabBar: UITabBar) {
         tabBar.tintColor = bioDark
     default:
         break
+    }
+}
+
+func getLocationString() -> String {
+    
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return "Ingen"
+    case .føtex:
+        return "Føtex"
+    case .fakta:
+        return "Fakta"
+    case .bio:
+        return "Biografen"
+    default:
+        return ""
     }
 }
 

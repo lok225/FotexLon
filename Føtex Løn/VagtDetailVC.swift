@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import UserNotifications
+import EventKit
 
 protocol VagtDetailVCDelegate: class {
     func vagtDetailVCDidCancel(controller: VagtDetailVC)
@@ -46,7 +47,7 @@ class VagtDetailVC: UITableViewController {
     
     var vagtToEdit: Vagt?
     
-    var startDatePickerHidden = false
+    var startDatePickerHidden = true
     var endDatePickerHidden = true
     
     var calendar: Calendar!
@@ -56,20 +57,20 @@ class VagtDetailVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setStandardVagter()
+        
         setAttributes(for: navigationController!.navigationBar)
-        // hideKeyboardWhenTappedAround()
-        self.standardHverdag = defaults.object(forKey: kStandardHverdage) as! [StandardVagt]
-        self.standardLørdag = defaults.object(forKey: kStandardLørdag) as! [StandardVagt]
-        self.standardSøndag = defaults.object(forKey: kStandardSøndag) as! [StandardVagt]
+        setColors(forVagtDetailVC: self)
+        
         self.calendar = Calendar.current
         
         if let _ = vagtToEdit {
-            startDatePickerHidden = true
+            hideStartPicker(true)
             title = "Ændre Vagt"
+        } else {
+            hideStartPicker(false)
         }
         
-        lblStartDate.textColor = UIColor.gray
-        lblEndDate.textColor = UIColor.gray
         lblStartDate.text = formatDate(date: startTimePicker.date)
         lblEndDate.text = formatDate(date: endTimePicker.date)
     }
@@ -91,7 +92,7 @@ class VagtDetailVC: UITableViewController {
             noteTextField.text = nil
         }
         
-        // setupSegControl()
+        setupSegControl()
         
         lblStartDate.text = formatDate(date: startTimePicker.date)
         lblEndDate.text = formatDate(date: endTimePicker.date)
@@ -112,10 +113,14 @@ class VagtDetailVC: UITableViewController {
             vagt.endTime = endTimePicker.date
             vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
-            vagt.createNotifications()
+            vagt.updateNotifications()
             
             if let text = noteTextField.text {
                 vagt.note = text
+            }
+            
+            if let _ = vagt.eventID {
+                vagt.updateCalendarEvent()
             }
             
             dataController.save()
@@ -142,6 +147,7 @@ class VagtDetailVC: UITableViewController {
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
             vagt.createNotifications()
             vagt.createCalendarEvent()
+            vagt.createID()
             
             if let text = noteTextField.text {
                 vagt.note = text
@@ -177,7 +183,8 @@ class VagtDetailVC: UITableViewController {
         }
         
         updateDateLabels()
-        // setupSegControl()
+        
+        setupSegControl()
     }
     
     @IBAction func endTimePickerChanged(_ sender: UIDatePicker) {
@@ -196,6 +203,18 @@ class VagtDetailVC: UITableViewController {
     
     // MARK: - Helper Functions
     
+    func setStandardVagter() {
+        
+        let standardHverdagData = defaults.object(forKey: kStandardHverdage) as! Data
+        let standardLørdagData = defaults.object(forKey: kStandardLørdag) as! Data
+        let standardSøndagData = defaults.object(forKey: kStandardSøndag) as! Data
+        
+        standardHverdag = NSKeyedUnarchiver.unarchiveObject(with: standardHverdagData) as! [StandardVagt]
+        standardLørdag = NSKeyedUnarchiver.unarchiveObject(with: standardLørdagData) as! [StandardVagt]
+        standardSøndag = NSKeyedUnarchiver.unarchiveObject(with: standardSøndagData) as! [StandardVagt]
+        
+    }
+    
     func shouldCreateDate() -> Bool {
         
         let startDate = startTimePicker.date
@@ -210,6 +229,12 @@ class VagtDetailVC: UITableViewController {
     }
     
     func hideStartPicker(_ hide: Bool) {
+        if hide {
+            lblStartDate.textColor = UIColor.black
+        } else {
+            lblStartDate.textColor = self.view.tintColor
+        }
+        
         startDatePickerHidden = hide
         
         tableView.beginUpdates()
@@ -217,6 +242,12 @@ class VagtDetailVC: UITableViewController {
     }
     
     func hideEndPicker(_ hide: Bool) {
+        if hide {
+            lblEndDate.textColor = UIColor.black
+        } else {
+            lblEndDate.textColor = self.view.tintColor
+        }
+        
         endDatePickerHidden = hide
         
         tableView.beginUpdates()
@@ -300,42 +331,37 @@ extension VagtDetailVC {
         timesSegControl.removeAllSegments()
         
         switch weekday {
-        case 0:
+        case 1:
             var i = 0
-            
-            if standardSøndag.isEmpty {
-                timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: true)
-                timesSegControl.selectedSegmentIndex = i
-            }
             
             for vagt in standardSøndag {
-                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: true)
+                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
                 i += 1
             }
-        case 1...5:
-            var i = 0
             
-            if standardHverdag.isEmpty {
-                timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: true)
-                timesSegControl.selectedSegmentIndex = i
-            }
+            timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
+            timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+        case 2...6:
+            var i = 0
             
             for vagt in standardHverdag {
-                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: true)
+                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
                 i += 1
             }
-        case 6:
+            
+            timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
+            timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+        case 7:
             var i = 0
-            
-            if standardLørdag.isEmpty {
-                timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: true)
-                timesSegControl.selectedSegmentIndex = i
-            }
-            
+        
             for vagt in standardLørdag {
-                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: true)
+                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
                 i += 1
             }
+            
+            timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
+            timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+            
         default:
             break
         }

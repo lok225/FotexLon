@@ -21,11 +21,29 @@ class StandardVagtDetailVC: UITableViewController {
     @IBOutlet weak var txtPause: UITextField!
     
     weak var delegate: StandardVagtDetailVCDelegate?
+    
+    let calendar = Calendar.current
+    
+    var standardVagtToEdit: StandardVagt?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setAttributes(for: navigationController!.navigationBar)
+        
+        if let vagt = standardVagtToEdit {
+            startTimePicker.date = vagt.startTime
+            endTimePicker.date = vagt.endTime
+            txtPause.text = String(vagt.pause) + " min"
+        } else {
+            var startComps = calendar.dateComponents(in: TimeZone.current, from: Date())
+            startComps.minute = 0
+            
+            let endComps = calendar.dateComponents(in: TimeZone.current, from: Date(timeInterval: 60*60*4.5, since: calendar.date(from: startComps)!))
+            
+            startTimePicker.date = calendar.date(from: startComps)!
+            endTimePicker.date = calendar.date(from: endComps)!
+        }
     }
     
     @IBAction func done(_ sender: UIBarButtonItem) {

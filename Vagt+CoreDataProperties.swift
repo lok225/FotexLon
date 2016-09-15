@@ -21,5 +21,7 @@ extension Vagt {
     @NSManaged public var endTime: Date!
     @NSManaged public var pause: Int
     @NSManaged public var monthNumber: Double
+    @NSManaged public var id: String!
+    @NSManaged public var eventID: String?
 
 }

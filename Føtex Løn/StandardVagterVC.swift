@@ -13,17 +13,52 @@ class StandardVagterVC: UITableViewController {
     let defaults = UserDefaults.standard
     
     var standardVagter: [StandardVagt]!
+    var standardVagterInt: Int!
+    
+    var currentKey: String {
+        switch standardVagterInt {
+        case 0:
+            return kStandardHverdage
+        case 1:
+            return kStandardLørdag
+        case 2:
+            return kStandardSøndag
+        default:
+            return ""
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setAttributes(for: navigationController!.navigationBar)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        switch standardVagterInt! {
+        case 0:
+            print("Hverdag")
+            let vagterData = defaults.object(forKey: kStandardHverdage) as! Data
+            standardVagter = NSKeyedUnarchiver.unarchiveObject(with: vagterData) as! [StandardVagt]
+        case 1:
+            print("Lørdag")
+            let vagterData = defaults.object(forKey: kStandardLørdag) as! Data
+            standardVagter = NSKeyedUnarchiver.unarchiveObject(with: vagterData) as! [StandardVagt]
+            //standardVagter.removeAll()
+        case 2:
+            print("Søndag")
+            let vagterData = defaults.object(forKey: kStandardSøndag) as! Data
+            standardVagter = NSKeyedUnarchiver.unarchiveObject(with: vagterData) as! [StandardVagt]
+            //standardVagter.removeAll()
+        default:
+            break
+        }
+    }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        
     }
 
     // MARK: - Table view data source
@@ -37,37 +72,28 @@ class StandardVagterVC: UITableViewController {
             cell.textLabel?.textColor = cell.tintColor
             cell.textLabel?.text = "Tilføj standard vagt"
             cell.accessoryType = .none
-            
-            let touchGR = UITapGestureRecognizer(target: self, action: #selector(emptyCellTapped))
-            // cell.textLabel?.addGestureRecognizer(touchGR)
             cell.textLabel?.isUserInteractionEnabled = true
-            return cell
-        } else {
             
-            var i = 0
-            for vagt in standardVagter {
-                if let vagt = standardVagter[i] as? StandardVagt {
+            return cell
+            
+        } else {
+            if indexPath.row < standardVagter.count {
+                
+                let vagt: StandardVagt? = standardVagter[indexPath.row]
+                
+                if vagt != nil {
                     cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-                    cell.textLabel?.text = vagt.getTimeIntervalString()
+                    cell.textLabel?.text = vagt!.getTimeIntervalString() + " med \(vagt!.pause!) min pause"
                 }
-                i += 1
+            } else {
+                cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+                cell.textLabel?.textColor = cell.tintColor
+                cell.textLabel?.text = "Tilføj standard vagt"
+                cell.accessoryType = .none
+                cell.textLabel?.isUserInteractionEnabled = true
             }
             
             return cell
-        }
-    }
-    
-    func emptyCellTapped(sender: UITapGestureRecognizer) {
-        
-        switch sender.state {
-        case .began:
-            let label = sender.view as! UILabel
-            label.textColor = UIColor.darkGray
-            print("Began")
-        case .ended:
-            print("Hej")
-        default:
-            break
         }
     }
     
@@ -82,6 +108,22 @@ class StandardVagterVC: UITableViewController {
         }
     }
     
+    // Override to support editing the table view.
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            standardVagter.remove(at: indexPath.row)
+            tableView.reloadData()
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if indexPath.row < standardVagter.count {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -91,6 +133,7 @@ class StandardVagterVC: UITableViewController {
         
         if let _ = sender as? StandardVagt {
             vc.title = "Ændre standard vagt"
+            vc.standardVagtToEdit = sender as! StandardVagt?
         }
         
         vc.delegate = self
@@ -101,13 +144,21 @@ extension StandardVagterVC: StandardVagtDetailVCDelegate {
     
     func standardVagtDetailVCDidCancel(controller: StandardVagtDetailVC) {
         dismiss(animated: true, completion: nil)
+        print("Key: \(currentKey)")
     }
     
     func standardVagtDetailVC(controller: StandardVagtDetailVC, didFinishAddingVagt vagt: StandardVagt) {
         
         dismiss(animated: true, completion: nil)
+        
         standardVagter.append(vagt)
-        defaults.set(standardVagter, forKey: "hej")
+        
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: standardVagter)
+        
+        defaults.set(data, forKey: currentKey)
+        print("Key: \(currentKey)")
+        defaults.synchronize()
+        
         tableView.reloadData()
     }
     

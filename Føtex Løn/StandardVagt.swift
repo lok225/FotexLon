@@ -9,8 +9,6 @@
 import UIKit
 
 class StandardVagt: NSObject, NSCoding {
-
-
     
     let kStandardStartTime = "standardStartTime"
     let kStandardEndTime = "standardEndTime"
@@ -39,7 +37,7 @@ class StandardVagt: NSObject, NSCoding {
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(startTime, forKey: kStandardStartTime)
         aCoder.encode(endTime, forKey: kStandardEndTime)
-        aCoder.encode(startTime, forKey: kStandardPause)
+        aCoder.encode(pause, forKey: kStandardPause)
     }
     
     /// Bruges til notifikationer

@@ -60,20 +60,28 @@ class SettingsVC: UITableViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        if let _ = sender as? Int {
-            
-            let vc = segue.destination as! StandardVagterVC
-            
-            switch sender as! Int {
-            case 0:
-                vc.standardVagter = defaults.object(forKey: kStandardHverdage) as! [StandardVagt]
-            case 1:
-                vc.standardVagter = defaults.object(forKey: kStandardLørdag) as! [StandardVagt]
-            case 2:
-                vc.standardVagter = defaults.object(forKey: kStandardSøndag) as! [StandardVagt]
-            default:
-                break
+        switch segue.identifier! {
+        case "standardVCSegue":
+            if let _ = sender as? Int {
+                
+                let vc = segue.destination as! StandardVagterVC
+                
+                switch sender as! Int {
+                case 0:
+                    vc.standardVagterInt = 0
+                case 1:
+                    vc.standardVagterInt = 1
+                case 2:
+                    vc.standardVagterInt = 2
+                default:
+                    break
+                }
             }
+        case "notificationsSegue":
+            let destVC = segue.destination as! NotificationsVC
+            destVC.vagterFRC = self.vagterFRC
+        default:
+            break
         }
         
         
@@ -121,6 +129,8 @@ class SettingsVC: UITableViewController {
 
     @IBAction func save(_ sender: UIBarButtonItem) {
         
+        // TODO: - Slet notifikationer først, og derefter gem + tilføj nye notifikationer
+        
         self.dismissKeyboard()
         
         let grundlon = Double(lblGrundlon.text!.replacingOccurrences(of: ",-", with: ""))
@@ -149,7 +159,6 @@ class SettingsVC: UITableViewController {
         switch themeSegControl.selectedSegmentIndex {
         case 0:
             shop = .ingen
-            print("none")
         case 1:
             shop = .føtex
         case 2:
@@ -160,7 +169,6 @@ class SettingsVC: UITableViewController {
             shop = .ingen
         }
         
-        print(shop.rawValue)
         defaults.set(shop.rawValue, forKey: kTheme)
         
         dismiss(animated: true, completion: nil)

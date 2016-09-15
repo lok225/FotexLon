@@ -52,6 +52,8 @@ class VagterVC: UITableViewController {
         super.viewDidLoad()
 
         setupFetchedResultsController()
+        
+        goToCurrentMonth()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,8 +84,7 @@ class VagterVC: UITableViewController {
     // MARK: - @IBActions
     
     @IBAction func toDate(_ sender: UIBarButtonItem) {
-        let indexPath = IndexPath(row: 0, section: currentMonthIndex)
-        tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        goToCurrentMonth()
     }
     
     // MARK: - Core Data Functions
@@ -96,8 +97,6 @@ class VagterVC: UITableViewController {
         let sortDescriptor1 = NSSortDescriptor(key: "monthNumber", ascending: false)
         let sortDescriptor2 = NSSortDescriptor(key: "startTime", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor1, sortDescriptor2]
-        
-        fetchRequest.fetchBatchSize = 20
         
         vagterFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext, sectionNameKeyPath: "monthNumber", cacheName: "vagter")
         vagterFRC.delegate = self
@@ -145,6 +144,11 @@ class VagterVC: UITableViewController {
     
     // MARK: - Helper Functions
     
+    func goToCurrentMonth() {
+        let indexPath = IndexPath(row: 0, section: currentMonthIndex)
+        tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+    }
+    
     func configure(cell: UITableViewCell, atIndexPath indexPath: IndexPath) {
         let vagt = vagterFRC.object(at: indexPath) as! Vagt
         
@@ -170,7 +174,7 @@ class VagterVC: UITableViewController {
         }
         
         let longPressGR = UILongPressGestureRecognizer(target: self, action: #selector(cellLongPressed))
-        longPressGR.minimumPressDuration = 1.0
+        longPressGR.minimumPressDuration = 0.6
         cell.addGestureRecognizer(longPressGR)
         
     }
@@ -211,8 +215,9 @@ extension VagterVC {
         return month.getMonthString() + " " + month.getYearString()
     }
      
-    
-    
+    // Override to support editing the table view.
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    }
 }
 
 // MARK: - UITableViewDelegate 
@@ -226,11 +231,6 @@ extension VagterVC {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         super.performSegue(withIdentifier: kVagtDetailSegue, sender: indexPath)
     }
-
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-
-    }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
@@ -238,8 +238,8 @@ extension VagterVC {
         
         let deleteAction = UITableViewRowAction(style: .destructive, title: "Slet") { (action, indexPath) in
             tableView.isEditing = false
-            self.managedObjectContext.delete(vagt)
-            self.dataController.save()
+            
+            self.dataController.delete(vagt: vagt)
         }
         
         let inactiveAction: UITableViewRowAction!
@@ -307,7 +307,8 @@ extension VagterVC {
         
         let cancelAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
         let deleteAction = UIAlertAction(title: "Slet", style: .destructive) { (_) in
-            self.managedObjectContext.delete(vagt)
+            
+            self.dataController.delete(vagt: vagt)
         }
         
         let dublicateAction = UIAlertAction(title: "Dubler", style: .default) { (_) in
@@ -336,6 +337,10 @@ extension VagterVC {
                 newVagt.pause = vagt.pause
                 newVagt.monthNumber = newVagt.startTime.getMonthNumber(withYear: true)
                 
+                newVagt.createNotifications()
+                newVagt.createCalendarEvent()
+                newVagt.createID()
+                
                 self.dataController.save()
             })
             
@@ -345,12 +350,11 @@ extension VagterVC {
                 datePicker = UIDatePicker()
                 datePicker.datePickerMode = .date
                 textField.text = self.getFormattedDate(datePicker.date)
+                textField.autocapitalizationType = .sentences
                 datePicker.addTarget(self, action: #selector(self.alertPickerChanged), for: .valueChanged)
                 textField.inputView = datePicker
             })
             self.present(self.dateAlert!, animated: true, completion: nil)
-
-            self.dataController.save()
         }
         
         actionSheet.addAction(dublicateAction)
@@ -414,7 +418,10 @@ extension VagterVC: NSFetchedResultsControllerDelegate {
             tableView.deleteRows(at: [indexPath!], with: .fade)
         case .update:
             print("*** NSFetchedResultsChangeUpdate (object)")
-            configure(cell: tableView.cellForRow(at: indexPath!)!, atIndexPath: indexPath!)
+            if let cell = tableView.cellForRow(at: indexPath!) {
+                configure(cell: cell, atIndexPath: indexPath!)
+            }
+
         case .move:
             print("*** NSFetchedResultsChangeMove (object)")
             tableView.deleteRows(at: [indexPath!], with: .fade)

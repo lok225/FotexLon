@@ -295,6 +295,8 @@ class MainVC: UIViewController {
         vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
         vagt.pause = 0
         vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+        
+        vagt.createID()
         dataController.save()
         
         do {

@@ -21,6 +21,7 @@ let kTheme = "theme"
 let kIsLoggedIn = "loggedIn"
 let kAddToCalendar = "addToCalendar"
 let kFrikort = "frikort"
+let kTrækprocent = "trækprocent"
 
 // Segues
 
@@ -386,6 +387,16 @@ extension Date {
         } else {
             return Double(components.month!)
         }
+    }
+    
+    func getYearAndMonthString() -> String {
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day], from: self)
+        
+        let monthString = Double(components.month!).getMonthAsString()
+        let yearString = String(components.year!)
+        
+        return monthString + ", " + yearString
     }
 }
 

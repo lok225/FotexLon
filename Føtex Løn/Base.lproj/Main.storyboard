@@ -216,11 +216,11 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="lblFøtexTillæg" destination="F0z-hJ-dcW" id="mgy-x8-e5r"/>
-                        <outlet property="lblFøtexTimer" destination="Lsy-ta-6Fc" id="KJg-sr-jR6"/>
-                        <outlet property="lblFøtexTotalLøn" destination="wJC-kE-qoR" id="ON5-Cw-BE7"/>
-                        <outlet property="lblFøtexVagter" destination="Zi8-Ac-BOO" id="gR2-gv-Pco"/>
                         <outlet property="lblThisMonth" destination="Fqo-Kc-enb" id="704-d8-sJ5"/>
+                        <outlet property="lblTimer" destination="Lsy-ta-6Fc" id="KJg-sr-jR6"/>
+                        <outlet property="lblTotalLøn" destination="wJC-kE-qoR" id="ON5-Cw-BE7"/>
+                        <outlet property="lblUdbetaling" destination="F0z-hJ-dcW" id="mgy-x8-e5r"/>
+                        <outlet property="lblVagter" destination="Zi8-Ac-BOO" id="gR2-gv-Pco"/>
                         <outlet property="vagtTableView" destination="T59-Wg-xYS" id="PXs-38-42e"/>
                     </connections>
                 </viewController>
@@ -1092,7 +1092,7 @@
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G2L-3Z-d7I">
                                 <subviews>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="olY-gf-iT8">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="xxxx-xxxx-xxxx" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="olY-gf-iT8">
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>

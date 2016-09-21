@@ -28,8 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         setGlobalColors()
         
-        
-        
         return true
     }
     
@@ -96,8 +94,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                            kIsLoggedIn: false,
                            kAddToCalendar: false,
                            kFrikort: 0,
-                           kTheme: Shop.ingen.rawValue,
-                           kNotifications: [0],
+                           kTrækprocent: 0,
+                           kTheme: Shop.teal.rawValue,
+                           kNotifications: [0, 5],
                            kStandardHverdage: NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()),
                            kStandardLørdag: NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()),
                            kStandardSøndag: NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()),

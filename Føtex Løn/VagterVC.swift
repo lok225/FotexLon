@@ -169,8 +169,10 @@ class VagterVC: UITableViewController {
     */
     
     func goToCurrentMonth() {
-        let indexPath = IndexPath(row: 0, section: currentMonthIndex)
-        tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        if tableView.visibleCells.count != 0 {
+            let indexPath = IndexPath(row: 0, section: currentMonthIndex)
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        }
     }
     
     func configure(cell: UITableViewCell, atIndexPath indexPath: IndexPath) {

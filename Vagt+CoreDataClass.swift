@@ -109,25 +109,28 @@ public class Vagt: NSManagedObject {
     // MARK: - Calendar Functions
     
     func createCalendarEvent() {
-        let eventStore = EKEventStore()
         
-        eventStore.requestAccess(to: .event) { (granted, error) in
-            if granted && error == nil {
-                let event = EKEvent(eventStore: eventStore)
-                event.title = getLocationString() + " - Vagt"
-                event.startDate = self.startTime
-                event.endDate = self.endTime
-                event.location = getLocationString()
-                event.notes = self.note
-                event.calendar = eventStore.defaultCalendarForNewEvents
-                
-                do {
-                    try eventStore.save(event, span: .thisEvent, commit: true)
-                } catch {
-                    print(error)
+        if EKEventStore.authorizationStatus(for: .event) == .authorized {
+            let eventStore = EKEventStore()
+            
+            eventStore.requestAccess(to: .event) { (granted, error) in
+                if granted && error == nil {
+                    let event = EKEvent(eventStore: eventStore)
+                    event.title = "Arbejde" + " - Vagt"
+                    event.startDate = self.startTime
+                    event.endDate = self.endTime
+                    event.location = getLocationString()
+                    event.notes = self.note
+                    event.calendar = eventStore.defaultCalendarForNewEvents
+                    
+                    do {
+                        try eventStore.save(event, span: .thisEvent, commit: true)
+                    } catch {
+                        print(error)
+                    }
+                    
+                    self.eventID = event.eventIdentifier
                 }
-                
-                self.eventID = event.eventIdentifier
             }
         }
     }

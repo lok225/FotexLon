@@ -128,6 +128,7 @@ class SettingsVC: UITableViewController {
         }
         
         lblFrikort.text = getFormatted(number: defaults.integer(forKey: kFrikort))
+        lblTrækprocent.text = String(defaults.integer(forKey: kTrækprocent)) + "%"
     }
     
     func setNotificationsView() {
@@ -223,6 +224,7 @@ class SettingsVC: UITableViewController {
         let lordagsSats = Double(lblLordagssats.text!.replacingOccurrences(of: ",-", with: ""))
         let sondagsSats = Double(lblSondagssats.text!.replacingOccurrences(of: ",-", with: ""))
         let frikort = Int(lblFrikort.text!.replacingOccurrences(of: ",-", with: ""))
+        let trækprocent = Int(lblTrækprocent.text!.replacingOccurrences(of: "%", with: ""))
         
         if ageSegControl.selectedSegmentIndex == 0 {
             youngWorker = true
@@ -241,6 +243,7 @@ class SettingsVC: UITableViewController {
         defaults.set(youngWorker, forKey: kYoungWorker)
         defaults.set(calendarSwitch.isOn, forKey: kAddToCalendar)
         defaults.set(frikort, forKey: kFrikort)
+        defaults.set(trækprocent, forKey: kTrækprocent)
         
         defaults.synchronize()
         

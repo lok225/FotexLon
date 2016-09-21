@@ -15,10 +15,10 @@ class MainVC: UIViewController {
     // MARK: IBOutlets
     
     @IBOutlet weak var lblThisMonth: UILabel!
-    @IBOutlet weak var lblFøtexTotalLøn: UILabel!
-    @IBOutlet weak var lblFøtexTillæg: UILabel!
-    @IBOutlet weak var lblFøtexTimer: UILabel!
-    @IBOutlet weak var lblFøtexVagter: UILabel!
+    @IBOutlet weak var lblTotalLøn: UILabel!
+    @IBOutlet weak var lblUdbetaling: UILabel!
+    @IBOutlet weak var lblTimer: UILabel!
+    @IBOutlet weak var lblVagter: UILabel!
     
     @IBOutlet weak var vagtTableView: UITableView!
     
@@ -110,16 +110,16 @@ class MainVC: UIViewController {
         
         if shop == .ingen {
             lblThisMonth.textColor = UIColor.black
-            lblFøtexTotalLøn.textColor = UIColor.black
-            lblFøtexTillæg.textColor = UIColor.black
-            lblFøtexTimer.textColor = UIColor.black
-            lblFøtexVagter.textColor = UIColor.black
+            lblTotalLøn.textColor = UIColor.black
+            lblUdbetaling.textColor = UIColor.black
+            lblTimer.textColor = UIColor.black
+            lblVagter.textColor = UIColor.black
         } else {
             lblThisMonth.textColor = UIColor.white
-            lblFøtexTotalLøn.textColor = UIColor.white
-            lblFøtexTillæg.textColor = UIColor.white
-            lblFøtexTimer.textColor = UIColor.white
-            lblFøtexVagter.textColor = UIColor.white
+            lblTotalLøn.textColor = UIColor.white
+            lblUdbetaling.textColor = UIColor.white
+            lblTimer.textColor = UIColor.white
+            lblVagter.textColor = UIColor.white
         }
     }
     
@@ -168,44 +168,44 @@ class MainVC: UIViewController {
     }
     
     private func initialAnimations() {
-        self.lblFøtexTotalLøn.isHidden = true
-        self.lblFøtexTotalLøn.alpha = 0.0
+        self.lblTotalLøn.isHidden = true
+        self.lblTotalLøn.alpha = 0.0
         
-        self.lblFøtexTillæg.isHidden = true
-        self.lblFøtexTillæg.alpha = 0.0
+        self.lblUdbetaling.isHidden = true
+        self.lblUdbetaling.alpha = 0.0
         
-        self.lblFøtexTimer.isHidden = true
-        self.lblFøtexTimer.alpha = 0.0
+        self.lblTimer.isHidden = true
+        self.lblTimer.alpha = 0.0
         
-        self.lblFøtexVagter.isHidden = true
-        self.lblFøtexVagter.alpha = 0.0
+        self.lblVagter.isHidden = true
+        self.lblVagter.alpha = 0.0
         
         self.vagtTableView.alpha = 0.0
         
         
         UIView.animate(withDuration: 0.3, delay: 0.2, options: .curveLinear, animations: {
-            self.lblFøtexTotalLøn.isHidden = false
-            self.lblFøtexTotalLøn.alpha = 1.0
+            self.lblTotalLøn.isHidden = false
+            self.lblTotalLøn.alpha = 1.0
             }, completion: nil)
         
         UIView.animate(withDuration: 0.3, delay: 0.3, options: .curveLinear, animations: {
-            self.lblFøtexTillæg.isHidden = false
-            self.lblFøtexTillæg.alpha = 1.0
+            self.lblUdbetaling.isHidden = false
+            self.lblUdbetaling.alpha = 1.0
             }, completion: nil)
         
         UIView.animate(withDuration: 0.3, delay: 0.4, options: .curveLinear, animations: {
-            self.lblFøtexTimer.isHidden = false
-            self.lblFøtexTimer.alpha = 1.0
+            self.lblTimer.isHidden = false
+            self.lblTimer.alpha = 1.0
             }, completion: nil)
         
         UIView.animate(withDuration: 0.3, delay: 0.5, options: .curveLinear, animations: {
-            self.lblFøtexVagter.isHidden = false
-            self.lblFøtexVagter.alpha = 1.0
+            self.lblVagter.isHidden = false
+            self.lblVagter.alpha = 1.0
             }, completion: nil)
         
         UIView.animate(withDuration: 0.3, delay: 0.6, options: .curveLinear, animations: {
-            self.lblFøtexVagter.isHidden = false
-            self.lblFøtexVagter.alpha = 1.0
+            self.lblVagter.isHidden = false
+            self.lblVagter.alpha = 1.0
             }, completion: nil)
         
         UIView.animate(withDuration: 0.4, delay: 0.8, options: .layoutSubviews, animations: {
@@ -321,17 +321,24 @@ class MainVC: UIViewController {
         
         if let month = currentMonth {
             lblThisMonth.text = "Anslået løn i \(month.getMonthString().lowercased())"
-            lblFøtexTotalLøn.text = getFormatted(number: month.calculateTotalLøn())
-            // lblFøtexTillæg.text = "Deraf tillæg: \(month.calculateSatser()),-"
-            lblFøtexTillæg.text = "Til udbetaling: \(getFormatted(number:Int(Double(month.calculateTotalLøn()) * 0.92)))"
-            lblFøtexTimer.text = "Antal timer: \(getFormatted(time: month.calculateAntalMin()))"
-            lblFøtexVagter.text = "Antal vagter: \(month.calculateAntalVagter())"
+            lblTotalLøn.text = getFormatted(number: month.calculateTotalLøn())
+            
+            let trækprocent = Double(UserDefaults.standard.integer(forKey: kTrækprocent))
+            var udbetaling: String!
+            if trækprocent != 0 {
+                udbetaling = getFormatted(number:Int(Double(month.calculateTotalLøn()) * ((100 - trækprocent) / 100)))
+            } else {
+                udbetaling = getFormatted(number:Int(Double(month.calculateTotalLøn()) * 0.92))
+            }
+            lblUdbetaling.text = "Til udbetaling: " + udbetaling
+            lblTimer.text = "Antal timer: \(getFormatted(time: month.calculateAntalMin()))"
+            lblVagter.text = "Antal vagter: \(month.calculateAntalVagter())"
         } else {
             lblThisMonth.text = "Løn i denne måned"
-            lblFøtexTotalLøn.text = "0,-"
-            lblFøtexTillæg.text = "Deraf tillæg: 0,-"
-            lblFøtexTimer.text = "Antal timer: \(getFormatted(time: 0))"
-            lblFøtexVagter.text = "Antal vagter: 0"
+            lblTotalLøn.text = "0,-"
+            lblUdbetaling.text = "Deraf tillæg: 0,-"
+            lblTimer.text = "Antal timer: \(getFormatted(time: 0))"
+            lblVagter.text = "Antal vagter: 0"
         }
         
     }
@@ -381,42 +388,82 @@ class MainVC: UIViewController {
 extension MainVC: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return years.count
+        
+        if years.count == 0 {
+            return 1
+        } else {
+            return years.count
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return years[section].months.count
+        
+        if years.count == 0 {
+            return 1
+        } else {
+            return years[section].months.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var cell: UITableViewCell!
-        
-        let month = years[indexPath.section].months[indexPath.row]
-        
         cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
-        cell.textLabel?.text = month.getMonthString() + ", " + month.getYearString()
-        cell.detailTextLabel?.text = getFormatted(number: month.calculateTotalLøn()) + " / " + getFormatted(number: Int(Double(month.calculateTotalLøn()) * 0.92))
-        
         cell.selectionStyle = .none
         
         setColors(forCell: cell)
+        
+        if years.count == 0 {
+            let date = Date()
+            cell.textLabel?.text = date.getYearAndMonthString()
+            cell.detailTextLabel?.text = "0,- / 0,-"
+            
+            return cell
+        }
+        
+        let month = years[indexPath.section].months[indexPath.row]
+        
+        cell.textLabel?.text = month.getMonthString() + ", " + month.getYearString()
+        
+        let trækprocent = Double(UserDefaults.standard.integer(forKey: kTrækprocent))
+        var udbetaling: String!
+        if trækprocent != 0 {
+            udbetaling = getFormatted(number:Int(Double(month.calculateTotalLøn()) * ((100 - trækprocent) / 100)))
+        } else {
+            udbetaling = getFormatted(number:Int(Double(month.calculateTotalLøn()) * 0.92))
+        }
+        
+        cell.detailTextLabel?.text = getFormatted(number: month.calculateTotalLøn()) + " / " + udbetaling
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
-        let year = years[section]
-        let lønString = "\nLøn: ".lowercased() + getFormatted(number: year.calculateTotalLøn())
-        let feriePenge = "\nFeriepenge: " + getFormatted(number: Int(Double(year.calculateTotalLøn()) * 0.12))
-        
         let frikortInt = UserDefaults.standard.integer(forKey: kFrikort)
-        if frikortInt != 0 {
-            let frikort = "\nResterende frikort: " + getFormatted(number: frikortInt - year.calculateTotalLøn())
-            return year.getYearString() + lønString + frikort + feriePenge
+        
+        if years.count == 0 {
+            let yearString = String(Calendar.current.component(.year, from: Date()))
+            let lønString = "\nLøn: 0,-"
+            let feriePenge = "\nFeriepenge: 0,-"
+            
+            if frikortInt != 0 {
+                let frikortString = "\nResterende frikort: " + getFormatted(number: frikortInt)
+                return yearString + lønString + frikortString + feriePenge
+            } else {
+                return yearString + lønString + feriePenge
+            }
         } else {
-            return year.getYearString() + lønString + feriePenge
+            let year = years[section]
+            let lønString = "\nLøn: " + getFormatted(number: year.calculateTotalLøn())
+            let feriePenge = "\nFeriepenge: " + getFormatted(number: Int(Double(year.calculateTotalLøn()) * 0.12))
+            
+            if frikortInt != 0 {
+                let frikort = "\nResterende frikort: " + getFormatted(number: frikortInt - year.calculateTotalLøn())
+                return year.getYearString() + lønString + frikort + feriePenge
+            } else {
+                return year.getYearString() + lønString + feriePenge
+            }
         }
     }
 }

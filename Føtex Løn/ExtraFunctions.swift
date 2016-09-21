@@ -18,10 +18,14 @@ let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
 let kNotifications = "notifications"
 let kTheme = "theme"
+let kIsLoggedIn = "loggedIn"
+let kAddToCalendar = "addToCalendar"
+let kFrikort = "frikort"
 
 // Segues
 
 let kStandardVagtSegue = "standardVCSegue"
+let kNotificationsSegue = "notificationsSegue"
 
 // Cells
 
@@ -56,11 +60,11 @@ let oldSondagsSats: Double = 50.6
 // Enum
 
 enum Shop: Int {
-    case ingen = 0
+    case teal = 0
     case føtex = 1
     case fakta = 2
     case bio = 3
-    case dagli = 4
+    case ingen = 4
 }
 
 // MARK: Farver
@@ -79,6 +83,147 @@ let faktaRed = UIColor(red: 0.71, green: 0.09, blue: 0.16, alpha: 1.0)
 // Bio
 let bioDark = UIColor.black
 let bioLighter = UIColor.darkGray
+
+// teal
+let darkteal = UIColor(hue: 172/360, saturation: 0.68, brightness: 0.43, alpha: 1.0)
+let teal = UIColor(red: 0.06, green: 0.47, blue: 0.42, alpha: 1.0)
+let lightTeal = UIColor(red: 0.08, green: 0.58, blue: 0.53, alpha: 1.0)
+
+var mainColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return UIColor.white
+    case .føtex:
+        return fotexBlue
+    case .fakta:
+        return faktaRed
+    case .bio:
+        return bioLighter
+    case .teal:
+        return teal
+    }
+}
+
+var secondaryColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return UIColor.white
+    case .føtex:
+        return fotexCellBlue
+    case .fakta:
+        return faktaDardRed
+    case .bio:
+        return bioDark
+    case .teal:
+        return darkteal
+    }
+}
+
+var customTintColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return defaultTint
+    case .føtex:
+        return fotexBlue
+    case .fakta:
+        return faktaRed
+    case .bio:
+        return bioLighter
+    case .teal:
+        return darkteal
+    }
+}
+
+var customBarTintColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return UIColor.gray
+    case .føtex:
+        return fotexCellBlue
+    case .fakta:
+        return faktaDardRed
+    case .bio:
+        return bioDark
+    case .teal:
+        return darkteal
+    }
+}
+
+var customTabBarTintColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return UIColor.black
+    case .føtex:
+        return fotexBlue
+    case .fakta:
+        return faktaRed
+    case .bio:
+        return bioDark
+    case .teal:
+        return teal
+    }
+}
+
+var textColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return UIColor.black
+    case .føtex:
+        return UIColor.white
+    case .fakta:
+        return UIColor.white
+    case .bio:
+        return UIColor.white
+    case .teal:
+        return UIColor.white
+    }
+}
+
+var detailTextColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return UIColor.lightGray
+    case .føtex:
+        return UIColor.lightText
+    case .fakta:
+        return UIColor.lightText
+    case .bio:
+        return UIColor.lightText
+    case .teal:
+        return UIColor.lightText
+    }
+}
+
+var highlightedCellColor: UIColor {
+    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    
+    switch shop {
+    case .ingen:
+        return UIColor.lightGray
+    case .føtex:
+        return highlightedCellBlue2
+    case .fakta:
+        return UIColor.lightText
+    case .bio:
+        return UIColor.lightText
+    case .teal:
+        return UIColor.lightText
+    }
+}
 
 // Data Model
 
@@ -122,143 +267,46 @@ func presentAndGetYoungWorkerSetting(in vc: UIViewController) {
 
 func setAttributes(for navBar: UINavigationBar) {
     
-    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
-    
-    switch shop {
-    case .ingen:
-        navBar.barTintColor = UIColor.gray
-    case .føtex:
-        navBar.barTintColor = fotexCellBlue
-    case .fakta:
-        navBar.barTintColor = faktaDardRed
-    case .bio:
-        navBar.barTintColor = bioDark
-    default:
-        break
-    }
-
+    navBar.barTintColor = customBarTintColor
     navBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
 }
 
 func setColors(forVagtDetailVC vc: VagtDetailVC) {
     
-    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
-    
-    switch shop {
-    case .ingen:
-        vc.view.tintColor = defaultTint
-    case .føtex:
-        vc.view.tintColor = fotexBlue
-    case .fakta:
-        vc.view.tintColor = faktaRed
-    case .bio:
-        vc.view.tintColor = bioLighter
-    case .dagli:
-        break
-    }
-    
-    
+    vc.view.tintColor = customTintColor
 }
 
 func setColors(forVC vc: UIViewController) {
     
-    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
-    
-    switch shop {
-    case .ingen:
-        vc.view.backgroundColor = UIColor.white
-        vc.view.tintColor = defaultTint
-    case .føtex:
-        vc.view.backgroundColor = fotexBlue
-        vc.view.tintColor = fotexBlue
-    case .fakta:
-        vc.view.backgroundColor = faktaRed
-        vc.view.tintColor = faktaRed
-    case .bio:
-        vc.view.backgroundColor = bioLighter
-        vc.view.tintColor = bioLighter
-    case .dagli:
-        break
-    }
+    vc.view.backgroundColor = mainColor
+    vc.view.tintColor = customTintColor
 }
 
 func setColors(forTableView tableView: UITableView) {
     
-    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
-    
-    switch shop {
-    case .ingen:
-        tableView.backgroundColor = UIColor.white
-    case .føtex:
-        tableView.backgroundColor = fotexBlue
-    case .fakta:
-        tableView.backgroundColor = faktaRed
-    case .bio:
-        tableView.backgroundColor = bioLighter
-    case .dagli:
-        break
-    }
+    tableView.backgroundColor = mainColor
 }
 
 func setColors(forCell cell: UITableViewCell) {
     
-    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+    cell.backgroundColor = mainColor
+    cell.textLabel?.textColor = textColor
+    cell.detailTextLabel?.textColor = detailTextColor
     
-    switch shop {
-    case .ingen:
-        cell.backgroundColor = UIColor.white
-        cell.textLabel?.textColor = UIColor.black
-        cell.detailTextLabel?.textColor = UIColor.lightText
-    case .føtex:
-        cell.backgroundColor = fotexBlue
-        cell.textLabel?.textColor = UIColor.white
-        cell.detailTextLabel?.textColor = UIColor.lightText
-        
-        let cellView = UIView()
-        cellView.backgroundColor = highlightedCellBlue2
-        cell.selectedBackgroundView = cellView
-    case .fakta:
-        cell.backgroundColor = faktaRed
-        cell.textLabel?.textColor = UIColor.white
-        cell.detailTextLabel?.textColor = UIColor.lightText
-    case .bio:
-        cell.backgroundColor = bioLighter
-        cell.textLabel?.textColor = UIColor.white
-        cell.detailTextLabel?.textColor = UIColor.lightText
-    default:
-        break
-    }
+    let cellView = UIView()
+    cellView.backgroundColor = highlightedCellColor
+    cell.selectedBackgroundView = cellView
 }
 
 func setColors(forTableViewHeader header: UITableViewHeaderFooterView) {
-    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
-    
-    switch shop {
-    case .ingen:
-        header.textLabel?.textColor = UIColor.black
-    default:
-        header.textLabel?.textColor = UIColor.white
-    }
-    
+
+    header.textLabel?.textColor = textColor
     header.alpha = 0.85
 }
 
 func setColors(forTabBar tabBar: UITabBar) {
     
-    let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
-    
-    switch shop {
-    case .ingen:
-        tabBar.tintColor = UIColor.black
-    case .føtex:
-        tabBar.tintColor = fotexBlue
-    case .fakta:
-        tabBar.tintColor = faktaRed
-    case .bio:
-        tabBar.tintColor = bioDark
-    default:
-        break
-    }
+    tabBar.tintColor = customTabBarTintColor
 }
 
 func getLocationString() -> String {
@@ -297,7 +345,6 @@ func getFormatted(number: Int) -> String {
     formatter.maximumFractionDigits = 0
     
     return formatter.string(from: NSNumber(value: number))! + ",-"
-    
 }
 
 // MARK: Extensions
@@ -407,7 +454,6 @@ extension Int {
     }
     
 }
-
 
 
 

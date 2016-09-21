@@ -78,6 +78,8 @@ class VagtDetailVC: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
+        setupSegControl()
+        
         if let vagt = vagtToEdit {
             startTimePicker.date = vagt.startTime
             endTimePicker.date = vagt.endTime
@@ -91,8 +93,6 @@ class VagtDetailVC: UITableViewController {
             txtPause.text = "30 min"
             noteTextField.text = nil
         }
-        
-        setupSegControl()
         
         lblStartDate.text = formatDate(date: startTimePicker.date)
         lblEndDate.text = formatDate(date: endTimePicker.date)
@@ -145,9 +145,9 @@ class VagtDetailVC: UITableViewController {
             vagt.endTime = endTimePicker.date
             vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+            vagt.createID()
             vagt.createNotifications()
             vagt.createCalendarEvent()
-            vagt.createID()
             
             if let text = noteTextField.text {
                 vagt.note = text
@@ -192,13 +192,8 @@ class VagtDetailVC: UITableViewController {
     }
     
     @IBAction func timeSegControlChanged(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 4 {
-            hideStartPicker(false)
-            hideEndPicker(false)
-        } else {
-            hideStartPicker(false)
-            hideEndPicker(true)
-        }
+
+        updateDatePickers(from: sender, weekDay: calendar.component(.weekday, from: startTimePicker.date))
     }
     
     // MARK: - Helper Functions
@@ -339,8 +334,8 @@ extension VagtDetailVC {
                 i += 1
             }
             
-            timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
-            timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+            //timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
+            //timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
         case 2...6:
             var i = 0
             
@@ -349,8 +344,8 @@ extension VagtDetailVC {
                 i += 1
             }
             
-            timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
-            timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+            //timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
+            //timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
         case 7:
             var i = 0
         
@@ -359,29 +354,54 @@ extension VagtDetailVC {
                 i += 1
             }
             
-            timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
-            timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+            //timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
+            //timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
             
         default:
             break
         }
     }
 
-    func updateDatePicker(from segControl: UISegmentedControl, weekDay: Int) {
+    func updateDatePickers(from segControl: UISegmentedControl, weekDay: Int) {
         
+        var standardVagt: StandardVagt!
+        
+        let index = segControl.selectedSegmentIndex
+        
+        switch weekDay {
+        case 1:
+            standardVagt = standardSøndag[index]
+        case 2...6:
+            standardVagt = standardHverdag[index]
+        case 7:
+            standardVagt = standardLørdag[index]
+        default:
+            break
+        }
+        
+        var startComps = calendar.dateComponents(in: .current, from: startTimePicker.date)
+        let standardStartComps = calendar.dateComponents(in: .current, from: standardVagt.startTime)
+        
+        startComps.hour = standardStartComps.hour
+        startComps.minute = standardStartComps.minute
+        
+        var endComps = calendar.dateComponents(in: .current, from: endTimePicker.date)
+        let standardEndComps = calendar.dateComponents(in: .current, from: standardVagt.endTime)
+        
+        endComps.hour = standardEndComps.hour
+        endComps.minute = standardEndComps.minute
+        
+        startTimePicker.date = calendar.date(from: startComps)!
+        endTimePicker.date = calendar.date(from: endComps)!
+        txtPause.text = String(standardVagt.pause) + " min"
+        
+        updateDateLabels()
     }
-    
-//    func updateDatePickerFromSegmentControl(startTimes: [Int], endTimes: [Int], atIndex index: Int) {
-//        let startTime = startTimePicker.date
-//        
-//        let newStartTimeComps = calendar.dateComponents([.year, .month, .day], from: startTime)
-//        let newEndTimeComps = calendar.dateComponents([.year, .month, .day], from: startTime)
-//    }
 }
 
 // MARK: - UITextFieldDelegate
 
-extension VagtDetailVC: UITextFieldDelegate {
+extension StandardVagtDetailVC: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField.tag == 2 {

@@ -49,6 +49,20 @@ class NotificationsVC: UITableViewController {
         for vagt in objects {
             vagt.createNotifications()
         }
+        
+        UNUserNotificationCenter.current().getPendingNotificationRequests { (requests) in
+            print(requests.count)
+            for request in requests {
+                print(request)
+            }
+        }
+        
+        UNUserNotificationCenter.current().getDeliveredNotifications { (requests) in
+            print(requests.count)
+            for request in requests {
+                print(request.date)
+            }
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

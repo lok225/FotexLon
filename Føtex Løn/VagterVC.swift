@@ -19,6 +19,8 @@ class VagterVC: UITableViewController {
     
     var dateAlert: UIAlertController?
     
+    var næsteVagt: Vagt?
+    
     var currentMonthIndex: Int {
         
         var tempIndex = 0
@@ -52,8 +54,6 @@ class VagterVC: UITableViewController {
         super.viewDidLoad()
 
         setupFetchedResultsController()
-        
-        goToCurrentMonth()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,8 +78,6 @@ class VagterVC: UITableViewController {
         destinationVC.dataController = self.dataController
         destinationVC.managedObjectContext = self.managedObjectContext
     }
-    
-    // MARK: - Colors
     
     // MARK: - @IBActions
     
@@ -108,6 +106,7 @@ class VagterVC: UITableViewController {
                 
                 // Vagt eksisterer endnu ikke
                 
+                /*
                 let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
                 vagt.startTime = Date()
                 vagt.endTime = Date(timeInterval: 60, since: vagt.startTime)
@@ -115,6 +114,7 @@ class VagterVC: UITableViewController {
                 vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
                 
                 dataController.save()
+ */
             }
         } catch {
             fatalError(String(describing: error))
@@ -143,6 +143,30 @@ class VagterVC: UITableViewController {
     }
     
     // MARK: - Helper Functions
+    
+    /*
+    func setNæsteVagt() {
+        
+        var vagter = vagterFRC.fetchedObjects as! [Vagt]
+        vagter = vagter.sorted(by: { $0.startTime.compare($1.startTime) == .orderedAscending })
+        
+        var filteredVagter = [Vagt]()
+        
+        for vagt in vagter {
+            let date = Date()
+            let order = date.compare(vagt.startTime)
+            
+            if order == .orderedAscending {
+                filteredVagter.append(vagt)
+            }
+        }
+        
+        næsteVagt = filteredVagter.first
+        
+        let cell = tableView.cellForRow(at: vagterFRC.indexPath(forObject: næsteVagt!)!)!
+        cell.backgroundColor = UIColor.lightGray
+    }
+    */
     
     func goToCurrentMonth() {
         let indexPath = IndexPath(row: 0, section: currentMonthIndex)
@@ -174,7 +198,6 @@ class VagterVC: UITableViewController {
         }
         
         let longPressGR = UILongPressGestureRecognizer(target: self, action: #selector(cellLongPressed))
-        longPressGR.minimumPressDuration = 0.6
         cell.addGestureRecognizer(longPressGR)
         
     }
@@ -192,7 +215,7 @@ extension VagterVC {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let section = vagterFRC.sections![section]
         
-        return section.objects!.count
+        return section.numberOfObjects
     }
     
     
@@ -305,7 +328,7 @@ extension VagterVC {
         
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let cancelAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
         let deleteAction = UIAlertAction(title: "Slet", style: .destructive) { (_) in
             
             self.dataController.delete(vagt: vagt)

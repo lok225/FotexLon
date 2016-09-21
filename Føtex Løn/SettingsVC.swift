@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreData
+import EventKit
+import UserNotifications
 
 protocol SettingsVCDelegate: class {
     func settingsVCDidCancel(controller: VagtDetailVC)
@@ -22,10 +24,18 @@ class SettingsVC: UITableViewController {
     @IBOutlet weak var lblAftensats: UITextField!
     @IBOutlet weak var lblLordagssats: UITextField!
     @IBOutlet weak var lblSondagssats: UITextField!
+    @IBOutlet weak var lblFrikort: UITextField!
+    @IBOutlet weak var lblTrækprocent: UITextField!
     
     @IBOutlet weak var lblNotifications: UILabel!
     
+    @IBOutlet weak var lblTema: UILabel!
+    
+    @IBOutlet weak var calendarSwitch: UISwitch!
+    
     let defaults = UserDefaults.standard
+    
+    var appDel: AppDelegate!
 
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
@@ -34,6 +44,8 @@ class SettingsVC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        appDel = UIApplication.shared.delegate! as! AppDelegate
         
         youngWorker = defaults.bool(forKey: kYoungWorker)
         
@@ -44,7 +56,6 @@ class SettingsVC: UITableViewController {
         }
         
         setLonViews()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -53,7 +64,21 @@ class SettingsVC: UITableViewController {
         setAttributes(for: navigationController!.navigationBar)
         notifications = defaults.object(forKey: kNotifications) as! [Int]
         setNotificationsView()
-        themeSegControl.selectedSegmentIndex = defaults.integer(forKey: kTheme)
+        setTemaView()
+        calendarSwitch.isOn = defaults.bool(forKey: kAddToCalendar)
+        
+        switch EKEventStore.authorizationStatus(for: .event) {
+        case .authorized:
+            calendarSwitch.isEnabled = true
+        case .denied:
+            calendarSwitch.isOn = false
+        case .notDetermined:
+            break
+        case .restricted:
+            calendarSwitch.isOn = false
+            calendarSwitch.isEnabled = false
+        }
+        
     }
     
     // MARK: - Segue
@@ -101,35 +126,95 @@ class SettingsVC: UITableViewController {
             lblLordagssats.text = String(defaults.double(forKey: kOldLordagsSats)).replacingOccurrences(of: ".", with: ",") + ",-"
             lblSondagssats.text = String(defaults.double(forKey: kOldSondagsSats)).replacingOccurrences(of: ".", with: ",") + ",-"
         }
+        
+        lblFrikort.text = getFormatted(number: defaults.integer(forKey: kFrikort))
     }
     
     func setNotificationsView() {
         
-        var string = ""
+        var thisString = ""
         
-        for not in notifications {
-            
-            if string.isEmpty {
-                string.append(not.getNotificationsDetailString())
-            } else {
-                string += ", \(not.getNotificationsDetailString().lowercased())"
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            switch settings.authorizationStatus {
+            case .authorized:
+                print("authed")
+                for not in self.notifications {
+                    if thisString.isEmpty {
+                        thisString.append(not.getNotificationsDetailString())
+                        print("Nu")
+                        print(not.getNotificationsDetailString())
+                    } else {
+                        thisString += ", \(not.getNotificationsDetailString().lowercased())"
+                    }
+                }
+            case .denied:
+                thisString = "Ingen"
+            case .notDetermined:
+                thisString = "Ingen"
             }
+            
+            self.lblNotifications.text = thisString
+            self.lblNotifications.textColor = UIColor.darkGray
+        }
+    }
+    
+    func setTemaView() {
+        let shop = Shop(rawValue: UserDefaults.standard.integer(forKey: kTheme))!
+        
+        var temaString: String!
+        
+        switch shop {
+        case .ingen:
+            temaString = "Intet"
+        case .føtex:
+            temaString = "Blå"
+        case .fakta:
+            temaString = "Rød"
+        case .bio:
+            temaString = "Sort & Grå"
+        case .teal:
+            temaString = "Teal"
         }
         
-        lblNotifications.text = string
-        lblNotifications.textColor = UIColor.darkGray
+        lblTema.text = temaString
     }
     
     // MARK: - @IBActions
     
-    @IBAction func cancel(_ sender: UIBarButtonItem) {
-        self.dismissKeyboard()
-        dismiss(animated: true, completion: nil)
+    @IBAction func reset(_ sender: UIBarButtonItem) {
+        
+        let alert = UIAlertController(title: "Advarsel", message: "Er du sikker på du vil slette alle brugerdefinerede indstillinger", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
+        let resetAction = UIAlertAction(title: "Reset", style: .destructive) { (action) in
+            self.defaults.set([0], forKey: kNotifications)
+            
+            self.defaults.set(63.86, forKey: kYoungBasisLon)
+            self.defaults.set(12.6, forKey: kYoungAftensSats)
+            self.defaults.set(22.38, forKey: kYoungLordagsSats)
+            self.defaults.set(25.3, forKey: kYoungSondagsSats)
+            self.defaults.set(112.42, forKey: kOldBasisLon)
+            self.defaults.set(25.2, forKey: kOldAftensSats)
+            self.defaults.set(44.75, forKey: kOldLordagsSats)
+            self.defaults.set(50.6, forKey: kOldSondagsSats)
+            
+            self.defaults.set(NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()), forKey: kStandardHverdage)
+            self.defaults.set(NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()), forKey: kStandardLørdag)
+            self.defaults.set(NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()), forKey: kStandardSøndag)
+            
+            self.defaults.synchronize()
+            
+            self.dismissKeyboard()
+            self.dismiss(animated: true, completion: nil)
+        }
+        
+        alert.addAction(okAction)
+        alert.addAction(resetAction)
+        
+        present(alert, animated: true, completion: nil)
     }
 
     @IBAction func save(_ sender: UIBarButtonItem) {
-        
-        // TODO: - Slet notifikationer først, og derefter gem + tilføj nye notifikationer
         
         self.dismissKeyboard()
         
@@ -137,6 +222,7 @@ class SettingsVC: UITableViewController {
         let aftensSats = Double(lblAftensats.text!.replacingOccurrences(of: ",-", with: ""))
         let lordagsSats = Double(lblLordagssats.text!.replacingOccurrences(of: ",-", with: ""))
         let sondagsSats = Double(lblSondagssats.text!.replacingOccurrences(of: ",-", with: ""))
+        let frikort = Int(lblFrikort.text!.replacingOccurrences(of: ",-", with: ""))
         
         if ageSegControl.selectedSegmentIndex == 0 {
             youngWorker = true
@@ -153,23 +239,12 @@ class SettingsVC: UITableViewController {
         }
         
         defaults.set(youngWorker, forKey: kYoungWorker)
+        defaults.set(calendarSwitch.isOn, forKey: kAddToCalendar)
+        defaults.set(frikort, forKey: kFrikort)
         
-        var shop: Shop!
+        defaults.synchronize()
         
-        switch themeSegControl.selectedSegmentIndex {
-        case 0:
-            shop = .ingen
-        case 1:
-            shop = .føtex
-        case 2:
-            shop = .fakta
-        case 3:
-            shop = .bio
-        default:
-            shop = .ingen
-        }
-        
-        defaults.set(shop.rawValue, forKey: kTheme)
+        appDel.setGlobalColors()
         
         dismiss(animated: true, completion: nil)
     }
@@ -186,23 +261,91 @@ class SettingsVC: UITableViewController {
         setLonViews()
     }
     
-    @IBAction func themeSegChanged(_ sender: UISegmentedControl) {
-        
+    @IBAction func calendarSwitchChanged(_ sender: UISwitch) {
+        switch EKEventStore.authorizationStatus(for: .event) {
+        case .authorized:
+            break
+        case .denied:
+            calendarSwitch.isOn = false
+            let alert = UIAlertController(title: "Mangler tilladelse", message: "Gå til indstillinger og giv appen tilladelse til at oprette kalender-events", preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
+            let settingsAction = UIAlertAction(title: "Gå til indstillinger", style: .default, handler: { (action) in
+                UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
+            })
+            alert.addAction(cancelAction)
+            alert.addAction(settingsAction)
+            self.present(alert, animated: true, completion: nil)
+        case .notDetermined:
+            break
+        case .restricted:
+            calendarSwitch.isOn = false
+            calendarSwitch.isEnabled = false
+        }
     }
-    
 }
 
 extension SettingsVC {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard indexPath.section == 2 else { return }
         
-        switch indexPath.row {
-        case 0:
-            performSegue(withIdentifier: kStandardVagtSegue, sender: 0)
+        tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
+        
+        switch indexPath.section {
         case 1:
-            performSegue(withIdentifier: kStandardVagtSegue, sender: 1)
+            if indexPath.row == 0 {
+                UNUserNotificationCenter.current().getNotificationSettings(completionHandler: { (settings) in
+                    switch settings.authorizationStatus {
+                    case .authorized:
+                        break
+                    case .denied:
+                        let alert = UIAlertController(title: "Mangler tilladelse", message: "Gå til indstillinger og giv appen tilladelse til at sende notifikationer", preferredStyle: .alert)
+                        let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
+                        let settingsAction = UIAlertAction(title: "Gå til indstillinger", style: .default, handler: { (action) in
+                            UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
+                        })
+                        alert.addAction(cancelAction)
+                        alert.addAction(settingsAction)
+                        self.present(alert, animated: true, completion: nil)
+                    case .notDetermined:
+                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound], completionHandler: { (granted, error) in
+                            if granted && error == nil {
+                                self.setNotificationsView()
+                            }
+                        })
+                    }
+                })
+            }
         case 2:
-            performSegue(withIdentifier: kStandardVagtSegue, sender: 2)
+            tableView.cellForRow(at: indexPath)!.setSelected(false, animated: true)
+            
+            switch indexPath.row {
+            case 0:
+                performSegue(withIdentifier: kStandardVagtSegue, sender: 0)
+            case 1:
+                performSegue(withIdentifier: kStandardVagtSegue, sender: 1)
+            case 2:
+                performSegue(withIdentifier: kStandardVagtSegue, sender: 2)
+            default:
+                break
+            }
+        case 3:
+            let alert = UIAlertController(title: nil, message: "Er du sikker på du vil logge af?", preferredStyle: .alert)
+            
+            let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
+            let logOffAction = UIAlertAction(title: "Log af", style: .destructive, handler: { (action) in
+                self.defaults.set(false, forKey: kIsLoggedIn)
+                self.defaults.synchronize()
+                
+                self.dismiss(animated: false) {
+                    self.appDel.showLoginScreen(animated: true)
+                }
+                
+                
+            })
+            alert.addAction(cancelAction)
+            alert.addAction(logOffAction)
+            
+            present(alert, animated: true, completion: nil)
+            
         default:
             break
         }
@@ -212,8 +355,22 @@ extension SettingsVC {
 extension SettingsVC: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        let position = textField.position(from: textField.beginningOfDocument, offset: textField.text!.characters.count - 2)!
-        textField.selectedTextRange = textField.textRange(from: position, to: position)
+        
+        if textField.tag == 40 {
+            let position = textField.position(from: textField.beginningOfDocument, offset: textField.text!.characters.count - 1)!
+            textField.selectedTextRange = textField.textRange(from: position, to: position)
+        } else {
+            let position = textField.position(from: textField.beginningOfDocument, offset: textField.text!.characters.count - 2)!
+            textField.selectedTextRange = textField.textRange(from: position, to: position)
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+        if textField.tag == 40 {
+            if Int(textField.text!.replacingOccurrences(of: "%", with: ""))! > 100 {
+                textField.text = String(100) + "%"
+            }
+        }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

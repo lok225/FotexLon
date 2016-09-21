@@ -161,13 +161,10 @@ public class Vagt: NSManagedObject {
                 return
             }
             
-            print(self.eventID!)
             let event = eventStore.event(withIdentifier: self.eventID!)!
-            print("Deleted")
             
             do {
                 try eventStore.remove(event, span: .thisEvent, commit: true)
-                print("Deleted")
             } catch {
                 print(error)
             }
@@ -177,6 +174,11 @@ public class Vagt: NSManagedObject {
     // MARK: - Notifications
     
     func createNotifications() {
+        
+        guard startTime.compare(Date()) == .orderedDescending else {
+            return
+        }
+        
         let center = UNUserNotificationCenter.current()
         
         center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
@@ -226,27 +228,35 @@ public class Vagt: NSManagedObject {
                 let formatter = DateFormatter()
                 formatter.dateStyle = .full
                 formatter.timeStyle = .medium
-                print(formatter.string(from: self.startTime))
-                print(formatter.string(from: date))
                 
                 var comps: DateComponents!
                 comps = Calendar.current.dateComponents(in: TimeZone.current, from: date)
+                let comps1 = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
                 if content.title == "Arbejde imorgen" {
                     comps.hour = 20
                     comps.minute = 0
                 }
-                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+                
+                let trigger = UNCalendarNotificationTrigger(dateMatching: comps1, repeats: false)
                 
                 let request = UNNotificationRequest(identifier: self.id + String(notificationInt), content: content, trigger: trigger)
-                print(request.identifier)
                 
-                center.add(request, withCompletionHandler: nil)
+                center.add(request, withCompletionHandler: { (error) in
+                    if let _ = error {
+                        print("Error: \(error!.localizedDescription)")
+                    }
+                })
             }
             
         }
     }
     
     func deleteNotifications() {
+        
+        guard startTime.compare(Date()) == .orderedDescending else {
+            return
+        }
+        
         let center = UNUserNotificationCenter.current()
         
         center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
@@ -263,6 +273,7 @@ public class Vagt: NSManagedObject {
             }
             center.removePendingNotificationRequests(withIdentifiers: IDs)
         }
+        
     }
     
     func updateNotifications() {

@@ -15,6 +15,8 @@ class StandardVagterVC: UITableViewController {
     var standardVagter: [StandardVagt]!
     var standardVagterInt: Int!
     
+    var selectedRow: Int = 0
+    
     var currentKey: String {
         switch standardVagterInt {
         case 0:
@@ -59,9 +61,19 @@ class StandardVagterVC: UITableViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        defaults.synchronize()
+    }
+    
+    // MARK: - Helper Functions
+    
+    func saveStandardVagter() {
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: standardVagter)
+        defaults.set(data, forKey: currentKey)
+        defaults.synchronize()
     }
 
     // MARK: - Table view data source
+    
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -102,6 +114,7 @@ class StandardVagterVC: UITableViewController {
         let cell = tableView.cellForRow(at: indexPath)!
         
         if cell.textLabel?.textColor != cell.textLabel?.tintColor {
+            selectedRow = indexPath.row
             performSegue(withIdentifier: "nyStandardVagtSegue", sender: standardVagter[indexPath.row])
         } else {
             performSegue(withIdentifier: "nyStandardVagtSegue", sender: nil)
@@ -112,6 +125,9 @@ class StandardVagterVC: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             standardVagter.remove(at: indexPath.row)
+            let data: Data = NSKeyedArchiver.archivedData(withRootObject: standardVagter)
+            defaults.set(data, forKey: currentKey)
+            defaults.synchronize()
             tableView.reloadData()
         }
     }
@@ -144,26 +160,23 @@ extension StandardVagterVC: StandardVagtDetailVCDelegate {
     
     func standardVagtDetailVCDidCancel(controller: StandardVagtDetailVC) {
         dismiss(animated: true, completion: nil)
-        print("Key: \(currentKey)")
     }
     
     func standardVagtDetailVC(controller: StandardVagtDetailVC, didFinishAddingVagt vagt: StandardVagt) {
-        
         dismiss(animated: true, completion: nil)
         
         standardVagter.append(vagt)
-        
-        let data: Data = NSKeyedArchiver.archivedData(withRootObject: standardVagter)
-        
-        defaults.set(data, forKey: currentKey)
-        print("Key: \(currentKey)")
-        defaults.synchronize()
-        
+        saveStandardVagter()
         tableView.reloadData()
     }
     
     func standardVagtDetailVC(controller: StandardVagtDetailVC, didFinishEditingVagt vagt: StandardVagt) {
+        dismiss(animated: true, completion: nil)
+        standardVagter.remove(at: selectedRow)
+        standardVagter.insert(vagt, at: selectedRow)
+        saveStandardVagter()
         
+        tableView.reloadData()
     }
 }
 

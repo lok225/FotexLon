@@ -19,7 +19,6 @@ class MainVC: UIViewController {
     @IBOutlet weak var lblFøtexTillæg: UILabel!
     @IBOutlet weak var lblFøtexTimer: UILabel!
     @IBOutlet weak var lblFøtexVagter: UILabel!
-    @IBOutlet weak var lblNæsteVagt: UILabel!
     
     @IBOutlet weak var vagtTableView: UITableView!
     
@@ -47,6 +46,10 @@ class MainVC: UIViewController {
         
         let thisMonthNumber = Date().getMonthNumber(withYear: true)
         
+        if sections.count == 1 {
+            return 0
+        }
+        
         for section in sections {
             let vagt = section.objects?[0] as! Vagt
             
@@ -73,6 +76,8 @@ class MainVC: UIViewController {
         setupFetchedResultsController()
         
         initialAnimations()
+        
+        createNotifications()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -85,7 +90,9 @@ class MainVC: UIViewController {
         
         fetchObjects()
         setupMonths()
-        currentMonth = months[currentMonthIndex]
+        if months.count > 0 {
+            currentMonth = months[currentMonthIndex]
+        }
         setupYears()
         vagtTableView.reloadData()
         setViews()
@@ -107,14 +114,12 @@ class MainVC: UIViewController {
             lblFøtexTillæg.textColor = UIColor.black
             lblFøtexTimer.textColor = UIColor.black
             lblFøtexVagter.textColor = UIColor.black
-            lblNæsteVagt.textColor = UIColor.black
         } else {
             lblThisMonth.textColor = UIColor.white
             lblFøtexTotalLøn.textColor = UIColor.white
             lblFøtexTillæg.textColor = UIColor.white
             lblFøtexTimer.textColor = UIColor.white
             lblFøtexVagter.textColor = UIColor.white
-            lblNæsteVagt.textColor = UIColor.white
         }
     }
     
@@ -175,9 +180,6 @@ class MainVC: UIViewController {
         self.lblFøtexVagter.isHidden = true
         self.lblFøtexVagter.alpha = 0.0
         
-        self.lblNæsteVagt.isHidden = true
-        self.lblNæsteVagt.alpha = 0.0
-        
         self.vagtTableView.alpha = 0.0
         
         
@@ -206,16 +208,21 @@ class MainVC: UIViewController {
             self.lblFøtexVagter.alpha = 1.0
             }, completion: nil)
         
-        UIView.animate(withDuration: 0.3, delay: 0.7, options: .layoutSubviews, animations: {
-            self.lblNæsteVagt.isHidden = false
-            self.lblNæsteVagt.alpha = 1.0
-            }, completion: nil)
-        
         UIView.animate(withDuration: 0.4, delay: 0.8, options: .layoutSubviews, animations: {
             self.vagtTableView.alpha = 1.0
             }, completion: nil)
         
         
+    }
+    
+    func createNotifications() {
+        let center = UNUserNotificationCenter.current()
+        center.removeAllPendingNotificationRequests()
+        
+        let objects = vagterFRC.fetchedObjects as! [Vagt]
+        for vagt in objects {
+            vagt.createNotifications()
+        }
     }
     
     // MARK: - Segue
@@ -272,6 +279,7 @@ class MainVC: UIViewController {
 //                }
 //            }
             
+            /*
             var needNew = true
             
             for section in vagterFRC.sections! {
@@ -284,6 +292,7 @@ class MainVC: UIViewController {
             if needNew == true {
                 createStandardVagt()
             }
+ */
         } catch {
             fatalError(String(describing: error))
         }
@@ -400,10 +409,15 @@ extension MainVC: UITableViewDataSource {
         
         let year = years[section]
         let lønString = "\nLøn: ".lowercased() + getFormatted(number: year.calculateTotalLøn())
-        let frikort = "\nResterende frikort: " + getFormatted(number: 33000 - year.calculateTotalLøn())
         let feriePenge = "\nFeriepenge: " + getFormatted(number: Int(Double(year.calculateTotalLøn()) * 0.12))
         
-        return year.getYearString() + lønString + frikort + feriePenge
+        let frikortInt = UserDefaults.standard.integer(forKey: kFrikort)
+        if frikortInt != 0 {
+            let frikort = "\nResterende frikort: " + getFormatted(number: frikortInt - year.calculateTotalLøn())
+            return year.getYearString() + lønString + frikort + feriePenge
+        } else {
+            return year.getYearString() + lønString + feriePenge
+        }
     }
 }
 

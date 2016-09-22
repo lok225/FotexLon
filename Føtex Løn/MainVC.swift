@@ -30,6 +30,10 @@ class MainVC: UIViewController {
     
     var shouldShow = false
     
+    var lønPeriodeAlert: UIAlertController?
+    
+    var fromDetailVC = false
+    
     var currentMonthIndex: Int {
         
         var tempIndex = 0
@@ -72,13 +76,13 @@ class MainVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        firstTime(in: self)
         setupFetchedResultsController()
         
         initialAnimations()
         
         createNotifications()
     }
+
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -98,11 +102,73 @@ class MainVC: UIViewController {
         setViews()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+
+    }
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return UIStatusBarStyle.lightContent
     }
     
-    // Startup Functions
+    // MARK: - Startup Functions
+    
+    func firstTime() {
+        let defaults = UserDefaults.standard
+        let isFirstTime = defaults.bool(forKey: kFirstTime)
+        
+        if isFirstTime {
+            
+            let time = DispatchTime.now() + .milliseconds(400)
+            DispatchQueue.main.asyncAfter(deadline: time, execute: {
+                self.presentAndGetYoungWorkerSetting()
+            })
+            
+            defaults.set(false, forKey: kFirstTime)
+            defaults.synchronize()
+        }
+    }
+    
+    func presentAndGetLønPeriode() {
+        lønPeriodeAlert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din lønperiode", preferredStyle: .alert)
+        lønPeriodeAlert!.addTextField(configurationHandler: { (textField) in
+            let picker = UIPickerView()
+            picker.dataSource = self
+            picker.delegate = self
+            picker.selectRow(19, inComponent: 0, animated: false)
+            textField.inputView = picker
+            textField.text = "Fra d. 19. til d. 18."
+        })
+        let doneAction = UIAlertAction(title: "Færdig", style: .default, handler: { (action) in
+            let picker = self.lønPeriodeAlert!.inputView! as! UIPickerView
+            let row = picker.selectedRow(inComponent: 0)
+            UserDefaults.standard.set(row, forKey: kLønPeriodeStart)
+            UserDefaults.standard.synchronize()
+        })
+        lønPeriodeAlert!.addAction(doneAction)
+        self.present(lønPeriodeAlert!, animated: true, completion: nil)
+
+    }
+    
+    func presentAndGetYoungWorkerSetting() {
+        let defaults = UserDefaults.standard
+        
+        let alertController = UIAlertController(title: "Over eller under 18", message: "Informationen bruges til at lave indtillinger for timeløn", preferredStyle: .alert)
+        
+        let underAction = UIAlertAction(title: "Under 18", style: .default) { (action) in
+            defaults.set(true, forKey: kYoungWorker)
+            self.presentAndGetLønPeriode()
+        }
+        let overAction = UIAlertAction(title: "Over 18", style: .default) { (action) in
+            defaults.set(false, forKey: kYoungWorker)
+            self.presentAndGetLønPeriode()
+        }
+        alertController.addAction(underAction)
+        alertController.addAction(overAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
     
     private func setMainViewColors() {
         
@@ -230,14 +296,21 @@ class MainVC: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         switch segue.identifier! {
-        case "settingsSegue":
+        case kSettingsSegue:
             let navVC = segue.destination as! UINavigationController
             let vc = navVC.topViewController! as! SettingsVC
             vc.vagterFRC = self.vagterFRC
+            
+            if fromDetailVC {
+                self.fromDetailVC = false
+                vc.fromDetailVC = true
+            }
         default:
             break
         }
     }
+    
+    @IBAction func dismissToMainVC(segue:UIStoryboardSegue) {}
     
     // MARK: - Core Data Functions
     
@@ -487,9 +560,36 @@ extension MainVC: UITableViewDelegate {
         
         setColors(forTableViewHeader: view as! UITableViewHeaderFooterView)
     }
-    
 }
 
+// MARK: - UIPickerView Delegate & DataSource
+
+extension MainVC: UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return 30
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return String(row)
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let selectedRow = pickerView.selectedRow(inComponent: 0)
+        var endLøn: Int!
+        if selectedRow == 1 {
+            endLøn = 30
+        } else {
+            endLøn = selectedRow - 1
+        }
+        
+        let textField = lønPeriodeAlert!.textFields![0]
+        textField.text = "Fra d. \(String(selectedRow)). til d. \(String(endLøn))."
+    }
+}
 
 
 

@@ -19,7 +19,6 @@
 		E365E6A31D6DB3370046F56D /* StandardVagtDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E365E6A21D6DB3370046F56D /* StandardVagtDetailVC.swift */; };
 		E366621C1D6D870E0014C14D /* StandardVagterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E366621B1D6D870E0014C14D /* StandardVagterVC.swift */; };
 		E36FF43A1D8FFF090023A5D7 /* TemaVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E36FF4391D8FFF090023A5D7 /* TemaVC.swift */; };
-		E3A387DD1D4BD75A001F7952 /* MonthCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A387DC1D4BD75A001F7952 /* MonthCell.swift */; };
 		E3BE97931D4254C900D30589 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3BE97921D4254C900D30589 /* AppDelegate.swift */; };
 		E3BE979A1D4254C900D30589 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E3BE97981D4254C900D30589 /* Main.storyboard */; };
 		E3BE979C1D4254C900D30589 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E3BE979B1D4254C900D30589 /* Assets.xcassets */; };
@@ -45,7 +44,6 @@
 		E365E6A21D6DB3370046F56D /* StandardVagtDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StandardVagtDetailVC.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E366621B1D6D870E0014C14D /* StandardVagterVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardVagterVC.swift; sourceTree = "<group>"; };
 		E36FF4391D8FFF090023A5D7 /* TemaVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemaVC.swift; sourceTree = "<group>"; };
-		E3A387DC1D4BD75A001F7952 /* MonthCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonthCell.swift; sourceTree = "<group>"; };
 		E3BE978F1D4254C900D30589 /* Min Løn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Min Løn.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3BE97921D4254C900D30589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E3BE97991D4254C900D30589 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -114,7 +112,6 @@
 				E3BE97921D4254C900D30589 /* AppDelegate.swift */,
 				E3F4DEBF1D50C66300857279 /* View Controllers */,
 				E3BE97981D4254C900D30589 /* Main.storyboard */,
-				E3A387DC1D4BD75A001F7952 /* MonthCell.swift */,
 				E34453BC1D5DAACC00B3DB67 /* VagtCell.swift */,
 				E30AFF391D469456009ADF71 /* ExtraFunctions.swift */,
 				E3FD81B51D49736B001171EE /* Data Model */,
@@ -234,7 +231,6 @@
 				E3FE4DF91D6AE9090012B828 /* NotificationsVC.swift in Sources */,
 				E3000D141D57A9FD004788B0 /* Vagt+CoreDataClass.swift in Sources */,
 				E318EEAE1D6C2C4500893D53 /* Year.swift in Sources */,
-				E3A387DD1D4BD75A001F7952 /* MonthCell.swift in Sources */,
 				E365E6A31D6DB3370046F56D /* StandardVagtDetailVC.swift in Sources */,
 				E3F4FA481D481CFA00647B1E /* VagterVC.swift in Sources */,
 				E34453BD1D5DAACC00B3DB67 /* VagtCell.swift in Sources */,
@@ -363,7 +359,7 @@
 				DEVELOPMENT_TEAM = 2J6YE5GZ93;
 				INFOPLIST_FILE = "Føtex Løn/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.martinlok.F-tex-L-n";
+				PRODUCT_BUNDLE_IDENTIFIER = com.martinlok.minLon;
 				PRODUCT_NAME = "Min Løn";
 				SWIFT_VERSION = 3.0;
 			};
@@ -376,7 +372,7 @@
 				DEVELOPMENT_TEAM = 2J6YE5GZ93;
 				INFOPLIST_FILE = "Føtex Løn/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.martinlok.F-tex-L-n";
+				PRODUCT_BUNDLE_IDENTIFIER = com.martinlok.minLon;
 				PRODUCT_NAME = "Min Løn";
 				SWIFT_VERSION = 3.0;
 			};

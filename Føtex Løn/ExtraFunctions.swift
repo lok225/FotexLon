@@ -22,11 +22,16 @@ let kIsLoggedIn = "loggedIn"
 let kAddToCalendar = "addToCalendar"
 let kFrikort = "frikort"
 let kTrækprocent = "trækprocent"
+let kLønPeriodeStart = "lønPeriodeStart"
 
 // Segues
 
 let kStandardVagtSegue = "standardVCSegue"
 let kNotificationsSegue = "notificationsSegue"
+let kSettingsSegue = "settingsSegue"
+let kLoginSegue = "loginSegue"
+
+let kDismissToMainVCSegue = "dismissToMainVCSegue"
 
 // Cells
 
@@ -233,12 +238,20 @@ var months: [[Vagt]] = [vagter]
 
 // MARK: Functions
 
-func firstTime(in vc: UIViewController) {
+func firstTime(in vc: MainVC) {
     let defaults = UserDefaults.standard
     let isFirstTime = defaults.bool(forKey: kFirstTime)
     
     if isFirstTime {
         presentAndGetYoungWorkerSetting(in: vc)
+        
+        let alert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din vælgperiode", preferredStyle: .alert)
+        alert.addTextField(configurationHandler: { (textField) in
+            let picker = UIPickerView()
+            picker.dataSource = vc
+            picker.delegate = vc
+            textField.text = "Fra d. 19. til d. 18."
+        })
         
         defaults.set(false, forKey: kFirstTime)
         defaults.synchronize()
@@ -376,7 +389,7 @@ extension Date {
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day], from: self)
         
-        if components.day! > 18 {
+        if components.day! > UserDefaults.standard.integer(forKey: kLønPeriodeStart) {
             components.month! += 1
         }
         

@@ -119,7 +119,6 @@ public class Vagt: NSManagedObject {
                     event.title = "Arbejde" + " - Vagt"
                     event.startDate = self.startTime
                     event.endDate = self.endTime
-                    event.location = getLocationString()
                     event.notes = self.note
                     event.calendar = eventStore.defaultCalendarForNewEvents
                     

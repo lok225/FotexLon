@@ -97,6 +97,11 @@ class VagtDetailVC: UITableViewController {
         lblStartDate.text = formatDate(date: startTimePicker.date)
         lblEndDate.text = formatDate(date: endTimePicker.date)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let vagterVC = segue.destination as! VagterVC
+        vagterVC.dismissed = true
+    }
 
     // MARK: - @IBActions
     
@@ -192,8 +197,19 @@ class VagtDetailVC: UITableViewController {
     }
     
     @IBAction func timeSegControlChanged(_ sender: UISegmentedControl) {
-
-        updateDatePickers(from: sender, weekDay: calendar.component(.weekday, from: startTimePicker.date))
+        
+        if sender.titleForSegment(at: 0) == "Setup standard vagter" {
+            let alert = UIAlertController(title: "Setup standard vagter", message: "Gå til indstillinger for at lave dine setup vagter.\nPS. Det vil gøre det langt hurtigere at lave vagter", preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "Senere", style: .cancel, handler: nil)
+            let settingsAction = UIAlertAction(title: "Gå til indstillinger", style: .default, handler: { (action) in
+                self.performSegue(withIdentifier: "unwindToVagter", sender: nil)
+            })
+            alert.addAction(cancelAction)
+            alert.addAction(settingsAction)
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            updateDatePickers(from: sender, weekDay: calendar.component(.weekday, from: startTimePicker.date))
+        }
     }
     
     // MARK: - Helper Functions
@@ -322,44 +338,32 @@ extension VagtDetailVC {
     
     func setupSegControl() {
         let weekday = calendar.component(.weekday, from: startTimePicker.date)
+        var standardVagter = [StandardVagt]()
         
         timesSegControl.removeAllSegments()
         
         switch weekday {
         case 1:
-            var i = 0
-            
-            for vagt in standardSøndag {
-                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
-                i += 1
-            }
-            
-            //timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
-            //timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+            standardVagter = standardSøndag
         case 2...6:
-            var i = 0
-            
-            for vagt in standardHverdag {
-                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
-                i += 1
-            }
-            
-            //timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
-            //timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
+            standardVagter = standardHverdag
         case 7:
-            var i = 0
-        
-            for vagt in standardLørdag {
-                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
-                i += 1
-            }
-            
-            //timesSegControl.insertSegment(withTitle: "Vælg selv", at: i, animated: false)
-            //timesSegControl.selectedSegmentIndex = timesSegControl.numberOfSegments - 1
-            
+            standardVagter = standardLørdag
         default:
             break
         }
+        
+        if standardVagter.count != 0 {
+            var i = 0
+            for vagt in standardVagter {
+                timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
+                i += 1
+            }
+        } else {
+            timesSegControl.insertSegment(withTitle: "Setup standard vagter", at: 0, animated: false)
+        }
+        
+        
     }
 
     func updateDatePickers(from segControl: UISegmentedControl, weekDay: Int) {

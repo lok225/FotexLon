@@ -26,10 +26,14 @@ class LoginVC: UIViewController {
             UserDefaults.standard.set(true, forKey: kIsLoggedIn)
             UserDefaults.standard.synchronize()
             
-            dismiss(animated: true, completion: nil)
+            self.performSegue(withIdentifier: kDismissToMainVCSegue, sender: nil)
         }
     }
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destVC = segue.destination as! MainVC
+        destVC.firstTime()
+    }
 }
 
 extension LoginVC: UITextFieldDelegate {

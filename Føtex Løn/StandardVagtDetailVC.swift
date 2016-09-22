@@ -48,15 +48,26 @@ class StandardVagtDetailVC: UITableViewController {
     
     @IBAction func done(_ sender: UIBarButtonItem) {
         
-        if let vagt = standardVagtToEdit {
-            // TODO: Færdiggør
-            vagt.startTime = startTimePicker.date
-            vagt.endTime = endTimePicker.date
-            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))
-            delegate?.standardVagtDetailVC(controller: self, didFinishEditingVagt: vagt)
+        var startDateComps = calendar.dateComponents(in: .current, from: startTimePicker.date)
+        var newComps = startDateComps
+        let endDateComps = calendar.dateComponents(in: .current, from: endTimePicker.date)
+        startDateComps.hour = endDateComps.hour!
+        startDateComps.minute = endDateComps.minute!
+        
+        if newComps.hour! > endDateComps.hour! || newComps.hour! == endDateComps.hour! && newComps.minute! >= endDateComps.minute!{
+            let alert = UIAlertController(title: "Ups!", message: "Starttiden skal være før sluttiden", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(okAction)
+            self.present(alert, animated: true, completion: nil)
         } else {
-            let standardVagt = StandardVagt(startTime: startTimePicker.date, endTime: endTimePicker.date, pause: Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!)
-            delegate?.standardVagtDetailVC(controller: self, didFinishAddingVagt: standardVagt)
+            if let vagt = standardVagtToEdit {
+                vagt.endTime = calendar.date(from: startDateComps)
+                vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))
+                delegate?.standardVagtDetailVC(controller: self, didFinishEditingVagt: vagt)
+            } else {
+                let standardVagt = StandardVagt(startTime: startTimePicker.date, endTime: calendar.date(from: startDateComps)!, pause: Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!)
+                delegate?.standardVagtDetailVC(controller: self, didFinishAddingVagt: standardVagt)
+            }
         }
     }
 

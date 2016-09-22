@@ -8,6 +8,8 @@
 
 import UIKit
 
+
+/*
 class VagtCell: UITableViewCell {
     
     override func awakeFromNib() {
@@ -22,3 +24,5 @@ class VagtCell: UITableViewCell {
     }
 
 }
+ 
+ */

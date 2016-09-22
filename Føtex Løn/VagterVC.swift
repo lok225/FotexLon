@@ -21,6 +21,8 @@ class VagterVC: UITableViewController {
     
     var næsteVagt: Vagt?
     
+    var dismissed: Bool = false
+    
     var currentMonthIndex: Int {
         
         var tempIndex = 0
@@ -63,6 +65,11 @@ class VagterVC: UITableViewController {
         setAttributes(for: navigationController!.navigationBar)
         
         tableView.reloadData()
+        
+        if dismissed {
+            self.dismissed = false
+            goToSettings()
+        }
     }
     
     // MARK: Segue
@@ -80,6 +87,8 @@ class VagterVC: UITableViewController {
     }
     
     // MARK: - @IBActions
+    
+    @IBAction func dismissVC(segue:UIStoryboardSegue) {}
     
     @IBAction func toDate(_ sender: UIBarButtonItem) {
         goToCurrentMonth()
@@ -168,6 +177,18 @@ class VagterVC: UITableViewController {
     }
     */
     
+    func goToSettings() {
+        // let tabBarCon = self.tabBarController!
+        
+        let appDel = UIApplication.shared.delegate as! AppDelegate
+        let tabBar = appDel.window?.rootViewController as! UITabBarController
+        tabBar.selectedIndex = 0
+        let mainNC = tabBar.viewControllers![0] as! UINavigationController
+        let mainVC = mainNC.topViewController as! MainVC
+        mainVC.fromDetailVC = true
+        mainVC.performSegue(withIdentifier: kSettingsSegue, sender: nil)
+    }
+    
     func goToCurrentMonth() {
         if tableView.visibleCells.count != 0 {
             let indexPath = IndexPath(row: 0, section: currentMonthIndex)
@@ -211,7 +232,39 @@ class VagterVC: UITableViewController {
 extension VagterVC {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return vagterFRC.sections!.count
+        
+        if vagterFRC.sections!.count == 0 {
+            
+            let view = UIView(frame: CGRect(
+                x: 0,
+                y: 0,
+                width: tableView.bounds.size.width,
+                height: tableView.bounds.size.height
+            ))
+            
+            let label = UILabel(frame: CGRect(
+                x: 20,
+                y: 20,
+                width: view.bounds.size.width - 40,
+                height: view.bounds.size.height - 40
+                )
+            )
+            
+            label.text = "Der er ingen vagter ☹️" + "\n\n" + "Tryk '+' i højre hjørne for at tilføje en vagt."
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.textColor = UIColor.white
+            //label.sizeToFit()
+            
+            view.addSubview(label)
+            
+            tableView.backgroundView = view
+            tableView.separatorStyle = .none
+            
+            return 0
+        } else {
+            return vagterFRC.sections!.count
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -410,8 +463,6 @@ extension VagterVC: VagtDetailVCDelegate {
     func vagtDetailVCDidCancel(controller: VagtDetailVC) {
         dismiss(animated: true, completion: nil)
     }
-    
-    // TODO: Færdiggør protokollen
     
     func vagtDetailVC(controller: VagtDetailVC, didFinishEditingVagt vagt: Vagt) {
         dismiss(animated: true, completion: nil)

@@ -42,6 +42,8 @@ class SettingsVC: UITableViewController {
     var youngWorker: Bool!
     var notifications: [Int]!
     
+    var fromDetailVC = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -77,6 +79,11 @@ class SettingsVC: UITableViewController {
         case .restricted:
             calendarSwitch.isOn = false
             calendarSwitch.isEnabled = false
+        }
+        
+        if fromDetailVC {
+            fromDetailVC = false
+            tableView.scrollToRow(at: IndexPath(row: 0, section: 2), at: .middle, animated: false)
         }
         
     }

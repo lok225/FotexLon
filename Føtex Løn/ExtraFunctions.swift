@@ -238,12 +238,13 @@ var months: [[Vagt]] = [vagter]
 
 // MARK: Functions
 
+/*
 func firstTime(in vc: MainVC) {
     let defaults = UserDefaults.standard
     let isFirstTime = defaults.bool(forKey: kFirstTime)
     
     if isFirstTime {
-        presentAndGetYoungWorkerSetting(in: vc)
+        
         
         let alert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din vælgperiode", preferredStyle: .alert)
         alert.addTextField(configurationHandler: { (textField) in
@@ -257,23 +258,7 @@ func firstTime(in vc: MainVC) {
         defaults.synchronize()
     }
 }
-
-func presentAndGetYoungWorkerSetting(in vc: UIViewController) {
-    let defaults = UserDefaults.standard
-    
-    let alertController = UIAlertController(title: "Over eller under 18", message: "Informationen bruges til at lave indtillinger for timeløn", preferredStyle: .alert)
-    
-    let underAction = UIAlertAction(title: "Under 18", style: .default) { (action) in
-        defaults.set(true, forKey: kYoungWorker)
-    }
-    let overAction = UIAlertAction(title: "Over 18", style: .default) { (action) in
-        defaults.set(false, forKey: kYoungWorker)
-    }
-    alertController.addAction(underAction)
-    alertController.addAction(overAction)
-    
-    vc.present(alertController, animated: true, completion: nil)
-}
+ */
 
 // MARK: - Global Colors
 
@@ -389,7 +374,7 @@ extension Date {
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day], from: self)
         
-        if components.day! > UserDefaults.standard.integer(forKey: kLønPeriodeStart) {
+        if components.day! >= UserDefaults.standard.integer(forKey: kLønPeriodeStart) {
             components.month! += 1
         }
         

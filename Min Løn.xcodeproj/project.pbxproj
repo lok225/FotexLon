@@ -150,9 +150,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E3BE978E1D4254C800D30589 /* Føtex Løn */ = {
+		E3BE978E1D4254C800D30589 /* Løn */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E3BE97A31D4254C900D30589 /* Build configuration list for PBXNativeTarget "Føtex Løn" */;
+			buildConfigurationList = E3BE97A31D4254C900D30589 /* Build configuration list for PBXNativeTarget "Løn" */;
 			buildPhases = (
 				E3BE978B1D4254C800D30589 /* Sources */,
 				E3BE978C1D4254C800D30589 /* Frameworks */,
@@ -162,7 +162,7 @@
 			);
 			dependencies = (
 			);
-			name = "Føtex Løn";
+			name = "Løn";
 			productName = "Føtex Løn";
 			productReference = E3BE978F1D4254C900D30589 /* Min Løn.app */;
 			productType = "com.apple.product-type.application";
@@ -185,7 +185,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E3BE978A1D4254C800D30589 /* Build configuration list for PBXProject "Føtex Løn" */;
+			buildConfigurationList = E3BE978A1D4254C800D30589 /* Build configuration list for PBXProject "Min Løn" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -198,7 +198,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E3BE978E1D4254C800D30589 /* Føtex Løn */,
+				E3BE978E1D4254C800D30589 /* Løn */,
 			);
 		};
 /* End PBXProject section */
@@ -381,7 +381,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E3BE978A1D4254C800D30589 /* Build configuration list for PBXProject "Føtex Løn" */ = {
+		E3BE978A1D4254C800D30589 /* Build configuration list for PBXProject "Min Løn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E3BE97A11D4254C900D30589 /* Debug */,
@@ -390,7 +390,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E3BE97A31D4254C900D30589 /* Build configuration list for PBXNativeTarget "Føtex Løn" */ = {
+		E3BE97A31D4254C900D30589 /* Build configuration list for PBXNativeTarget "Løn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E3BE97A41D4254C900D30589 /* Debug */,

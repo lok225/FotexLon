@@ -63,7 +63,11 @@ class VagterVC: UITableViewController {
         
         setColors(forTableView: tableView)
         setAttributes(for: navigationController!.navigationBar)
-        
+        do {
+            try vagterFRC.performFetch()
+        } catch {
+            print(error)
+        }
         tableView.reloadData()
         
         if dismissed {
@@ -263,6 +267,8 @@ extension VagterVC {
             
             return 0
         } else {
+            tableView.backgroundView = nil
+            tableView.separatorStyle = .singleLine
             return vagterFRC.sections!.count
         }
     }
@@ -329,6 +335,7 @@ extension VagterVC {
                 alert.addTextField(configurationHandler: { (textField) in
                     textField.placeholder = "F.eks. 'Byttet til Camilla'"
                     textField.text = vagt.note
+                    textField.autocapitalizationType = .sentences
                 })
                 let action = UIAlertAction(title: "OK", style: .default, handler: { (action) in
                     vagt.note = alert.textFields?.first?.text
@@ -495,7 +502,7 @@ extension VagterVC: NSFetchedResultsControllerDelegate {
         case .update:
             print("*** NSFetchedResultsChangeUpdate (object)")
             if let cell = tableView.cellForRow(at: indexPath!) {
-                configure(cell: cell, atIndexPath: indexPath!)
+                configure(cell: cell, atIndexPath: newIndexPath!)
             }
 
         case .move:

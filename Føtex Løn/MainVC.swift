@@ -42,12 +42,6 @@ class MainVC: UIViewController {
             return tempIndex
         }
         
-        /*
-        if vagterFRC.sections!.count > 1 {
-            tempIndex += 1
-        }
-        */
-        
         let thisMonthNumber = Date().getMonthNumber(withYear: true)
         
         if sections.count == 1 {
@@ -131,24 +125,24 @@ class MainVC: UIViewController {
     }
     
     func presentAndGetLønPeriode() {
-        lønPeriodeAlert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din lønperiode", preferredStyle: .alert)
+        lønPeriodeAlert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din lønperiode.\nVigtigt: Kan ikke ændres senere", preferredStyle: .alert)
+        var thisPicker: UIPickerView!
         lønPeriodeAlert!.addTextField(configurationHandler: { (textField) in
             let picker = UIPickerView()
             picker.dataSource = self
             picker.delegate = self
-            picker.selectRow(19, inComponent: 0, animated: false)
+            picker.selectRow(18, inComponent: 0, animated: false)
             textField.inputView = picker
-            textField.text = "Fra d. 19. til d. 18."
+            thisPicker = self.lønPeriodeAlert!.textFields!.first!.inputView! as! UIPickerView
+            textField.text = "D. 19."
         })
         let doneAction = UIAlertAction(title: "Færdig", style: .default, handler: { (action) in
-            let picker = self.lønPeriodeAlert!.inputView! as! UIPickerView
-            let row = picker.selectedRow(inComponent: 0)
+            let row = thisPicker.selectedRow(inComponent: 0) + 1
             UserDefaults.standard.set(row, forKey: kLønPeriodeStart)
             UserDefaults.standard.synchronize()
         })
         lønPeriodeAlert!.addAction(doneAction)
         self.present(lønPeriodeAlert!, animated: true, completion: nil)
-
     }
     
     func presentAndGetYoungWorkerSetting() {
@@ -300,6 +294,8 @@ class MainVC: UIViewController {
             let navVC = segue.destination as! UINavigationController
             let vc = navVC.topViewController! as! SettingsVC
             vc.vagterFRC = self.vagterFRC
+            vc.dataController = self.dataController
+            vc.managedObjectContext = self.managedObjectContext
             
             if fromDetailVC {
                 self.fromDetailVC = false
@@ -574,20 +570,14 @@ extension MainVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return String(row)
+        return String(row + 1)
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selectedRow = pickerView.selectedRow(inComponent: 0)
-        var endLøn: Int!
-        if selectedRow == 1 {
-            endLøn = 30
-        } else {
-            endLøn = selectedRow - 1
-        }
         
         let textField = lønPeriodeAlert!.textFields![0]
-        textField.text = "Fra d. \(String(selectedRow)). til d. \(String(endLøn))."
+        textField.text = "D. \(selectedRow + 1)."
     }
 }
 

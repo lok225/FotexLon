@@ -41,16 +41,16 @@ class StandardVagterVC: UITableViewController {
         
         switch standardVagterInt! {
         case 0:
-            print("Hverdag")
+            // Hverdag
             let vagterData = defaults.object(forKey: kStandardHverdage) as! Data
             standardVagter = NSKeyedUnarchiver.unarchiveObject(with: vagterData) as! [StandardVagt]
         case 1:
-            print("Lørdag")
+            // Lørdag
             let vagterData = defaults.object(forKey: kStandardLørdag) as! Data
             standardVagter = NSKeyedUnarchiver.unarchiveObject(with: vagterData) as! [StandardVagt]
             //standardVagter.removeAll()
         case 2:
-            print("Søndag")
+            // Søndag
             let vagterData = defaults.object(forKey: kStandardSøndag) as! Data
             standardVagter = NSKeyedUnarchiver.unarchiveObject(with: vagterData) as! [StandardVagt]
             //standardVagter.removeAll()

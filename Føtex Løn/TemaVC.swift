@@ -22,8 +22,6 @@ class TemaVC: UITableViewController {
         let shop = defaults.integer(forKey: kTheme)
         let indexPath = IndexPath(row: shop, section: 0)
         tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        
-        print(shop)
     }
     
     override func viewWillDisappear(_ animated: Bool) {

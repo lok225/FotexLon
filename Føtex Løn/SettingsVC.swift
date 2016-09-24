@@ -24,6 +24,7 @@ class SettingsVC: UITableViewController {
     @IBOutlet weak var lblAftensats: UITextField!
     @IBOutlet weak var lblLordagssats: UITextField!
     @IBOutlet weak var lblSondagssats: UITextField!
+    @IBOutlet weak var lblLønPeriode: UILabel!
     @IBOutlet weak var lblFrikort: UITextField!
     @IBOutlet weak var lblTrækprocent: UITextField!
     
@@ -37,12 +38,17 @@ class SettingsVC: UITableViewController {
     
     var appDel: AppDelegate!
 
+    var dataController: DataController!
+    var managedObjectContext: NSManagedObjectContext!
     var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
     var youngWorker: Bool!
     var notifications: [Int]!
     
     var fromDetailVC = false
+    var lønPeriodeChanged = false
+    
+    var lønPeriodeAlert: UIAlertController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -134,6 +140,8 @@ class SettingsVC: UITableViewController {
             lblSondagssats.text = String(defaults.double(forKey: kOldSondagsSats)).replacingOccurrences(of: ".", with: ",") + ",-"
         }
         
+        lblLønPeriode.text = "D. \(defaults.integer(forKey: kLønPeriodeStart))."
+        print(getFormatted(number: defaults.integer(forKey: kFrikort)))
         lblFrikort.text = getFormatted(number: defaults.integer(forKey: kFrikort))
         lblTrækprocent.text = String(defaults.integer(forKey: kTrækprocent)) + "%"
     }
@@ -145,12 +153,9 @@ class SettingsVC: UITableViewController {
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             switch settings.authorizationStatus {
             case .authorized:
-                print("authed")
                 for not in self.notifications {
                     if thisString.isEmpty {
                         thisString.append(not.getNotificationsDetailString())
-                        print("Nu")
-                        print(not.getNotificationsDetailString())
                     } else {
                         thisString += ", \(not.getNotificationsDetailString().lowercased())"
                     }
@@ -230,7 +235,8 @@ class SettingsVC: UITableViewController {
         let aftensSats = Double(lblAftensats.text!.replacingOccurrences(of: ",-", with: ""))
         let lordagsSats = Double(lblLordagssats.text!.replacingOccurrences(of: ",-", with: ""))
         let sondagsSats = Double(lblSondagssats.text!.replacingOccurrences(of: ",-", with: ""))
-        let frikort = Int(lblFrikort.text!.replacingOccurrences(of: ",-", with: ""))
+        let tempString = lblFrikort.text!.replacingOccurrences(of: ",-", with: "")
+        let frikort = Int(tempString.replacingOccurrences(of: ".", with: ""))
         let trækprocent = Int(lblTrækprocent.text!.replacingOccurrences(of: "%", with: ""))
         
         if ageSegControl.selectedSegmentIndex == 0 {
@@ -251,6 +257,29 @@ class SettingsVC: UITableViewController {
         defaults.set(calendarSwitch.isOn, forKey: kAddToCalendar)
         defaults.set(frikort, forKey: kFrikort)
         defaults.set(trækprocent, forKey: kTrækprocent)
+        print(defaults.integer(forKey: kFrikort))
+        
+        /*
+        if lønPeriodeChanged {
+            for oldVagt in vagterFRC.fetchedObjects as! [Vagt] {
+                dataController.delete(vagt: oldVagt)
+                
+                let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
+                vagt.startTime = oldVagt.startTime
+                vagt.endTime = oldVagt.endTime
+                vagt.pause = oldVagt.pause
+                vagt.monthNumber = Date().getMonthNumber(withYear: true)
+                vagt.createID()
+                vagt.createNotifications()
+                vagt.createCalendarEvent()
+                
+                if let note = oldVagt.note {
+                    vagt.note = note
+                }
+            }
+            self.dataController.save()
+        }
+        */
         
         defaults.synchronize()
         
@@ -292,6 +321,31 @@ class SettingsVC: UITableViewController {
             calendarSwitch.isEnabled = false
         }
     }
+    
+    // MARK: - Helper Functions
+    
+    func presentAndGetLønPeriode() {
+        lønPeriodeAlert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din lønperiode", preferredStyle: .alert)
+        var thisPicker: UIPickerView!
+        lønPeriodeAlert!.addTextField(configurationHandler: { (textField) in
+            let picker = UIPickerView()
+            picker.dataSource = self
+            picker.delegate = self
+            let startInt = self.defaults.integer(forKey: kLønPeriodeStart)
+            picker.selectRow(startInt - 1, inComponent: 0, animated: false)
+            textField.inputView = picker
+            thisPicker = self.lønPeriodeAlert!.textFields!.first!.inputView! as! UIPickerView
+            textField.text = "D. \(startInt)."
+        })
+        let doneAction = UIAlertAction(title: "Færdig", style: .default, handler: { (action) in
+            let row = thisPicker.selectedRow(inComponent: 0) + 1
+            self.lblLønPeriode.text = "D. \(row)"
+            UserDefaults.standard.set(row, forKey: kLønPeriodeStart)
+            UserDefaults.standard.synchronize()
+        })
+        lønPeriodeAlert!.addAction(doneAction)
+        self.present(lønPeriodeAlert!, animated: true, completion: nil)
+    }
 }
 
 extension SettingsVC {
@@ -300,6 +354,10 @@ extension SettingsVC {
         tableView.cellForRow(at: indexPath)?.setSelected(false, animated: true)
         
         switch indexPath.section {
+        case 0:
+            //self.lønPeriodeChanged = true
+            //self.presentAndGetLønPeriode()
+            break
         case 1:
             if indexPath.row == 0 {
                 UNUserNotificationCenter.current().getNotificationSettings(completionHandler: { (settings) in
@@ -390,6 +448,30 @@ extension SettingsVC: UITextFieldDelegate {
         return true
     }
 }
+
+// MARK: - UIPickerView Delegate & DataSource
+
+extension SettingsVC: UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return 30
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return String(row + 1)
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let selectedRow = pickerView.selectedRow(inComponent: 0)
+        
+        let textField = lønPeriodeAlert!.textFields![0]
+        textField.text = "D. \(selectedRow + 1)."
+    }
+}
+
 
 
 

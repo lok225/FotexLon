@@ -25,7 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setManagedObjectContext()
         
         registerDefaults()
-        print(UserDefaults.standard.bool(forKey: kFirstTime))
         
         setGlobalColors()
         

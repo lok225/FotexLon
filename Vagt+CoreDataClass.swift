@@ -116,7 +116,7 @@ public class Vagt: NSManagedObject {
             eventStore.requestAccess(to: .event) { (granted, error) in
                 if granted && error == nil {
                     let event = EKEvent(eventStore: eventStore)
-                    event.title = "Arbejde" + " - Vagt"
+                    event.title = "Arbejde - Vagt"
                     event.startDate = self.startTime
                     event.endDate = self.endTime
                     event.notes = self.note

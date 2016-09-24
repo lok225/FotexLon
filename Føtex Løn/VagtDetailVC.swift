@@ -78,8 +78,6 @@ class VagtDetailVC: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        setupSegControl()
-        
         if let vagt = vagtToEdit {
             startTimePicker.date = vagt.startTime
             endTimePicker.date = vagt.endTime
@@ -93,6 +91,8 @@ class VagtDetailVC: UITableViewController {
             txtPause.text = "30 min"
             noteTextField.text = nil
         }
+        
+        setupSegControl()
         
         lblStartDate.text = formatDate(date: startTimePicker.date)
         lblEndDate.text = formatDate(date: endTimePicker.date)
@@ -354,12 +354,14 @@ extension VagtDetailVC {
         }
         
         if standardVagter.count != 0 {
+            timesSegControl.isMomentary = false
             var i = 0
             for vagt in standardVagter {
                 timesSegControl.insertSegment(withTitle: vagt.getTimeIntervalString(), at: i, animated: false)
                 i += 1
             }
         } else {
+            timesSegControl.isMomentary = true
             timesSegControl.insertSegment(withTitle: "Setup standard vagter", at: 0, animated: false)
         }
         

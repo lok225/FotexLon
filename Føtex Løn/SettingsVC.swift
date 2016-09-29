@@ -315,7 +315,14 @@ class SettingsVC: UITableViewController {
             alert.addAction(settingsAction)
             self.present(alert, animated: true, completion: nil)
         case .notDetermined:
-            break
+            let eventStore = EKEventStore()
+            eventStore.requestAccess(to: .event, completion: { (granted, error) in
+                if granted && error == nil {
+                    self.calendarSwitch.isOn = true
+                } else {
+                    self.calendarSwitch.isOn = false
+                }
+            })
         case .restricted:
             calendarSwitch.isOn = false
             calendarSwitch.isEnabled = false

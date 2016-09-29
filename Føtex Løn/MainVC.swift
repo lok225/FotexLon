@@ -86,6 +86,11 @@ class MainVC: UIViewController {
         setColors(forVC: self)
         setColors(forTableView: vagtTableView)
         
+        if UserDefaults.standard.bool(forKey: kFirstTime) == false {
+            print("called")
+            firstTime()
+        }
+        
         fetchObjects()
         setupMonths()
         if months.count > 0 {
@@ -98,8 +103,6 @@ class MainVC: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -113,7 +116,6 @@ class MainVC: UIViewController {
         let isFirstTime = defaults.bool(forKey: kFirstTime)
         
         if isFirstTime {
-            
             let time = DispatchTime.now() + .milliseconds(400)
             DispatchQueue.main.asyncAfter(deadline: time, execute: {
                 self.presentAndGetYoungWorkerSetting()
@@ -121,6 +123,10 @@ class MainVC: UIViewController {
             
             defaults.set(false, forKey: kFirstTime)
             defaults.synchronize()
+        } else if defaults.bool(forKey: kAlderIsSet) == false {
+            presentAndGetYoungWorkerSetting()
+        } else if defaults.bool(forKey: kLønperiodeIsSet) == false {
+            presentAndGetLønPeriode()
         }
     }
     
@@ -138,8 +144,10 @@ class MainVC: UIViewController {
         })
         let doneAction = UIAlertAction(title: "Færdig", style: .default, handler: { (action) in
             let row = thisPicker.selectedRow(inComponent: 0) + 1
-            UserDefaults.standard.set(row, forKey: kLønPeriodeStart)
-            UserDefaults.standard.synchronize()
+            let defaults = UserDefaults.standard
+            defaults.set(row, forKey: kLønPeriodeStart)
+            defaults.set(true, forKey: kLønperiodeIsSet)
+            defaults.synchronize()
         })
         lønPeriodeAlert!.addAction(doneAction)
         self.present(lønPeriodeAlert!, animated: true, completion: nil)
@@ -152,10 +160,14 @@ class MainVC: UIViewController {
         
         let underAction = UIAlertAction(title: "Under 18", style: .default) { (action) in
             defaults.set(true, forKey: kYoungWorker)
+            defaults.set(true, forKey: kLønperiodeIsSet)
+            defaults.synchronize()
             self.presentAndGetLønPeriode()
         }
         let overAction = UIAlertAction(title: "Over 18", style: .default) { (action) in
             defaults.set(false, forKey: kYoungWorker)
+            defaults.set(true, forKey: kLønperiodeIsSet)
+            defaults.synchronize()
             self.presentAndGetLønPeriode()
         }
         alertController.addAction(underAction)

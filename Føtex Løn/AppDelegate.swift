@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let dataController = DataController()
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         showLoginScreen(animated: false)
@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         
-        if shortcutItem.type == "com.martinlok.F-tex-L-n.nyVagt" {
+        if shortcutItem.type == "com.martinlok.minLon.nyVagt" {
             let tabBarController = window!.rootViewController as! UITabBarController
             let vagterNC = tabBarController.viewControllers![1] as! UINavigationController
             let vagterVC = vagterNC.topViewController as! VagterVC
@@ -91,6 +91,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func registerDefaults() {
         
         let defaultsDic = [kFirstTime: true,
+                           kLønperiodeIsSet: false,
+                           kAlderIsSet: false,
                            kIsLoggedIn: false,
                            kAddToCalendar: false,
                            kFrikort: 0,

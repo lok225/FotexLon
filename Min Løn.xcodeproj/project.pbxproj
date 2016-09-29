@@ -44,7 +44,7 @@
 		E365E6A21D6DB3370046F56D /* StandardVagtDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StandardVagtDetailVC.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E366621B1D6D870E0014C14D /* StandardVagterVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardVagterVC.swift; sourceTree = "<group>"; };
 		E36FF4391D8FFF090023A5D7 /* TemaVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemaVC.swift; sourceTree = "<group>"; };
-		E3BE978F1D4254C900D30589 /* Min Løn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Min Løn.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3BE978F1D4254C900D30589 /* Mit Arbejde.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mit Arbejde.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3BE97921D4254C900D30589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E3BE97991D4254C900D30589 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E3BE979B1D4254C900D30589 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -101,7 +101,7 @@
 		E3BE97901D4254C900D30589 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E3BE978F1D4254C900D30589 /* Min Løn.app */,
+				E3BE978F1D4254C900D30589 /* Mit Arbejde.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -164,7 +164,7 @@
 			);
 			name = "Løn";
 			productName = "Føtex Løn";
-			productReference = E3BE978F1D4254C900D30589 /* Min Løn.app */;
+			productReference = E3BE978F1D4254C900D30589 /* Mit Arbejde.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -360,7 +360,7 @@
 				INFOPLIST_FILE = "Føtex Løn/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.martinlok.minLon;
-				PRODUCT_NAME = "Min Løn";
+				PRODUCT_NAME = "Mit Arbejde";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -373,7 +373,7 @@
 				INFOPLIST_FILE = "Føtex Løn/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.martinlok.minLon;
-				PRODUCT_NAME = "Min Løn";
+				PRODUCT_NAME = "Mit Arbejde";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

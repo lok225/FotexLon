@@ -14,6 +14,9 @@ import UIKit
 // UserDefaults
 
 let kFirstTime = "firstTime"
+let kAlderIsSet = "alderIsSet"
+let kLønperiodeIsSet = "lønperiodeIsSet"
+
 let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
 let kNotifications = "notifications"

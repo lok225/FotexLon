@@ -19,6 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+        // Fjerner alle de skide UIKit debugger beskeder
+        UserDefaults.standard.setValue(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
+        
         showLoginScreen(animated: false)
         
         setDataControllers()
@@ -27,6 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         registerDefaults()
         
         setGlobalColors()
+        
+        print(UserDefaults.standard.bool(forKey: kFirstTime))
         
         return true
     }
@@ -114,12 +119,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
 
-}
-
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        
-    }
 }
 
 extension AppDelegate {

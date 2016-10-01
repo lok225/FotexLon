@@ -75,6 +75,12 @@ class MainVC: UIViewController {
         initialAnimations()
         
         createNotifications()
+        
+//        let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
+//        vagt.startTime = Date()
+//        vagt.endTime = Date()
+//        vagt.pause = 30
+//        vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
     }
 
     
@@ -115,8 +121,12 @@ class MainVC: UIViewController {
         let defaults = UserDefaults.standard
         let isFirstTime = defaults.bool(forKey: kFirstTime)
         
+        print("firstTime: \(defaults.bool(forKey: kFirstTime))")
+        print("alderIsSet: \(defaults.bool(forKey: kAlderIsSet))")
+        print("lønPeriodeIsSet: \(defaults.bool(forKey: kLønperiodeIsSet))")
+        
         if isFirstTime {
-            let time = DispatchTime.now() + .milliseconds(400)
+            let time = DispatchTime.now() + .milliseconds(800)
             DispatchQueue.main.asyncAfter(deadline: time, execute: {
                 self.presentAndGetYoungWorkerSetting()
             })
@@ -160,13 +170,13 @@ class MainVC: UIViewController {
         
         let underAction = UIAlertAction(title: "Under 18", style: .default) { (action) in
             defaults.set(true, forKey: kYoungWorker)
-            defaults.set(true, forKey: kLønperiodeIsSet)
+            defaults.set(true, forKey: kAlderIsSet)
             defaults.synchronize()
             self.presentAndGetLønPeriode()
         }
         let overAction = UIAlertAction(title: "Over 18", style: .default) { (action) in
             defaults.set(false, forKey: kYoungWorker)
-            defaults.set(true, forKey: kLønperiodeIsSet)
+            defaults.set(false, forKey: kAlderIsSet)
             defaults.synchronize()
             self.presentAndGetLønPeriode()
         }
@@ -288,8 +298,12 @@ class MainVC: UIViewController {
     }
     
     func createNotifications() {
-        let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
+        if #available(iOS 10.0, *) {
+            let center = UNUserNotificationCenter.current()
+            center.removeAllPendingNotificationRequests()
+        } else {
+            // Fallback on earlier versions
+        }
         
         let objects = vagterFRC.fetchedObjects as! [Vagt]
         for vagt in objects {
@@ -425,41 +439,42 @@ class MainVC: UIViewController {
     }
     
     func setupNotification() {
-        let center = UNUserNotificationCenter.current()
-        
-        center.requestAuthorization(options: [UNAuthorizationOptions.alert, .sound, .badge], completionHandler: { (granted, error) in
-            
-            if granted == true {
-                let content = UNMutableNotificationContent()
-                content.title = "Eksempel"
-                content.body = "Ikke lavet endnu"
-                content.sound = UNNotificationSound.default()
+        if #available(iOS 10.0, *) {
+            let center = UNUserNotificationCenter.current()
+            center.requestAuthorization(options: [UNAuthorizationOptions.alert, .sound, .badge], completionHandler: { (granted, error) in
                 
-                let date = Date(timeIntervalSinceNow: 7)
-                let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-                // Request
-                let request = UNNotificationRequest(identifier: "eksempel", content: content, trigger: trigger)
-                
-                center.add(request, withCompletionHandler: nil)
-                
-            } else {
-                
-                let alertController = UIAlertController (title: "Notifikationer slået fra", message: "Gå til indstillinger for at tillade Føtex Løn at sende notifikationer", preferredStyle: .alert)
-                
-                let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
-                    let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
-                    if let url = settingsUrl {
-                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                if granted == true {
+                    let content = UNMutableNotificationContent()
+                    content.title = "Eksempel"
+                    content.body = "Ikke lavet endnu"
+                    content.sound = UNNotificationSound.default()
+                    
+                    let date = Date(timeIntervalSinceNow: 7)
+                    let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+                    // Request
+                    let request = UNNotificationRequest(identifier: "eksempel", content: content, trigger: trigger)
+                    
+                    center.add(request, withCompletionHandler: nil)
+                    
+                } else {
+                    
+                    let alertController = UIAlertController (title: "Notifikationer slået fra", message: "Gå til indstillinger for at tillade Føtex Løn at sende notifikationer", preferredStyle: .alert)
+                    
+                    let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
+                        let settingsUrl = URL(string: UIApplicationOpenSettingsURLString)
+                        if let url = settingsUrl {
+                            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                        }
                     }
+                    let cancelAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
+                    alertController.addAction(cancelAction)
+                    alertController.addAction(settingsAction)
+                    
+                    self.present(alertController, animated: true, completion: nil)
                 }
-                let cancelAction = UIAlertAction(title: "Annuler", style: .cancel, handler: nil)
-                alertController.addAction(cancelAction)
-                alertController.addAction(settingsAction)
-                
-                self.present(alertController, animated: true, completion: nil)
-            }
-        })
+            })
+        }
     }
 
 }

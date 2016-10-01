@@ -42,8 +42,10 @@ class NotificationsVC: UITableViewController {
         
         defaults.set(array, forKey: kNotifications)
         
-        let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
+        if #available(iOS 10.0, *) {
+            let center = UNUserNotificationCenter.current()
+            center.removeAllPendingNotificationRequests()
+        }
         
         let objects = vagterFRC.fetchedObjects as! [Vagt]
         for vagt in objects {

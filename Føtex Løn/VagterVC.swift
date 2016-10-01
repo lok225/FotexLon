@@ -502,7 +502,7 @@ extension VagterVC: NSFetchedResultsControllerDelegate {
         case .update:
             print("*** NSFetchedResultsChangeUpdate (object)")
             if let cell = tableView.cellForRow(at: indexPath!) {
-                configure(cell: cell, atIndexPath: newIndexPath!)
+                configure(cell: cell, atIndexPath: indexPath!)
             }
 
         case .move:

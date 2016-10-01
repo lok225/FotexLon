@@ -70,8 +70,6 @@ extension LoginVC: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         let count = textField.text!.characters.count
-        print("Count: \(count)")
-        print("PrevCount: \(prevCount)\n")
         if textField.text?.characters.count == 4 && prevCount == 3{
             textField.text = textField.text! + "-"
             

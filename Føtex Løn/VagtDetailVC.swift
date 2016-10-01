@@ -111,9 +111,10 @@ class VagtDetailVC: UITableViewController {
         
         if let vagt = vagtToEdit {
             
-            let center = UNUserNotificationCenter.current()
-            center.removePendingNotificationRequests(withIdentifiers: [String(describing: vagt.startTime)])
-            
+            if #available(iOS 10.0, *) {
+                let center = UNUserNotificationCenter.current()
+                center.removePendingNotificationRequests(withIdentifiers: [String(describing: vagt.startTime)])
+            }
             vagt.startTime = startTimePicker.date
             vagt.endTime = endTimePicker.date
             vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!

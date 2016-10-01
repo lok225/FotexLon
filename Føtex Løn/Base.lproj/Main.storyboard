@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -545,9 +544,6 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
-                                        <connections>
-                                            <segue destination="3Dt-O0-Dmr" kind="show" identifier="notificationsSegue" id="yrO-UW-cVv"/>
-                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="c5A-eW-DeN" detailTextLabel="2YZ-DG-hwL" style="IBUITableViewCellStyleValue1" id="ZVc-uH-Iwk">
                                         <rect key="frame" x="0.0" y="579.5" width="375" height="44"/>
@@ -711,6 +707,7 @@
                         <outlet property="lblTema" destination="2YZ-DG-hwL" id="AUR-hd-wNd"/>
                         <outlet property="lblTrækprocent" destination="OXZ-R2-KkI" id="7WH-gT-9rH"/>
                         <segue destination="PV9-Ap-47c" kind="show" identifier="standardVCSegue" id="woW-X0-hYr"/>
+                        <segue destination="3Dt-O0-Dmr" kind="show" identifier="notificationsSegue" id="lzl-Ye-Ryb"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Weg-hD-yiX" userLabel="First Responder" sceneMemberID="firstResponder"/>

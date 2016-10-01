@@ -150,22 +150,33 @@ class SettingsVC: UITableViewController {
         
         var thisString = ""
         
-        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
-            switch settings.authorizationStatus {
-            case .authorized:
-                for not in self.notifications {
-                    if thisString.isEmpty {
-                        thisString.append(not.getNotificationsDetailString())
-                    } else {
-                        thisString += ", \(not.getNotificationsDetailString().lowercased())"
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+                switch settings.authorizationStatus {
+                case .authorized:
+                    print("Authed")
+                    for not in self.notifications {
+                        if thisString.isEmpty {
+                            thisString.append(not.getNotificationsDetailString())
+                            print(thisString)
+                        } else {
+                            thisString += ", \(not.getNotificationsDetailString().lowercased())"
+                            print(thisString)
+                        }
                     }
+                    self.lblNotifications.text = thisString
+                    self.lblNotifications.textColor = UIColor.darkGray
+                case .denied:
+                    thisString = "Ingen"
+                case .notDetermined:
+                    thisString = "Ingen"
                 }
-            case .denied:
-                thisString = "Ingen"
-            case .notDetermined:
-                thisString = "Ingen"
             }
-            
+        } else {
+            thisString = "Ikke tilgængeligt"
+            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 1))
+            cell?.accessoryType = .none
+            cell?.selectionStyle = .none
             self.lblNotifications.text = thisString
             self.lblNotifications.textColor = UIColor.darkGray
         }
@@ -309,7 +320,12 @@ class SettingsVC: UITableViewController {
             let alert = UIAlertController(title: "Mangler tilladelse", message: "Gå til indstillinger og giv appen tilladelse til at oprette kalender-events", preferredStyle: .alert)
             let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
             let settingsAction = UIAlertAction(title: "Gå til indstillinger", style: .default, handler: { (action) in
-                UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
+                if #available(iOS 10.0, *) {
+                    // UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
+                    UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+                } else {
+                    UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+                }
             })
             alert.addAction(cancelAction)
             alert.addAction(settingsAction)
@@ -367,27 +383,32 @@ extension SettingsVC {
             break
         case 1:
             if indexPath.row == 0 {
-                UNUserNotificationCenter.current().getNotificationSettings(completionHandler: { (settings) in
-                    switch settings.authorizationStatus {
-                    case .authorized:
-                        break
-                    case .denied:
-                        let alert = UIAlertController(title: "Mangler tilladelse", message: "Gå til indstillinger og giv appen tilladelse til at sende notifikationer", preferredStyle: .alert)
-                        let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
-                        let settingsAction = UIAlertAction(title: "Gå til indstillinger", style: .default, handler: { (action) in
-                            UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
-                        })
-                        alert.addAction(cancelAction)
-                        alert.addAction(settingsAction)
-                        self.present(alert, animated: true, completion: nil)
-                    case .notDetermined:
-                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound], completionHandler: { (granted, error) in
-                            if granted && error == nil {
-                                self.setNotificationsView()
-                            }
-                        })
-                    }
-                })
+                if #available(iOS 10.0, *) {
+                    performSegue(withIdentifier: kNotificationsSegue, sender: nil)
+                    UNUserNotificationCenter.current().getNotificationSettings(completionHandler: { (settings) in
+                        switch settings.authorizationStatus {
+                        case .authorized:
+                            break
+                        case .denied:
+                            let alert = UIAlertController(title: "Mangler tilladelse", message: "Gå til indstillinger og giv appen tilladelse til at sende notifikationer", preferredStyle: .alert)
+                            let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
+                            let settingsAction = UIAlertAction(title: "Gå til indstillinger", style: .default, handler: { (action) in
+                                UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
+                            })
+                            alert.addAction(cancelAction)
+                            alert.addAction(settingsAction)
+                            self.present(alert, animated: true, completion: nil)
+                        case .notDetermined:
+                            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound], completionHandler: { (granted, error) in
+                                if granted && error == nil {
+                                    self.setNotificationsView()
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    break
+                }
             }
         case 2:
             tableView.cellForRow(at: indexPath)!.setSelected(false, animated: true)
@@ -440,6 +461,7 @@ extension SettingsVC: UITextFieldDelegate {
         }
     }
     
+    @available(iOS 10.0, *)
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
         if textField.tag == 40 {
             if Int(textField.text!.replacingOccurrences(of: "%", with: ""))! > 100 {
@@ -459,6 +481,7 @@ extension SettingsVC: UITextFieldDelegate {
 // MARK: - UIPickerView Delegate & DataSource
 
 extension SettingsVC: UIPickerViewDelegate, UIPickerViewDataSource {
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }

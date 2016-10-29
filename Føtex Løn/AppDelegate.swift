@@ -67,6 +67,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    func setupStores() {
+        let noneStore = Store(id: 0, code: "XDGJ-QAID")
+    }
+    
     // MARK: CoreData
     
     private func setDataControllers() {
@@ -96,13 +100,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func registerDefaults() {
         
         let defaultsDic = [kFirstTime: true,
+                           kEnteredCode: "XDGJ-QAID",
                            kLønperiodeIsSet: false,
+                           kLønPeriodeStart: 1,
                            kAlderIsSet: false,
                            kIsLoggedIn: false,
                            kAddToCalendar: false,
                            kFrikort: 0,
                            kTrækprocent: 0,
                            kTheme: Shop.teal.rawValue,
+                           kStore: 0,
                            kNotifications: [0, 5],
                            kStandardHverdage: NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()),
                            kStandardLørdag: NSKeyedArchiver.archivedData(withRootObject: [StandardVagt]()),

@@ -26,35 +26,41 @@ class LoginVC: UIViewController {
     
     @IBAction func login(_ sender: UIButton) {
         
-        let text = txtPassword.text?.uppercased()
+        guard let text = txtPassword.text?.uppercased() else {
+            return
+        }
         
-        if text == "XDGJ-QAID" {
-            UserDefaults.standard.set(true, forKey: kIsLoggedIn)
-            UserDefaults.standard.synchronize()
-            
-            UIView.animate(withDuration: 0.2, animations: { 
-                let view = self.txtPassword.superview
-                view?.backgroundColor = UIColor.green
-                self.txtPassword.backgroundColor = UIColor.green
-                self.txtPassword.textColor = UIColor.white
+        for store in stores {
+            if store.code == text {
+                UserDefaults.standard.set(true, forKey: kIsLoggedIn)
+                UserDefaults.standard.synchronize()
+                
+                UIView.animate(withDuration: 0.2, animations: {
+                    let view = self.txtPassword.superview
+                    view?.backgroundColor = UIColor.green
+                    self.txtPassword.backgroundColor = UIColor.green
+                    self.txtPassword.textColor = UIColor.white
                 }, completion: { (_) in
                     self.performSegue(withIdentifier: kDismissToMainVCSegue, sender: nil)
-            })
-        } else {
+                })
+                
+                return
+            }
+        }
+        
+        UIView.animate(withDuration: 0.2, animations: {
+            let view = self.txtPassword.superview
+            view?.backgroundColor = faktaRed
+            self.txtPassword.backgroundColor = faktaRed
+            self.txtPassword.textColor = UIColor.white
+        }, completion: { (completed) in
             UIView.animate(withDuration: 0.2, animations: {
                 let view = self.txtPassword.superview
-                view?.backgroundColor = faktaRed
-                self.txtPassword.backgroundColor = faktaRed
-                self.txtPassword.textColor = UIColor.white
-                }, completion: { (completed) in
-                    UIView.animate(withDuration: 0.2, animations: { 
-                        let view = self.txtPassword.superview
-                        view?.backgroundColor = UIColor.white
-                        self.txtPassword.backgroundColor = UIColor.white
-                        self.txtPassword.textColor = UIColor.black
-                    })
+                view?.backgroundColor = UIColor.white
+                self.txtPassword.backgroundColor = UIColor.white
+                self.txtPassword.textColor = UIColor.black
             })
-        }
+        })
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

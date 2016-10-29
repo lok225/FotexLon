@@ -95,7 +95,11 @@ class StandardVagterVC: UITableViewController {
                 
                 if vagt != nil {
                     cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-                    cell.textLabel?.text = vagt!.getTimeIntervalString() + " med \(vagt!.pause!) min pause"
+                    if vagt!.pause == 0 {
+                        cell.textLabel?.text = vagt!.getTimeIntervalString() + " uden pause"
+                    } else {
+                        cell.textLabel?.text = vagt!.getTimeIntervalString() + " med \(vagt!.pause!) min pause"
+                    }
                 }
             } else {
                 cell = UITableViewCell(style: .default, reuseIdentifier: nil)

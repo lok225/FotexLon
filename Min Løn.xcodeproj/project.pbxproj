@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E3000D141D57A9FD004788B0 /* Vagt+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3000D121D57A9FD004788B0 /* Vagt+CoreDataClass.swift */; };
 		E3000D151D57A9FD004788B0 /* Vagt+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3000D131D57A9FD004788B0 /* Vagt+CoreDataProperties.swift */; };
+		E30175B41DC427E60055FFE6 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30175B31DC427E60055FFE6 /* Store.swift */; };
 		E30784EA1D4A9ED7009ED245 /* VagtDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */; };
 		E30AFF3A1D469456009ADF71 /* ExtraFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30AFF391D469456009ADF71 /* ExtraFunctions.swift */; };
 		E31478D61D5FD1DE00C4C9DC /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */; };
@@ -34,6 +35,7 @@
 /* Begin PBXFileReference section */
 		E3000D121D57A9FD004788B0 /* Vagt+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Vagt+CoreDataClass.swift"; path = "../Vagt+CoreDataClass.swift"; sourceTree = "<group>"; };
 		E3000D131D57A9FD004788B0 /* Vagt+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Vagt+CoreDataProperties.swift"; path = "../Vagt+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		E30175B31DC427E60055FFE6 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		E30784E91D4A9ED7009ED245 /* VagtDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VagtDetailVC.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E30AFF391D469456009ADF71 /* ExtraFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ExtraFunctions.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E31478D51D5FD1DE00C4C9DC /* SettingsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SettingsVC.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -44,6 +46,7 @@
 		E365E6A21D6DB3370046F56D /* StandardVagtDetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StandardVagtDetailVC.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E366621B1D6D870E0014C14D /* StandardVagterVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardVagterVC.swift; sourceTree = "<group>"; };
 		E36FF4391D8FFF090023A5D7 /* TemaVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemaVC.swift; sourceTree = "<group>"; };
+		E37824691D9FEA2300D763E3 /* CoreDataModel v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataModel v2.xcdatamodel"; sourceTree = "<group>"; };
 		E3BE978F1D4254C900D30589 /* Mit Arbejde.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mit Arbejde.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3BE97921D4254C900D30589 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		E3BE97991D4254C900D30589 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -114,6 +117,7 @@
 				E3BE97981D4254C900D30589 /* Main.storyboard */,
 				E34453BC1D5DAACC00B3DB67 /* VagtCell.swift */,
 				E30AFF391D469456009ADF71 /* ExtraFunctions.swift */,
+				E30175B31DC427E60055FFE6 /* Store.swift */,
 				E3FD81B51D49736B001171EE /* Data Model */,
 				E30784EB1D4A9EE9009ED245 /* Andre Filer */,
 			);
@@ -236,6 +240,7 @@
 				E34453BD1D5DAACC00B3DB67 /* VagtCell.swift in Sources */,
 				E3D47E311D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld in Sources */,
 				E36FF43A1D8FFF090023A5D7 /* TemaVC.swift in Sources */,
+				E30175B41DC427E60055FFE6 /* Store.swift in Sources */,
 				E30784EA1D4A9ED7009ED245 /* VagtDetailVC.swift in Sources */,
 				E3EDB2D91D5222CD00D2D1BB /* Month.swift in Sources */,
 				E30AFF3A1D469456009ADF71 /* ExtraFunctions.swift in Sources */,
@@ -407,9 +412,10 @@
 		E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				E37824691D9FEA2300D763E3 /* CoreDataModel v2.xcdatamodel */,
 				E3D47E301D42B4E100C3A7E7 /* CoreDataModel.xcdatamodel */,
 			);
-			currentVersion = E3D47E301D42B4E100C3A7E7 /* CoreDataModel.xcdatamodel */;
+			currentVersion = E37824691D9FEA2300D763E3 /* CoreDataModel v2.xcdatamodel */;
 			path = CoreDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

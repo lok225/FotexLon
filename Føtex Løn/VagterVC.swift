@@ -88,6 +88,7 @@ class VagterVC: UITableViewController {
         destinationVC.delegate = self
         destinationVC.dataController = self.dataController
         destinationVC.managedObjectContext = self.managedObjectContext
+        destinationVC.vagterFRC = self.vagterFRC
     }
     
     // MARK: - @IBActions
@@ -195,7 +196,12 @@ class VagterVC: UITableViewController {
     
     func goToCurrentMonth() {
         if tableView.visibleCells.count != 0 {
-            let indexPath = IndexPath(row: 0, section: currentMonthIndex)
+            var indexPath: IndexPath!
+            if tableView.numberOfSections == 1 {
+                indexPath = IndexPath(row: 0, section: 0)
+            } else {
+                indexPath = IndexPath(row: 0, section: currentMonthIndex)
+            }
             tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
     }
@@ -348,7 +354,7 @@ extension VagterVC {
                 
                 let time = DispatchTime.now() + .milliseconds(500)
                 DispatchQueue.main.asyncAfter(deadline: time, execute: { 
-                    vagt.active = !vagt.active
+                    vagt.setActiveState(isActive: !vagt.active)
                     self.dataController.save()
                 })
                 
@@ -374,7 +380,8 @@ extension VagterVC {
                 
                 let time = DispatchTime.now() + .milliseconds(500)
                 DispatchQueue.main.asyncAfter(deadline: time, execute: {
-                    vagt.active = !vagt.active
+                    vagt.setActiveState(isActive: !vagt.active)
+                    
                     self.dataController.save()
                 })
             }

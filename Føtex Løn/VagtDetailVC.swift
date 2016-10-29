@@ -44,6 +44,7 @@ class VagtDetailVC: UITableViewController {
     
     var dataController: DataController!
     var managedObjectContext: NSManagedObjectContext!
+    var vagterFRC: NSFetchedResultsController<NSFetchRequestResult>!
     
     var vagtToEdit: Vagt?
     
@@ -106,63 +107,34 @@ class VagtDetailVC: UITableViewController {
     // MARK: - @IBActions
     
     @IBAction func doneBtnPressed(_ sender: UIBarButtonItem) {
-        
         self.dismissKeyboard()
         
-        if let vagt = vagtToEdit {
+        guard shouldCreateDate() == true else {
+            let alert = UIAlertController(title: "Ugyldig Dato", message: "Sluttiden skal være efter efter starttiden", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(action)
             
-            if #available(iOS 10.0, *) {
-                let center = UNUserNotificationCenter.current()
-                center.removePendingNotificationRequests(withIdentifiers: [String(describing: vagt.startTime)])
-            }
-            vagt.startTime = startTimePicker.date
-            vagt.endTime = endTimePicker.date
-            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
-            vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
-            vagt.updateNotifications()
+            self.present(alert, animated: true, completion: nil)
             
-            if let text = noteTextField.text {
-                vagt.note = text
-            }
-            
-            if let _ = vagt.eventID {
-                vagt.updateCalendarEvent()
-            }
-            
-            dataController.save()
-            
-            delegate?.vagtDetailVC(controller: self, didFinishEditingVagt: vagt)
-            
-        } else {
-            
-            guard shouldCreateDate() == true else {
-                
-                let alert = UIAlertController(title: "Ugyldig Dato", message: "Sluttiden skal være efter efter starttiden", preferredStyle: .alert)
-                let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-                alert.addAction(action)
+            return
+        }
+        
+        if #available(iOS 10.0, *) {
+            if let vagt = isOverlappingWithVagt() {
+                let alert = UIAlertController(title: "Vagter overlapper", message: "Din nye vagt overlapper med følgende vagt: \(vagt.getTimeIntervalString()). \nVil du stadig tilføje vagten?", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "Tilføj ikke", style: .cancel, handler: nil)
+                let createAction = UIAlertAction(title: "Tilføj vagt", style: .default, handler: { (action) in
+                    self.createVagt()
+                })
+                alert.addAction(okAction)
+                alert.addAction(createAction)
                 
                 self.present(alert, animated: true, completion: nil)
-                
                 return
             }
-            
-            let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
-            vagt.startTime = startTimePicker.date
-            vagt.endTime = endTimePicker.date
-            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
-            vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
-            vagt.createID()
-            vagt.createNotifications()
-            vagt.createCalendarEvent()
-            
-            if let text = noteTextField.text {
-                vagt.note = text
-            }
-            
-            dataController.save()
-            
-            delegate?.vagtDetailVC(controller: self, didFinishAddingVagt: vagt)
         }
+        
+        createVagt()
     }
     
     @IBAction func cancelBtnPressed(_ sender: UIBarButtonItem) {
@@ -215,6 +187,51 @@ class VagtDetailVC: UITableViewController {
     
     // MARK: - Helper Functions
     
+    func createVagt() {
+        if let vagt = vagtToEdit {
+            
+            if #available(iOS 10.0, *) {
+                let center = UNUserNotificationCenter.current()
+                center.removePendingNotificationRequests(withIdentifiers: [String(describing: vagt.startTime)])
+            }
+            vagt.startTime = startTimePicker.date
+            vagt.endTime = endTimePicker.date
+            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
+            vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+            vagt.updateNotifications()
+            
+            if let text = noteTextField.text {
+                vagt.note = text
+            }
+            
+            if let _ = vagt.eventID {
+                vagt.updateCalendarEvent()
+            }
+            
+            dataController.save()
+            
+            delegate?.vagtDetailVC(controller: self, didFinishEditingVagt: vagt)
+            
+        } else {
+            let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
+            vagt.startTime = startTimePicker.date
+            vagt.endTime = endTimePicker.date
+            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
+            vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
+            vagt.createID()
+            vagt.createNotifications()
+            vagt.createCalendarEvent()
+            
+            if let text = noteTextField.text {
+                vagt.note = text
+            }
+            
+            dataController.save()
+            
+            delegate?.vagtDetailVC(controller: self, didFinishAddingVagt: vagt)
+        }
+    }
+    
     func setStandardVagter() {
         
         let standardHverdagData = defaults.object(forKey: kStandardHverdage) as! Data
@@ -238,6 +255,21 @@ class VagtDetailVC: UITableViewController {
         } else {
             return true
         }
+    }
+    
+    @available(iOS 10.0, *)
+    func isOverlappingWithVagt() -> Vagt? {
+        let vagter = vagterFRC.fetchedObjects as! [Vagt]
+        let thisInterval = DateInterval(start: startTimePicker.date, end: endTimePicker.date)
+        
+        for vagt in vagter {
+            let tempInterval = DateInterval(start: vagt.startTime, end: vagt.endTime)
+            
+            if thisInterval.intersects(tempInterval) {
+                return vagt
+            }
+        }
+        return nil
     }
     
     func hideStartPicker(_ hide: Bool) {
@@ -395,6 +427,8 @@ extension VagtDetailVC {
         var endComps = calendar.dateComponents(in: .current, from: endTimePicker.date)
         let standardEndComps = calendar.dateComponents(in: .current, from: standardVagt.endTime)
         
+        endComps.month = startComps.month
+        endComps.day = startComps.day
         endComps.hour = standardEndComps.hour
         endComps.minute = standardEndComps.minute
         

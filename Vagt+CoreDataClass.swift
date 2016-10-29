@@ -106,6 +106,20 @@ public class Vagt: NSManagedObject {
         self.id = id.uuidString
     }
     
+    // MARK: - Other Functions
+    
+    func setActiveState(isActive: Bool) {
+        self.active = isActive
+        
+        if active {
+            self.createCalendarEvent()
+            self.createNotifications()
+        } else {
+            self.deleteCalendarEvent()
+            self.deleteNotifications()
+        }
+    }
+    
     // MARK: - Calendar Functions
     
     func createCalendarEvent() {
@@ -177,82 +191,82 @@ public class Vagt: NSManagedObject {
     
     func createNotifications() {
         
+        guard #available(iOS 10.0, *) else {
+            return
+        }
+        
         guard startTime.compare(Date()) == .orderedDescending else {
             return
         }
         
-        if #available(iOS 10.0, *) {
-            let center = UNUserNotificationCenter.current()
-            center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
-                
-                guard granted && error == nil else {
-                    return
-                }
-                
-                for notificationInt in UserDefaults.standard.object(forKey: kNotifications) as! [Int] {
-                    let content = UNMutableNotificationContent()
-                    content.sound = UNNotificationSound.default()
-                    
-                    var date: Date!
-                    switch notificationInt {
-                    case 0:
-                        content.title = "Vagt begynder nu"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu"
-                        date = Date(timeInterval: 0, since: self.startTime)
-                    case 1:
-                        content.title = "Arbejde om 5 min"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 5 minutter"
-                        date = Date(timeInterval: -300, since: self.startTime)
-                    case 2:
-                        content.title = "Arbejde om 15 min"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu 15 minutter"
-                        date = Date(timeInterval: -900, since: self.startTime)
-                    case 3:
-                        content.title = "Arbejde om 30 min"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 30 minutter"
-                        date = Date(timeInterval: -1800, since: self.startTime)
-                    case 4:
-                        content.title = "Arbejde om 1 time"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 1 time"
-                        date = Date(timeInterval: -3600, since: self.startTime)
-                    case 5:
-                        content.title = "Arbejde om 2 timer"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 2 timer"
-                        date = Date(timeInterval: -7200, since: self.startTime)
-                    case 6:
-                        content.title = "Arbejde imorgen"
-                        content.body = "Din vagt kl. \(self.getTimeIntervalString())"
-                        date = Date(timeInterval: -86400, since: self.startTime)
-                    default:
-                        break
-                    }
-                    
-                    let formatter = DateFormatter()
-                    formatter.dateStyle = .full
-                    formatter.timeStyle = .medium
-                    
-                    var comps: DateComponents!
-                    comps = Calendar.current.dateComponents(in: TimeZone.current, from: date)
-                    let comps1 = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-                    if content.title == "Arbejde imorgen" {
-                        comps.hour = 20
-                        comps.minute = 0
-                    }
-                    
-                    let trigger = UNCalendarNotificationTrigger(dateMatching: comps1, repeats: false)
-                    
-                    let request = UNNotificationRequest(identifier: self.id + String(notificationInt), content: content, trigger: trigger)
-                    
-                    center.add(request, withCompletionHandler: { (error) in
-                        if let _ = error {
-                            print("Error: \(error!.localizedDescription)")
-                        }
-                    })
-                }
-                
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound]) { (granted, error) in
+            
+            guard granted && error == nil else {
+                return
             }
-        } else {
-            // Fallback on earlier versions
+            
+            for notificationInt in UserDefaults.standard.object(forKey: kNotifications) as! [Int] {
+                let content = UNMutableNotificationContent()
+                content.sound = UNNotificationSound.default()
+                
+                var date: Date!
+                switch notificationInt {
+                case 0:
+                    content.title = "Vagt begynder nu"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu"
+                    date = Date(timeInterval: 0, since: self.startTime)
+                case 1:
+                    content.title = "Arbejde om 5 min"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 5 minutter"
+                    date = Date(timeInterval: -300, since: self.startTime)
+                case 2:
+                    content.title = "Arbejde om 15 min"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder nu 15 minutter"
+                    date = Date(timeInterval: -900, since: self.startTime)
+                case 3:
+                    content.title = "Arbejde om 30 min"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 30 minutter"
+                    date = Date(timeInterval: -1800, since: self.startTime)
+                case 4:
+                    content.title = "Arbejde om 1 time"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 1 time"
+                    date = Date(timeInterval: -3600, since: self.startTime)
+                case 5:
+                    content.title = "Arbejde om 2 timer"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString()) begynder om 2 timer"
+                    date = Date(timeInterval: -7200, since: self.startTime)
+                case 6:
+                    content.title = "Arbejde imorgen"
+                    content.body = "Din vagt kl. \(self.getTimeIntervalString())"
+                    date = Date(timeInterval: -86400, since: self.startTime)
+                default:
+                    break
+                }
+                
+                let formatter = DateFormatter()
+                formatter.dateStyle = .full
+                formatter.timeStyle = .medium
+                
+                //var comps: DateComponents!
+                //comps = Calendar.current.dateComponents(in: TimeZone.current, from: date)
+                var comps1 = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+                if content.title == "Arbejde imorgen" {
+                    comps1.hour = 20
+                    comps1.minute = 0
+                }
+                
+                let trigger = UNCalendarNotificationTrigger(dateMatching: comps1, repeats: false)
+                
+                let request = UNNotificationRequest(identifier: self.id + String(notificationInt), content: content, trigger: trigger)
+                
+                center.add(request, withCompletionHandler: { (error) in
+                    if let _ = error {
+                        print("Error: \(error!.localizedDescription)")
+                    }
+                })
+            }
+            
         }
     }
     

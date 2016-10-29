@@ -141,7 +141,7 @@ class MainVC: UIViewController {
     }
     
     func presentAndGetLønPeriode() {
-        lønPeriodeAlert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din lønperiode.\nVigtigt: Kan ikke ændres senere", preferredStyle: .alert)
+        lønPeriodeAlert = UIAlertController(title: "Lønperiode", message: "Vælg starten af din lønperiode. Spørg din chef hvis du ikke kender datoen. \nVigtigt: Kan ikke ændres senere", preferredStyle: .alert)
         var thisPicker: UIPickerView!
         lønPeriodeAlert!.addTextField(configurationHandler: { (textField) in
             let picker = UIPickerView()
@@ -172,13 +172,17 @@ class MainVC: UIViewController {
             defaults.set(true, forKey: kYoungWorker)
             defaults.set(true, forKey: kAlderIsSet)
             defaults.synchronize()
-            self.presentAndGetLønPeriode()
+            if defaults.bool(forKey: kLønperiodeIsSet) == false {
+                self.presentAndGetLønPeriode()
+            }
         }
         let overAction = UIAlertAction(title: "Over 18", style: .default) { (action) in
             defaults.set(false, forKey: kYoungWorker)
             defaults.set(false, forKey: kAlderIsSet)
             defaults.synchronize()
-            self.presentAndGetLønPeriode()
+            if defaults.bool(forKey: kLønperiodeIsSet) == false {
+                self.presentAndGetLønPeriode()
+            }
         }
         alertController.addAction(underAction)
         alertController.addAction(overAction)

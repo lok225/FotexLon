@@ -13,6 +13,7 @@ import UIKit
 
 // UserDefaults
 
+let kEnteredCode = "enteredCode"
 let kFirstTime = "firstTime"
 let kAlderIsSet = "alderIsSet"
 let kLønperiodeIsSet = "lønperiodeIsSet"
@@ -21,6 +22,7 @@ let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
 let kNotifications = "notifications"
 let kTheme = "theme"
+let kStore = "store"
 let kIsLoggedIn = "loggedIn"
 let kAddToCalendar = "addToCalendar"
 let kFrikort = "frikort"
@@ -65,6 +67,10 @@ let oldBasisLon: Double = 112.42
 let oldAftenSats: Double = 25.2
 let oldLordagsSats: Double = 44.75
 let oldSondagsSats: Double = 50.6
+
+// Store
+
+let stores = [Store]()
 
 // Enum
 

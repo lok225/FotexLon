@@ -321,7 +321,6 @@ class SettingsVC: UITableViewController {
             let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
             let settingsAction = UIAlertAction(title: "Gå til indstillinger", style: .default, handler: { (action) in
                 if #available(iOS 10.0, *) {
-                    // UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!, options: [:], completionHandler: nil)
                     UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
                 } else {
                     UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
@@ -365,6 +364,28 @@ class SettingsVC: UITableViewController {
             self.lblLønPeriode.text = "D. \(row)"
             UserDefaults.standard.set(row, forKey: kLønPeriodeStart)
             UserDefaults.standard.synchronize()
+            
+            for vagt in self.vagterFRC.fetchedObjects as! [Vagt] {
+                self.dataController.delete(vagt: vagt)
+            }
+            
+            for oldVagt in self.vagterFRC.fetchedObjects as! [Vagt] {
+                self.dataController.delete(vagt: oldVagt)
+                
+                let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: self.managedObjectContext) as! Vagt
+                vagt.startTime = oldVagt.startTime
+                vagt.endTime = oldVagt.endTime
+                vagt.pause = oldVagt.pause
+                vagt.monthNumber = Date().getMonthNumber(withYear: true)
+                vagt.createID()
+                vagt.createNotifications()
+                vagt.createCalendarEvent()
+                
+                if let note = oldVagt.note {
+                    vagt.note = note
+                }
+            }
+            self.dataController.save()
         })
         lønPeriodeAlert!.addAction(doneAction)
         self.present(lønPeriodeAlert!, animated: true, completion: nil)

@@ -154,23 +154,24 @@ class SettingsVC: UITableViewController {
             UNUserNotificationCenter.current().getNotificationSettings { (settings) in
                 switch settings.authorizationStatus {
                 case .authorized:
-                    print("Authed")
-                    for not in self.notifications {
-                        if thisString.isEmpty {
-                            thisString.append(not.getNotificationsDetailString())
-                            print(thisString)
-                        } else {
-                            thisString += ", \(not.getNotificationsDetailString().lowercased())"
-                            print(thisString)
+                    if self.notifications.isEmpty {
+                        thisString = "Ingen notifikationer"
+                    } else {
+                        for not in self.notifications {
+                            if thisString.isEmpty {
+                                thisString.append(not.getNotificationsDetailString())
+                            } else {
+                                thisString += ", \(not.getNotificationsDetailString().lowercased())"
+                            }
                         }
                     }
-                    self.lblNotifications.text = thisString
-                    self.lblNotifications.textColor = UIColor.darkGray
                 case .denied:
                     thisString = "Ingen"
                 case .notDetermined:
                     thisString = "Ingen"
                 }
+                self.lblNotifications.text = thisString
+                self.lblNotifications.textColor = UIColor.darkGray
             }
         } else {
             thisString = "Ikke tilgængeligt"
@@ -450,6 +451,9 @@ extension SettingsVC {
             let cancelAction = UIAlertAction(title: "Annuller", style: .cancel, handler: nil)
             let logOffAction = UIAlertAction(title: "Log af", style: .destructive, handler: { (action) in
                 self.defaults.set(false, forKey: kIsLoggedIn)
+                self.defaults.set(nil, forKey: kEnteredCode)
+                self.defaults.set(false, forKey: kLønperiodeIsSet)
+                self.defaults.set(false, forKey: kAlderIsSet)
                 self.defaults.synchronize()
                 
                 self.dismiss(animated: false) {
@@ -465,6 +469,15 @@ extension SettingsVC {
             
         default:
             break
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        
+        if section == 0 {
+            return stores[defaults.integer(forKey: kStore)].lønText ?? ""
+        } else {
+            return nil
         }
     }
 }
@@ -496,6 +509,21 @@ extension SettingsVC: UITextFieldDelegate {
         textField.resignFirstResponder()
         
         return true
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        let store = stores[defaults.integer(forKey: kStore)]
+        
+        if indexPath.section == 0 && indexPath.row == 0 {
+            if store.hasOldLøn! {
+                return 44
+            } else {
+                return 0
+            }
+        } else {
+            return 44
+        }
     }
 }
 

@@ -14,6 +14,8 @@ class LoginVC: UIViewController {
     
     var txtColor: UIColor!
     
+    var defaults = UserDefaults.standard
+    
     var prevCount = 0
     
     override func viewDidLoad() {
@@ -29,12 +31,35 @@ class LoginVC: UIViewController {
         guard let text = txtPassword.text?.uppercased() else {
             return
         }
-        
+
         for store in stores {
+            print(store.code)
             if store.code == text {
-                UserDefaults.standard.set(true, forKey: kIsLoggedIn)
-                UserDefaults.standard.synchronize()
                 
+                // Set løn ved store
+                defaults.set(store.basisLon ?? 0.0, forKey: kYoungBasisLon)
+                defaults.set(store.aftenTillæg ?? 0.0, forKey: kYoungAftensSats)
+                defaults.set(store.lørdagTillæg ?? 0.0, forKey: kYoungLordagsSats)
+                defaults.set(store.søndagTillæg ?? 0.0, forKey: kYoungSondagsSats)
+                
+                // Set lønperiode indstillinger
+                if store.lonPeriodeStart != nil {
+                    defaults.set(store.lonPeriodeStart, forKey: kLønPeriodeStart)
+                    defaults.set(true, forKey: kLønperiodeIsSet)
+                }
+                
+                // Set hasOldLøn
+                if !store.hasOldLøn {
+                    defaults.set(true, forKey: kAlderIsSet)
+                }
+                
+                // Lav afsluttende login indstillinger
+                defaults.set(text, forKey: kEnteredCode)
+                defaults.set(store.id, forKey: kStore)
+                defaults.set(true, forKey: kIsLoggedIn)
+                defaults.synchronize()
+                
+                // Lav animationer 
                 UIView.animate(withDuration: 0.2, animations: {
                     let view = self.txtPassword.superview
                     view?.backgroundColor = UIColor.green
@@ -48,6 +73,7 @@ class LoginVC: UIViewController {
             }
         }
         
+        // Perform password textField animation
         UIView.animate(withDuration: 0.2, animations: {
             let view = self.txtPassword.superview
             view?.backgroundColor = faktaRed

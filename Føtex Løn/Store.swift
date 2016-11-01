@@ -12,8 +12,11 @@ class Store: NSObject {
 
     var id: Int!
     var code: String!
+    var name: String?
     
-    var lonPeriodeStart: Int!
+    var hasOldLøn: Bool!
+    
+    var lonPeriodeStart: Int?
     
     var basisLon: Double?
     var aftenTillæg: Double?
@@ -25,11 +28,14 @@ class Store: NSObject {
     var oldLørdagTillæg: Double?
     var oldSøndagTillæg: Double?
     
-    init(id: Int, code: String) {
+    var lønText: String?
+    
+    init(id: Int, code: String, hasOldLøn: Bool) {
         super.init()
         
         self.id = id
         self.code = code
+        self.hasOldLøn = hasOldLøn
     }
     
     

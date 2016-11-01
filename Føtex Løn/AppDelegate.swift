@@ -22,14 +22,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Fjerner alle de skide UIKit debugger beskeder
         UserDefaults.standard.setValue(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
         
-        showLoginScreen(animated: false)
-        
         setDataControllers()
         setManagedObjectContext()
         
         registerDefaults()
+        setupStores()
         
         setGlobalColors()
+        
+        showLoginScreen(animated: false)
         
         print(UserDefaults.standard.bool(forKey: kFirstTime))
         
@@ -59,16 +60,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func showLoginScreen(animated: Bool) {
-        if UserDefaults.standard.bool(forKey: kIsLoggedIn) == false {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "loginScreen")
-            self.window?.makeKeyAndVisible()
-            self.window?.rootViewController?.present(vc, animated: animated, completion: nil)
+        
+        let defaults = UserDefaults.standard
+        
+        if defaults.bool(forKey: kFirstTime) == false && defaults.bool(forKey: kFirstTime103) == true {
+            defaults.set(false, forKey: kFirstTime103)
+            defaults.set("XDGJ-QAID", forKey: kEnteredCode)
+            defaults.set(0, forKey: kStore)
+            defaults.synchronize()
+            
+            return
         }
+        
+        for store in stores {
+            if defaults.string(forKey: kEnteredCode) == store.code {
+                return
+            }
+        }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "loginScreen")
+        self.window?.makeKeyAndVisible()
+        self.window?.rootViewController?.present(vc, animated: animated, completion: nil)
     }
     
     func setupStores() {
-        let noneStore = Store(id: 0, code: "XDGJ-QAID")
+        let noneStore = Store(id: 0, code: "XDGJ-QAID", hasOldLøn: true)
+        noneStore.basisLon = 63.86
+        noneStore.aftenTillæg = 12.6
+        noneStore.lørdagTillæg = 22.38
+        noneStore.søndagTillæg = 25.3
+        noneStore.oldBasisLon = 112.42
+        noneStore.oldAftenTillæg = 25.2
+        noneStore.oldLørdagTillæg = 44.75
+        noneStore.oldSøndagTillæg = 50.6
+        noneStore.lønText = "Lønnen er baseret på HK Handels overenskomst og er gældende for Dansk Supermarked."
+        
+        let firstStore = Store(id: 1, code: "NIL", hasOldLøn: false)
+        firstStore.basisLon = 75.9
+        //firstStore.lonPeriodeStart = 15
+        
+        stores.append(noneStore)
+        stores.append(firstStore)
     }
     
     // MARK: CoreData
@@ -100,11 +133,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func registerDefaults() {
         
         let defaultsDic = [kFirstTime: true,
+                           kFirstTime103: true,
                            kEnteredCode: "XDGJ-QAID",
                            kLønperiodeIsSet: false,
                            kLønPeriodeStart: 1,
                            kAlderIsSet: false,
                            kIsLoggedIn: false,
+                           kYoungWorker: true,
                            kAddToCalendar: false,
                            kFrikort: 0,
                            kTrækprocent: 0,

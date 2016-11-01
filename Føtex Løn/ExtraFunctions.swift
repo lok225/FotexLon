@@ -18,6 +18,8 @@ let kFirstTime = "firstTime"
 let kAlderIsSet = "alderIsSet"
 let kLønperiodeIsSet = "lønperiodeIsSet"
 
+let kFirstTime103 = "firstTime103"
+
 let kYoungWorker = "youngWorker"
 let kVagtDetailSegue = "vagtDetailSegue"
 let kNotifications = "notifications"
@@ -70,7 +72,7 @@ let oldSondagsSats: Double = 50.6
 
 // Store
 
-let stores = [Store]()
+var stores = [Store]()
 
 // Enum
 

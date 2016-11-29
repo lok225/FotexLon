@@ -196,7 +196,11 @@ class VagtDetailVC: UITableViewController {
             }
             vagt.startTime = startTimePicker.date
             vagt.endTime = endTimePicker.date
-            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
+            if checkPauseText() {
+                vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
+            } else {
+                return
+            }
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
             vagt.updateNotifications()
             
@@ -216,7 +220,19 @@ class VagtDetailVC: UITableViewController {
             let vagt = NSEntityDescription.insertNewObject(forEntityName: "Vagt", into: managedObjectContext) as! Vagt
             vagt.startTime = startTimePicker.date
             vagt.endTime = endTimePicker.date
-            vagt.pause = Int(txtPause.text!.replacingOccurrences(of: " min", with: ""))!
+            
+            var index = 0
+            var pauseText = txtPause.text!
+            for character in txtPause.text!.characters {
+                if Int(String(character)) != nil {
+                    
+                } else {
+                    pauseText = pauseText.replacingOccurrences(of: String(character), with: "")
+                }
+                index += 1
+            }
+            vagt.pause = Int(pauseText)!
+            
             vagt.monthNumber = vagt.startTime.getMonthNumber(withYear: true)
             vagt.createID()
             vagt.createNotifications()
@@ -226,9 +242,22 @@ class VagtDetailVC: UITableViewController {
                 vagt.note = text
             }
             
+            print(vagt.pause)
             dataController.save()
             
             delegate?.vagtDetailVC(controller: self, didFinishAddingVagt: vagt)
+        }
+    }
+    
+    func checkPauseText() -> Bool {
+        if Int(txtPause.text!.replacingOccurrences(of: " min", with: "")) != nil {
+            return true
+        } else {
+            let alert = UIAlertController(title: "Stavefejl", message: "Pausefeltet skal være udfyldt korrekt. F.eks. 'x min'", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(action)
+            self.present(alert, animated: true, completion: nil)
+            return false
         }
     }
     

@@ -117,7 +117,6 @@
 				E3BE97981D4254C900D30589 /* Main.storyboard */,
 				E34453BC1D5DAACC00B3DB67 /* VagtCell.swift */,
 				E30AFF391D469456009ADF71 /* ExtraFunctions.swift */,
-				E30175B31DC427E60055FFE6 /* Store.swift */,
 				E3FD81B51D49736B001171EE /* Data Model */,
 				E30784EB1D4A9EE9009ED245 /* Andre Filer */,
 			);
@@ -141,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				E3D47E2F1D42B4E100C3A7E7 /* CoreDataModel.xcdatamodeld */,
+				E30175B31DC427E60055FFE6 /* Store.swift */,
 				E3000D121D57A9FD004788B0 /* Vagt+CoreDataClass.swift */,
 				E365E6A01D6D8C3D0046F56D /* StandardVagt.swift */,
 				E3EDB2D81D5222CD00D2D1BB /* Month.swift */,

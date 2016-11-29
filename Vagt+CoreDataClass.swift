@@ -151,8 +151,19 @@ public class Vagt: NSManagedObject {
     func updateCalendarEvent() {
         let eventStore = EKEventStore()
         
+        guard UserDefaults.standard.bool(forKey: kAddToCalendar) else {
+            return
+        }
+        
         eventStore.requestAccess(to: .event) { (granted, error) in
-            guard granted && error == nil else {
+//            guard granted && error == nil else {
+//                return
+//            }
+            if granted == false {
+                return
+            }
+            
+            if error != nil {
                 return
             }
         
@@ -173,16 +184,27 @@ public class Vagt: NSManagedObject {
         let eventStore = EKEventStore()
         
         eventStore.requestAccess(to: .event) { (granted, error) in
-            guard granted && error == nil else {
+//            guard granted && error == nil else {
+//                return
+//            }
+            if granted == false {
                 return
             }
             
-            let event = eventStore.event(withIdentifier: self.eventID!)!
+            if error != nil {
+                return
+            }
             
-            do {
-                try eventStore.remove(event, span: .thisEvent, commit: true)
-            } catch {
-                print(error)
+            if let id = self.eventID {
+                let event = eventStore.event(withIdentifier: id)!
+                
+                do {
+                    try eventStore.remove(event, span: .thisEvent, commit: true)
+                } catch {
+                    print(error)
+                }
+            } else {
+                return
             }
         }
     }

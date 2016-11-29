@@ -156,7 +156,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                            kOldBasisLon: 112.42,
                            kOldAftensSats: 25.2,
                            kOldLordagsSats: 44.75,
-                           kOldSondagsSats: 50.6] as [String : Any]
+                           kOldSondagsSats: 50.6]
+            as [String : Any]
         UserDefaults.standard.register(defaults: defaultsDic)
     }
     

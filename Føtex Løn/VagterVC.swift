@@ -212,17 +212,23 @@ class VagterVC: UITableViewController {
         setColors(forCell: cell)
         
         if vagt.active == false {
-            let attString = NSMutableAttributedString(string: vagt.getDateIntervalString().capitalized)
-            attString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attString.length))
+//            let attString = NSMutableAttributedString(string: vagt.getDateIntervalString().capitalized)
+//            attString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attString.length))
+//            
+//            let attString2 = NSMutableAttributedString(string: "\(Int(vagt.samletLon)),-")
+//            attString2.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attString2.length))
             
-            let attString2 = NSMutableAttributedString(string: "\(Int(vagt.samletLon)),-")
-            attString2.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attString2.length))
+//            cell.textLabel?.attributedText = attString
+//            cell.textLabel?.textColor = UIColor.lightGray
+//            
+//            cell.detailTextLabel?.attributedText = attString2
+//            cell.detailTextLabel?.textColor = UIColor.lightGray
             
-            cell.textLabel?.attributedText = attString
-            cell.textLabel?.textColor = UIColor.lightGray
+            cell.textLabel?.text = vagt.getDateIntervalString().capitalized
+            cell.textLabel?.textColor = .lightGray
+            cell.detailTextLabel?.text = "\(Int(vagt.samletLon)),-"
+            cell.detailTextLabel?.textColor = .lightGray
             
-            cell.detailTextLabel?.attributedText = attString2
-            cell.detailTextLabel?.textColor = UIColor.lightGray
             
         } else {
             cell.textLabel?.text = vagt.getDateIntervalString().capitalized
